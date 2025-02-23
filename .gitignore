@@ -1,4 +1,6 @@
-
+###> PhpStorm ###
+/.idea/
+###< PhpStorm ###
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
@@ -8,3 +10,10 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
