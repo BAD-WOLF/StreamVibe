@@ -10,7 +10,7 @@ class HelloController extends AbstractController {
   public function index(): Response {
     # code...
     return $this->render("home/index.html.twig", [
-      "name" => "Nilton II Rocha",
+      "name" => "Dennis Camela",
     ]);
   }
 }
