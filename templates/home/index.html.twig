@@ -1,7 +1,11 @@
 {% extends "base.html.twig" %}
 
+{% block title %}
+  Pagina1
+{% endblock %}
+
 {% block body %}
-  <div {{ react_component('Hello', {firstName: name}) }}>
+  <div {{ react_component('Contacto', {firstName: name}) }}>
     <p>Loading ...</p>
   </div>
 {% endblock %}
