@@ -1,3 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import the fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+:root{
+    --font:"Poppins", sans-serif;
+    --gray-200:#E5E7EB;
+   --gray-300:#D1D5DB;
+   --gray-700:#1f2631;
+   --blue-600:#0066FF;
+   --blue-700:#1D4ED8;
+}
 body {
-    background-color: lightgray;
+    font-family: var(--gray-200);
+    background-color:var(--bg-color) ;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    max-width:100vw;
+    background-color:var(--gray-200);
+    color:var(--gray-700);
+    font-family:var(--text-robot)
+}
+
+h1,
+h2,
+h3,
+h4{
+    display:block;
+    margin:0;
+    padding:0;
+}
+p{
+    line-height:1rem
+}
+img{
+    width:100%;
+    display:block;
+    object-fit:cover;
+}
+input,
+textarea{
+    display:block;
+    width:100;
+    outline:none;
+    border:none;
+    background:var(--gray-300)
+}
+button{
+    display:block;
+    width:100%;
+    outline:none;
+    border:none
+}
+
+ul,
+li{
+    display:block;
+    list-style:none;
+}
+
+a{
+    text-decoration:none
+}
+
+/* Components */
+.container{
+    max-width:80rem;
+    margin:1em auto;
 }
