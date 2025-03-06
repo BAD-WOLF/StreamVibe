@@ -1,5 +1,5 @@
 import React from 'react';
 
 export default function (props) {
-    return <div>Hello {props.firstName}</div>;
+    return <section className='text-blue-600 border'>Hello {props.firstName}</section>;
 }
