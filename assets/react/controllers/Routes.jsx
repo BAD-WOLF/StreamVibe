@@ -10,10 +10,12 @@ export default function Index(){
     return(
         <>
           <BrowserRouter>
-                <Header/>
+
+            <Header/>
             <Routes>
-                <Route path='/' to={<Home/>}/>
+                <Route exact path='/' element={<Home/>} />
             </Routes>
+
           </BrowserRouter>
         </>
     )
