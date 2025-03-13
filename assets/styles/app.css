@@ -9,15 +9,15 @@
 :root{
     --font:"Poppins", sans-serif;
    --color-gray-200: #F0F4F8;
-   --color-gray-400: #3D3D3D;
-    --color-gray-500: #262626;
+   --color-gray-400: #262626;
+   --color-gray-500: #02060c;
     --ciano-escuro: #0E7490;
     --azul-petroleo: #274C7C;
 
 }
 body {
     font-family: var(--font);
-    background-image:linear-gradient(to right bottom, var(--color-gray-500), var(--color-gray-400)) ;
+    background-color:#02060c;
 }
 
 *{
