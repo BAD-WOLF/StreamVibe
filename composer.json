@@ -4,13 +4,14 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.2.*",
+        "symfony/http-client": "7.2.*",
         "symfony/runtime": "7.2.*",
         "symfony/twig-bundle": "7.2.*",
         "symfony/webpack-encore-bundle": "^2.2",
@@ -57,6 +58,9 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "start": [
+            "symfony serve:start"
         ]
     },
     "conflict": {
@@ -69,6 +73,7 @@
         }
     },
     "require-dev": {
+        "symfony/maker-bundle": "^1.62",
         "symfony/stopwatch": "7.2.*",
         "symfony/web-profiler-bundle": "7.2.*"
     }
