@@ -11,14 +11,14 @@ export default function Header(){
 
     return(
         <>
-        <main className={`bg-color_gray_500 sticky top-0`}>
-            <header className={`flex justify-between items-center py-2 px-4`}>
+        <main className={`sticky top-0 z-50 mainHeader backdrop-blur-md`}>
+            <header className={`flex justify-between items-center py-3 px-4`}>
 
                 <section>
                     <Logo/>
                 </section>
 
-                <nav className={` text-gray-200 flex justify-start items-center gap-2 text-base `}>
+                <nav className={` text-gray-200 flex justify-start items-center gap-2 text-base z-50`}>
                     <Link to='/' className={` font-medium hover:font-normal hover:text-gray-300 transition-all`}>Films</Link>
                     <Link to='/' className='font-medium hover:font-normal hover:text-gray-300 transition-all'>Series</Link>
                     <Link to='/' className='font-medium hover:font-normal hover:text-gray-300 transition-all'>Populares</Link>
