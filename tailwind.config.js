@@ -12,7 +12,16 @@ module.exports = {
         "color_gray_500":"#02060c",
         "ciano_escuro": "#0E7490",
         "azul_petroleo": "#274C7C"
-      }
+      },
+      keyframes: {
+              shine: {
+                '0%': { 'background-position': '100%' },
+                '100%': { 'background-position': '-100%' },
+              },
+            },
+            animation: {
+              shine: 'shine 5s linear infinite',
+            },
     },
   },
   plugins: [],
