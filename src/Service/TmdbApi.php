@@ -48,6 +48,9 @@ namespace App\Service {
         }
 
         /**
+         *
+         * Description: Searches for movies based on a query string
+         *
          * @param string $search_query
          * @param $page
          * @return array
@@ -59,11 +62,14 @@ namespace App\Service {
          */
         public function getMovies(string $search_query, $page): array
         {
-            $r = $this->client->request('GET', "{$this->_domain}/search/movie?query=$search_query&include_adult=true&language=en-US&page=$page", $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/search/movie?query=$search_query&include_adult=true&language=en-US&page=$page", options: $this->_options);
             return $r->toArray();
         }
 
         /**
+         *
+         * Description: Returns all actors of the movie in question
+         *
          * @param int $movie_id
          * @return array
          * @throws ClientExceptionInterface
@@ -72,13 +78,16 @@ namespace App\Service {
          * @throws ServerExceptionInterface
          * @throws TransportExceptionInterface
          */
-        public function getMoviePersons(int $movie_id): array
+        public function getPersonsFromMovie(int $movie_id): array
         {
-            $r = $this->client->request('GET', "{$this->_domain}/movie/$movie_id/credits?language=en-US", $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/movie/$movie_id/credits?language=en-US", options: $this->_options);
             return $r->toArray();
         }
 
         /**
+         *
+         * Description: Returns all the movies from person
+         *
          * @param int $persson_id
          * @return array
          * @throws ClientExceptionInterface
@@ -87,9 +96,26 @@ namespace App\Service {
          * @throws ServerExceptionInterface
          * @throws TransportExceptionInterface
          */
-        public function getPersonMovies(int $persson_id): array
+        public function getMoviesFromPerson(int $persson_id): array
         {
-            $r = $this->client->request('GET', "{$this->_domain}/person/$persson_id/movie_credits?language=en-US", $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/person/$persson_id/movie_credits?language=en-US", options: $this->_options);
+            return $r->toArray();
+        }
+
+        /**
+         *
+         * Description: Returns detailed information about a specific movie
+         *
+         * @param int $movie_id
+         * @return array
+         * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+         */
+        public function getMovieDetails(int $movie_id): array {
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/movie/$movie_id?language=en-US", options: $this->_options);
             return $r->toArray();
         }
     }
