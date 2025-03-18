@@ -9,7 +9,7 @@
 /* Reset Css */
 :root{
     --font-text:"Poppins", sans-serif;
-   --color-gray-200: #F0F4F8;
+   --color-gray-200: #f7f8f8;
    --color-gray-400: #262626;
    --color-gray-500: #02060c;
     --ciano-escuro: #0E7490;
@@ -77,5 +77,5 @@ a{
     margin:1em auto;
 }
 .mainHeader{
-    background-color: #02060cea;
+    background-color: #02060ce8;
 }
