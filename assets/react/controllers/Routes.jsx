@@ -3,7 +3,7 @@ import {BrowserRouter,Routes, Route} from 'react-router'
 
 //import components
 import Header from './components/Header/Header'
-import Home from './pages/Home'
+import Home from './pages/Home/Home'
 
 export default function Index(){
 
