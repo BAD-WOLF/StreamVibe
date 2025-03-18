@@ -23,6 +23,7 @@ const Depoimento = ({ testimonials, autoplay = false, className }) => {
 
   return (
     <div className={`max-w-sm md:max-w-4xl mx-auto px-4 md:px-8 lg:px-12 ${className}`}>
+      <h2 className="text-2xl font-medium pb-4">Depoimentos</h2>
       <div className="relative grid grid-cols-1 md:grid-cols-2 gap-20">
         <div className="relative h-80 w-full">
           <AnimatePresence>
@@ -54,7 +55,7 @@ const Depoimento = ({ testimonials, autoplay = false, className }) => {
             exit={{ y: -20, opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
           >
-            <h3 className="text-2xl font-bold">{testimonials[active].name}</h3>
+            <h3 className="text-2xl font-medium">{testimonials[active].name}</h3>
             <p className="text-sm text-gray-500">{testimonials[active].designation}</p>
             <p className="text-sm text-gray-700 mt-5">{testimonials[active].quote}</p>
           </motion.div>
