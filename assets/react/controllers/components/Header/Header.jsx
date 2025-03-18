@@ -22,7 +22,6 @@ export default function Header(){
                     <Link to='/' className={` font-light hover:font-normal hover:text-gray-300 transition-all`}>Movies</Link>
                     <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Series</Link>
                     <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Suporte</Link>
-                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Contactos</Link>
                     <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Sobre</Link>
                 </nav>
 
