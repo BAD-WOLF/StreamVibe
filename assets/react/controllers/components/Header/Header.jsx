@@ -19,11 +19,11 @@ export default function Header(){
                 </section>
 
                 <nav className={` text-gray-200 flex justify-start items-center gap-2 text-base z-50`}>
-                    <Link to='/' className={` font-medium hover:font-normal hover:text-gray-300 transition-all`}>Films</Link>
-                    <Link to='/' className='font-medium hover:font-normal hover:text-gray-300 transition-all'>Series</Link>
-                    <Link to='/' className='font-medium hover:font-normal hover:text-gray-300 transition-all'>Populares</Link>
-                    <Link to='/' className='font-medium hover:font-normal hover:text-gray-300 transition-all'>Suporte</Link>
-                    <Link to='/' className='font-medium hover:font-normal hover:text-gray-300 transition-all'>Contactos</Link>
+                    <Link to='/' className={` font-light hover:font-normal hover:text-gray-300 transition-all`}>Movies</Link>
+                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Series</Link>
+                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Suporte</Link>
+                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Contactos</Link>
+                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Sobre</Link>
                 </nav>
 
                 <section>
