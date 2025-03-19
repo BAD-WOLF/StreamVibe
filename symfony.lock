@@ -1,19 +1,4 @@
 {
-    "symfony/asset-mapper": {
-        "version": "7.2",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "6.4",
-            "ref": "5ad1308aa756d58f999ffbe1540d1189f5d7d14a"
-        },
-        "files": [
-            "./assets/app.js",
-            "./assets/styles/app.css",
-            "./config/packages/asset_mapper.yaml",
-            "./importmap.php"
-        ]
-    },
     "symfony/console": {
         "version": "7.2",
         "recipe": {
@@ -124,6 +109,15 @@
             "assets/react/controllers/Hello.jsx"
         ]
     },
+    "symfony/ux-turbo": {
+        "version": "2.23",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "main",
+            "version": "2.20",
+            "ref": "c85ff94da66841d7ff087c19cbcd97a2df744ef9"
+        }
+    },
     "symfony/web-profiler-bundle": {
         "version": "7.2",
         "recipe": {
@@ -151,18 +145,6 @@
             "config/packages/webpack_encore.yaml",
             "package.json",
             "webpack.config.js"
-        ]
-    },
-    "symfonycasts/tailwind-bundle": {
-        "version": "0.8",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "0.8",
-            "ref": "4ea7c9488fdce8943520daf3fdc31e93e5b59c64"
-        },
-        "files": [
-            "./config/packages/symfonycasts_tailwind.yaml"
         ]
     },
     "twig/extra-bundle": {
