@@ -68,7 +68,7 @@ namespace App\Service {
 
         /**
          *
-         * Description: Returns all actors of the movie in question
+         * Description: Returns all the movies from person
          *
          * @param int $movie_id
          * @return array
@@ -86,7 +86,7 @@ namespace App\Service {
 
         /**
          *
-         * Description: Returns all the movies from person
+         * Description: Returns all actors of the movie in question
          *
          * @param int $persson_id
          * @return array
