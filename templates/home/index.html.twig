@@ -1,7 +1,11 @@
 {% extends "base.html.twig" %}
 
+{% block title %}
+  StreamVibe
+{% endblock %}
+
 {% block body %}
-  <div>
-    <h1>{{hello}}</h1>
+  <div {{ react_component('App') }}>
+    <p>Loading ...</p>
   </div>
 {% endblock %}
