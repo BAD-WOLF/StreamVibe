@@ -1,6 +1,5 @@
 import React from 'react'
 import {Link } from 'react-router'
-import './Header.css'
 import {FaUser} from 'react-icons/fa'
 
 //import the component
@@ -12,24 +11,25 @@ export default function Header(){
     return(
         <>
         <main className={`sticky top-0 z-50 mainHeader backdrop-blur-md`}>
-            <header className={`flex justify-between items-center py-3 px-4`}>
+            <header className={`flex justify-between flex-wrap items-center py-3 px-4`}>
 
                 <section>
                     <Logo/>
                 </section>
 
-                <nav className={` text-gray-200 flex justify-start items-center gap-2 text-base z-50`}>
+                <nav className={` text-gray-200 flex justify-start items-center gap-2 text-base z-50 `}>
                     <Link to='/' className={` font-light hover:font-normal hover:text-gray-300 transition-all`}>Movies</Link>
                     <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Series</Link>
                     <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Suporte</Link>
                     <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Sobre</Link>
                 </nav>
 
-                <section>
+                <section className='hidden md:flex'>
                 <Button>
                     <span><FaUser/></span>
-                    <span>Minha Conta</span>
+                    <span>Entrar Agora</span>
                 </Button>
+
                 </section>
 
             </header>

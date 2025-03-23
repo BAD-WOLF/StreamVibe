@@ -1,7 +1,7 @@
 import React from 'react';
 
 //import Components
-import Routes from './Routes'
+import Routes from './Routes/PageRoute'
 
 export default function () {
     return(

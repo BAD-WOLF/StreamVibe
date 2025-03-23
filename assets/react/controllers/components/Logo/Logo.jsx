@@ -1,12 +1,14 @@
 import React from 'react'
 import {Link} from 'react-router'
+
+//import the component
 import logo from '../../../../images/logo.png'
 
 const Logo=()=>{
   return(
     <>
      <Link className='' to='/'>
-        <img src={logo} alt="Carregando logo" className={`w-48`}/>
+        <img src={logo} alt="Carregando logo" style={{width:"180px"}}/>
     </Link>
     </>
   )
