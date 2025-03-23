@@ -1,0 +1,16 @@
+{
+    "files.exclude": {
+        "bin": true,
+        "config": true,
+        "node_modules": true,
+        "public": true,
+        "src": true,
+        "var": true,
+        "vendor": true,
+        ".env": true,
+        ".env.dev": true,
+        "composer.json": true,
+        "composer.lock": true,
+        "symfony.lock": true,
+    }
+}
