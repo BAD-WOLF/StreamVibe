@@ -1,6 +1,10 @@
 import React from 'react'
+
+// Import the components
 import Banner from './Banner'
 import Depoimento from './Depoimento'
+
+// import img for profile testimonials
 import dennis from '../../../../images/users/dennis.jpg'
 import goreth from '../../../../images/users/goreth.jpg'
 import lau from '../../../../images/users/lau.jpg'
@@ -27,14 +31,25 @@ export default function Home(){
 
      return (
         <>
-        <main className='container text-gray-200 w-full h-lvh'>
+        <main className='text-gray-200 w-full  grid grid-rows-[auto_1fr_auto] min-h-screen'>
+
+            {/* Banner */}
             <section>
                 <Banner/>
             </section>            
 
-            {/* Show the films and serie */}
-            <section className='py-4'>
-                <Depoimento testimonials={testimonials} autoplay/>
+            <section className='Container md:px-4 px-8'>
+
+                {/* Description */}
+                <section className='md:px-0 pt-8'>
+                    <p className='md:text-center text-justify text-gray-400 text-base font-light'>A StreamVibe oferece uma experiência completa para amantes do cinema e séries, reunindo informações detalhadas sobre os títulos mais populares, lançamentos e clássicos do entretenimento. Com uma interface intuitiva, os usuários podem explorar sinopses, elencos, trailers e avaliações, facilitando a escolha do próximo filme ou série para assistir.</p>
+                </section>
+
+                {/* Show the testimonials */}
+                <section className='flex-grow mb-16'>
+                    <Depoimento testimonials={testimonials} autoplay/>
+                </section>
+                
             </section>
         </main>
         </>

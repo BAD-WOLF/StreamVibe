@@ -11,8 +11,6 @@
         ".env.dev": true,
         "composer.json": true,
         "composer.lock": true,
-        "importmap.php": true,
         "symfony.lock": true,
-        "templates": true,
     }
 }
