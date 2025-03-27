@@ -1,5 +1,4 @@
 import React from 'react'
-import {Link } from 'react-router'
 import {FaUser} from 'react-icons/fa'
 
 //import the component
@@ -18,10 +17,10 @@ export default function Header(){
                 </section>
 
                 <nav className={` text-gray-200 flex justify-start items-center gap-2 text-base z-50 `}>
-                    <Link to='/' className={` font-light hover:font-normal hover:text-gray-300 transition-all`}>Movies</Link>
-                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Series</Link>
-                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Suporte</Link>
-                    <Link to='/' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Sobre</Link>
+                    <a href='/movies' className={` font-light hover:font-normal hover:text-gray-300 transition-all`}>Movies</a>
+                    <a href='/series' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Series</a>
+                    <a href='/support' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Suporte</a>
+                    <a href='/about' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Sobre</a>
                 </nav>
 
                 <section className='hidden md:flex'>
