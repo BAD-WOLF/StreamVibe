@@ -3,17 +3,21 @@ import React from 'react'
 //Import components
 import Header from '../../components/Header/Header'
 import Footer from '../../components/Footer/Footer'
+import Button from '../../components/Forms/Button'
 import Banner from '../Home/Banner'
+import Pagination from './Pagination'
 
 const Movies = ({movies}) => {
-
-const [movie, setMovie] = React.useState([])
-const [loading, setLoading]=React.useState(true)
-
   //Obtendo a query da url
   const urlParts = window.location.pathname.split("/");
   const query = decodeURIComponent(urlParts[3]);
   const page = urlParts[4];
+  const totalPages=movies.total_pages
+
+  const [movie, setMovie] = React.useState([])
+  const [loading, setLoading]=React.useState(true)
+  const [currentPage, setCurrentPage]=React.useState(Number(page)); //página atual
+
 
   console.log(movies)
 
@@ -85,6 +89,10 @@ const [loading, setLoading]=React.useState(true)
                 </div>
               )
             }) : <h3 className='text-center text-gray-200 text-2xl'>Nenhum filme encontrado</h3>}
+          </section>
+
+          <section className='Container py-6 flex justify-center items-center'>
+          <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} query={query}/>
           </section>
 
     </section>
