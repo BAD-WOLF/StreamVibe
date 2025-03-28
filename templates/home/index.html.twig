@@ -1,12 +1,12 @@
 {% extends "base.html.twig" %}
 
 {% block title %}
-  StreamVibe
+  Home | StreamVibe
 {% endblock %}
 
 {% block body %}
     {# HOME PAGE HERE #}
-    <div {{ react_component('pages/Home/Home') }}>
-        <p>Loading ...</p>
-    </div>
+    <main {{ react_component('pages/Home/Home') }} className='min-h-screen w-full flex justify-center items-center border'>
+        <div class=''>Loading ...</div>
+    </main>
 {% endblock %}

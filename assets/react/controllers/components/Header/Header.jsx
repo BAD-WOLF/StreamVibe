@@ -17,7 +17,7 @@ export default function Header(){
                 </section>
 
                 <nav className={` text-gray-200 flex justify-start items-center gap-2 text-base z-50 `}>
-                    <a href='/movies' className={` font-light hover:font-normal hover:text-gray-300 transition-all`}>Movies</a>
+                    <a href='/movies/show/the/2' className={` font-light hover:font-normal hover:text-gray-300 transition-all`}>Movies</a>
                     <a href='/series' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Series</a>
                     <a href='/support' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Suporte</a>
                     <a href='/about' className='font-light hover:font-normal hover:text-gray-300 transition-all'>Sobre</a>
