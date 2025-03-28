@@ -69,7 +69,7 @@ const [loading, setLoading]=React.useState(true)
               }).format(new Date(movie.release_date)):'Data não disponível';
 
               return (
-                <div key={movie.id} className='flex justify-start rounded-sm shadow-sm shadow-gray-700'>
+                <div key={movie.id} className='flex justify-start rounded-sm border border-gray-900 shadow-sm shadow-gray-800'>
                   <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path || movie.backdrop_path}`} alt={movie.title} style={{width:'8rem'}}/>
                   
                   <div className='mx-4 flex flex-col justify-between py-4'>
