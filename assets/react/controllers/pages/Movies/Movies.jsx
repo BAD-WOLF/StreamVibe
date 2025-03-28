@@ -18,9 +18,6 @@ const Movies = ({movies}) => {
   const [loading, setLoading]=React.useState(true)
   const [currentPage, setCurrentPage]=React.useState(Number(page)); //página atual
 
-
-  console.log(movies)
-
   //funcao para chamar filmes, memorizada
   const fetchMovies=React.useCallback(()=>{
     setLoading(true) //define o estado de carregamento
