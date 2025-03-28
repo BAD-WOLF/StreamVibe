@@ -9,7 +9,7 @@ export default function Header(){
 
     return(
         <>
-        <main className={`sticky top-0 z-50 mainHeader backdrop-blur-md`}>
+        <main className={`sticky top-0 z-50 mainHeader backdrop-blur-md shadow-sm shadow-gray-800`}>
             <header className={`flex justify-between flex-wrap items-center py-3 px-4`}>
 
                 <section>
