@@ -88,8 +88,11 @@ const Movies = ({movies}) => {
             }) : <h3 className='text-center text-gray-200 text-2xl'>Nenhum filme encontrado</h3>}
           </section>
 
-          <section className='Container py-6 flex justify-center items-center'>
-          <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} query={query}/>
+          <section className='Container py-6 flex justify-center items-center border'>
+            
+            <div>
+                 <Pagination totalPages={totalPages} currentPage={currentPage} onPageChange={setCurrentPage} query={query}/>
+            </div>
           </section>
 
     </section>
