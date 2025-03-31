@@ -2,6 +2,9 @@
 
 {# /movies/show/{query}/{page} #}
 
+{% block title %}
+  Movies | StreamVibe
+{% endblock %}
 
 {# MOVIE SHOW PAGE HERE #}
 {#
@@ -12,16 +15,10 @@
 
 {# I left this below just so you have an example #}
 {% block body %}
-{# Don't forget that whenever you want to use a macro, you must first import it #}
-    {% import 'base.macro.twig' as macros %}
-    {% if movies is not empty %}
-        {% for i in movies.results %}
-            {% if i.backdrop_path %}
-                {# After you have imported them into the page/file you want, simply pull them in #}
-                <img src="{{ macros.tmdb_img(i.backdrop_path, "w500") }}"/>
-            {% endif %}
-        {% endfor %}
-    {% else %}
-        <p>esta vazio</p>
-    {% endif %}
+
+ {# Page Movie Here #}
+ <div {{ react_component('pages/Movies/Movies', {movies:movies}) }}>
+        <p>Loading ...</p>
+ </div>
+
 {% endblock %}
