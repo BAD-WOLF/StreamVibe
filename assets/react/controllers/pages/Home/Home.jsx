@@ -3,6 +3,8 @@ import React from 'react'
 // Import the components
 import Banner from './Banner'
 import Depoimento from './Depoimento'
+import Header from '../../components/Header/Header'
+import Footer from '../../components/Footer/Footer'
 
 // import img for profile testimonials
 import dennis from '../../../../images/users/dennis.jpg'
@@ -31,7 +33,8 @@ export default function Home(){
 
      return (
         <>
-        <main className='text-gray-200 w-full  grid grid-rows-[auto_1fr_auto] min-h-screen'>
+        <Header/>
+        <main className='text-gray-200 w-full min-h-screen'>
 
             {/* Banner */}
             <section>
@@ -51,7 +54,9 @@ export default function Home(){
                 </section>
                 
             </section>
+            
         </main>
+        <Footer/>
         </>
      )
 }
