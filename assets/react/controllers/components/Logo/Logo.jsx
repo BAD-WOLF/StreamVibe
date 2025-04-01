@@ -1,5 +1,4 @@
 import React from 'react'
-import {Link} from 'react-router'
 
 //import the component
 import logo from '../../../../images/logo.png'
@@ -7,9 +6,9 @@ import logo from '../../../../images/logo.png'
 const Logo=()=>{
   return(
     <>
-     <Link className='' to='/'>
+     <a className='' href='/'>
         <img src={logo} alt="Carregando logo" style={{width:"180px"}}/>
-    </Link>
+    </a>
     </>
   )
 }
