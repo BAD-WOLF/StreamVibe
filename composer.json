@@ -20,6 +20,7 @@
         "phpunit/phpunit": "^12.1",
         "symfony/asset": "7.2.*",
         "symfony/console": "7.2.*",
+        "symfony/css-selector": "7.2.*",
         "symfony/dotenv": "7.2.*",
         "symfony/expression-language": "7.2.*",
         "symfony/flex": "^2.5",
