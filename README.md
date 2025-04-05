@@ -1,7 +1,11 @@
-# tmdb2
+# StreamVibe
 
-## summary redirection
-- HOME pesquisa movies e joga pra show_result
-- show_result de movies joda pra movie_details
-- movie_details mostra detalhes do filme e os atores do filme que ao clicar em um ator joga pra person_movies
-- person_movies contem tods os filmes que o ator em questao participou/fez
+**StreamVibe** is a streaming platform for series and movies built with Symfony, **made with care**, attention to detail and that mindset of “let’s do it right from the start”
+
+The idea here isn’t to reinvent anything, it’s to have a solid, modern base that works well, things like authentication, email verification, password reset… **it’s all set up!**
+
+It’s a project that speaks to those who’ve been around the dev world for a while, but also welcomes anyone just getting started and wanting to understand how to build something clean and scalable
+
+If you enjoy well-organized backend, clear structure and a project that feels good to maintain, take a look with care, it was made with that in mind
+
+---
