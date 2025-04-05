@@ -7,22 +7,22 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "api-platform/doctrine-orm": "^4.1",
-        "api-platform/graphql": "^4.1",
-        "api-platform/symfony": "^4.1",
-        "doctrine/dbal": "^3",
-        "doctrine/doctrine-bundle": "^2.13",
-        "doctrine/doctrine-migrations-bundle": "^3.4",
-        "doctrine/orm": "^3.3",
+        "api-platform/doctrine-orm": "^4.1.5",
+        "api-platform/graphql": "^4.1.5",
+        "api-platform/symfony": "^4.1.5",
+        "doctrine/dbal": "^3.9.4",
+        "doctrine/doctrine-bundle": "^2.14",
+        "doctrine/doctrine-migrations-bundle": "^3.4.1",
+        "doctrine/orm": "^3.3.2",
         "nelmio/cors-bundle": "^2.5",
-        "phpdocumentor/reflection-docblock": "^5.6",
+        "phpdocumentor/reflection-docblock": "^5.6.1",
         "phpstan/phpdoc-parser": "^2.1",
-        "phpunit/phpunit": "^12.0",
+        "phpunit/phpunit": "^12.1",
         "symfony/asset": "7.2.*",
         "symfony/console": "7.2.*",
         "symfony/dotenv": "7.2.*",
         "symfony/expression-language": "7.2.*",
-        "symfony/flex": "^2",
+        "symfony/flex": "^2.5",
         "symfony/form": "7.2.*",
         "symfony/framework-bundle": "7.2.*",
         "symfony/http-client": "7.2.*",
@@ -39,10 +39,10 @@
         "symfony/validator": "7.2.*",
         "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "7.2.*",
-        "symfonycasts/reset-password-bundle": "^1.23",
-        "symfonycasts/verify-email-bundle": "^1.17",
-        "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "symfonycasts/reset-password-bundle": "^1.23.1",
+        "symfonycasts/verify-email-bundle": "^1.17.3",
+        "twig/extra-bundle": "^2.12|^3.20",
+        "twig/twig": "^2.12|^3.20"
     },
     "config": {
         "allow-plugins": {
@@ -98,7 +98,8 @@
         }
     },
     "require-dev": {
-        "symfony/maker-bundle": "^1.62",
+        "symfony/browser-kit": "7.2.*",
+        "symfony/maker-bundle": "^1.62.1",
         "symfony/stopwatch": "7.2.*",
         "symfony/web-profiler-bundle": "7.2.*"
     }
