@@ -39,9 +39,8 @@ jobs:
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
     - name: Create Database
       run: |
-        mkdir -p data
-        touch data/database.sqlite
+        mkdir -p var/data
+        touch var/data/database.sqlite
+        php bin/console doctrine:migrations:migrate --env=test --no-interaction
     - name: Execute tests (Unit and Feature tests) via PHPUnit
-      env:
-        DATABASE_URL: sqlite:///%kernel.project_dir%/data/database.sqlite
       run: vendor/bin/phpunit
