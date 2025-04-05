@@ -51,7 +51,7 @@ namespace App\Controller {
         #[Route('/resend/verify/email', name: 'app_reverify_email')]
         public function reverifyUserEmail(Request $request, UserRepository $userRepository, EmailVerifier $emailVerifier): Response {
             if($this->getUser()) {
-                $this->redirectToRoute('home');
+                $this->redirectToRoute('app_home');
             }
 
             $form = $this->createForm(ReverifyFormType::class);
