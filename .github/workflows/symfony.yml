@@ -1,0 +1,84 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Symfony
+
+on:
+  push:
+    branches: [ "*" ]
+  pull_request:
+    branches: [ "*" ]
+
+permissions:
+  contents: read
+
+jobs:
+  symfony-tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [ 20.x, 22.x ]
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: Gk7!xRz92@wM
+          POSTGRES_DB: app_test
+        options: >-
+          --health-cmd="pg_isready -d $POSTGRES_DB -U $POSTGRES_USER"
+          --health-interval=5s
+          --health-timeout=10s
+          --health-retries=5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Install JS dependencies
+      run: npm install
+
+    #  To automatically get bug fixes and new Php versions for shivammathur/setup-php,
+    # change this to (see https://github.com/shivammathur/setup-php#bookmark-versioning):
+    # uses: shivammathur/setup-php@v2
+    - uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.4'
+
+    - name: Copy .env.test.local
+      run: |
+        php -r "file_exists('.env.test.local') || copy('.env.test', '.env.test.local');"
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v3
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install Dependencies
+      run: |
+        composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+    - name: Create Database
+      run: |
+        php bin/console dotenv:show --env=test >> $GITHUB_ENV
+        php bin/console doctrine:migrations:migrate --env=test --no-interaction
+
+    - name: Compile frontend assets
+      run: npm run dev
+
+    - name: Execute tests (Unit and Feature tests) via PHPUnit
+      run: vendor/bin/phpunit
