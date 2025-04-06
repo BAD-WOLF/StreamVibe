@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250405022552 extends AbstractMigration
+final class Version20250405155653 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -33,6 +33,12 @@ final class Version20250405022552 extends AbstractMigration
             COMMENT ON COLUMN reset_password_request.expires_at IS '(DC2Type:datetime_immutable)'
         SQL);
         $this->addSql(<<<'SQL'
+            CREATE TABLE "user" (id SERIAL NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, is_verified BOOLEAN NOT NULL, PRIMARY KEY(id))
+        SQL);
+        $this->addSql(<<<'SQL'
+            CREATE UNIQUE INDEX UNIQ_IDENTIFIER_EMAIL ON "user" (email)
+        SQL);
+        $this->addSql(<<<'SQL'
             ALTER TABLE reset_password_request ADD CONSTRAINT FK_7CE748AA76ED395 FOREIGN KEY (user_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE
         SQL);
     }
@@ -48,6 +54,9 @@ final class Version20250405022552 extends AbstractMigration
         SQL);
         $this->addSql(<<<'SQL'
             DROP TABLE reset_password_request
+        SQL);
+        $this->addSql(<<<'SQL'
+            DROP TABLE "user"
         SQL);
     }
 }
