@@ -15,5 +15,10 @@
 #}
 {% block body %}
 
+ {# Page Movie Here #}
+ <div {{ react_component('pages/Movies/Detalhes', {movieDetails:movieDetails}) }}>
+        <p>Loading ...</p>
+ </div>
+
 {% endblock %}
 
