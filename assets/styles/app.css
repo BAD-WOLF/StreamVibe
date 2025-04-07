@@ -14,8 +14,8 @@
    --color-gray-500: #02060c;
     --ciano-escuro: #0E7490;
     --azul-petroleo: #274C7C;
-
 }
+
 *{
     margin:0;
     padding:0;
@@ -38,6 +38,7 @@ h4{
     margin:0;
     padding:0;
 }
+
 p{
     line-height:1rem
 }
@@ -69,6 +70,7 @@ li{
 
 a{
     text-decoration:none;
+    display:inline-block;
 }
 
 /* create Components */
