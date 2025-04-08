@@ -8,14 +8,14 @@ use Symfony\Component\{
     Routing\Attribute\Route,
     Routing\Requirement\Requirement
 };
-use App\Service\TmdbApi;
+use App\Service\TmdbApiService;
 
 #[Route('/person', methods: ['GET'])]
 final class PersonController extends AbstractController
 {
     /**
      * @param int $personId
-     * @param \App\Service\TmdbApi $tmdbApi
+     * @param \App\Service\TmdbApiService $tmdbApiService
      * @return \Symfony\Component\HttpFoundation\Response
      * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
      * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
@@ -26,9 +26,9 @@ final class PersonController extends AbstractController
     #[Route(path: '/movies/{personId}', name: 'movies', requirements: [
         'personId' => Requirement::DIGITS,
     ])]
-    public function index(int $personId, TmdbApi $tmdbApi): Response
+    public function index(int $personId, TmdbApiService $tmdbApiService): Response
     {
-        $moviesFromPerson = $tmdbApi->getMoviesFromPerson($personId);
+        $moviesFromPerson = $tmdbApiService->getMoviesFromPerson($personId);
         dump($moviesFromPerson);
         return $this->render('person/index.html.twig', [
             'moviesFromPerson' => $moviesFromPerson,

@@ -38,8 +38,8 @@ class ResetPasswordControllerTest extends WebTestCase
     public function testResetPasswordController(): void
     {
         // Create a test user
-        $user = (new User())
-            ->setEmail('me@example.com')
+        $user = new User()
+            ->setEmail('me@test.com')
             ->setPassword('a-test-password-that-will-be-changed-later')
         ;
         $this->em->persist($user);
@@ -53,7 +53,7 @@ class ResetPasswordControllerTest extends WebTestCase
 
         // Submit the reset password form and test email message is queued / sent
         $this->client->submitForm('Send password reset email', [
-            'reset_password_request_form[email]' => 'me@example.com',
+            'reset_password_request_form[email]' => 'me@test.com',
         ]);
 
         // Ensure the reset password email was sent
@@ -64,7 +64,7 @@ class ResetPasswordControllerTest extends WebTestCase
         self::assertCount(1, $messages = $this->getMailerMessages());
 
         self::assertEmailAddressContains($messages[0], 'from', 'matheu@vieiratechnology.shop');
-        self::assertEmailAddressContains($messages[0], 'to', 'me@example.com');
+        self::assertEmailAddressContains($messages[0], 'to', 'me@test.com');
         self::assertEmailTextBodyContains($messages[0], 'This link will expire in 1 hour.');
 
         self::assertResponseRedirects('/reset-password/check-email');
@@ -93,7 +93,7 @@ class ResetPasswordControllerTest extends WebTestCase
 
         self::assertResponseRedirects('/');
 
-        $user = $this->userRepository->findOneBy(['email' => 'me@example.com']);
+        $user = $this->userRepository->findOneBy(['email' => 'me@test.com']);
 
         self::assertInstanceOf(User::class, $user);
 
