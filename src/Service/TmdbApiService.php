@@ -11,7 +11,7 @@ namespace App\Service {
     };
     use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-    class TmdbApi
+    class TmdbApiService
     {
 
         /**
@@ -29,12 +29,21 @@ namespace App\Service {
             ];
         }
 
-        private string $_domain = 'https://api.themoviedb.org/3' {
+        private string $_domain_api = 'https://api.themoviedb.org/3' {
             get {
-                return $this->_domain;
+                return $this->_domain_api;
             }
             set {
-                $this->_domain = $value;
+                $this->_domain_api = $value;
+            }
+        }
+
+        private string $_domain_img = 'https://image.tmdb.org/t/p/' {
+            get {
+                return $this->_domain_img;
+            }
+            set(string $value) {
+                $this->_domain_img = $value;
             }
         }
 
@@ -62,7 +71,7 @@ namespace App\Service {
          */
         public function getMovies(string $search_query, $page): array
         {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/search/movie?query=$search_query&include_adult=true&language=en-US&page=$page", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/search/movie?query=$search_query&include_adult=true&language=en-US&page=$page", options: $this->_options);
             return $r->toArray();
         }
 
@@ -80,7 +89,7 @@ namespace App\Service {
          */
         public function getPersonsFromMovie(int $movie_id): array
         {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/movie/$movie_id/credits?language=en-US", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/$movie_id/credits?language=en-US", options: $this->_options);
             return $r->toArray();
         }
 
@@ -98,7 +107,7 @@ namespace App\Service {
          */
         public function getMoviesFromPerson(int $persson_id): array
         {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/person/$persson_id/movie_credits?language=en-US", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/person/$persson_id/movie_credits?language=en-US", options: $this->_options);
             return $r->toArray();
         }
 
@@ -115,8 +124,19 @@ namespace App\Service {
          * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
          */
         public function getMovieDetails(int $movie_id): array {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain}/movie/$movie_id?language=en-US", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/$movie_id?language=en-US", options: $this->_options);
             return $r->toArray();
+        }
+
+        /**
+         * @param string|null $size
+         * @param string $endpoint
+         * @return mixed
+         * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+         */
+        public function tmdb_image(?string $size, string $endpoint): mixed {
+            $url = $this->_domain_img . ($size != "" ? $size : 'original') . "/" . $endpoint;
+            return $this->client->request(method: 'GET', url: $url)->getContent();
         }
     }
 }
