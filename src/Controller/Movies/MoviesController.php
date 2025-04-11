@@ -24,7 +24,7 @@ namespace App\Controller\Movies {
          * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
          * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
          */
-        #[Route(path: ['/show/{query}/{page}'], name: 'movies_show', requirements: [
+        #[Route(path: ['/search/{query}/{page}'], name: 'movies_search', requirements: [
             'query' => Requirement::CATCH_ALL, 'page' => Requirement::DIGITS,
         ])]
         public function MoviesShow(string $query, int $page, TmdbApiService $tmdbApi): Response {
