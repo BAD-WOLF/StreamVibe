@@ -1,6 +1,7 @@
 services:
 ###> doctrine/doctrine-bundle ###
   database:
+    container_name: streamvibe_psql_database
     image: postgres:${POSTGRES_VERSION:-16}-alpine
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-app}
@@ -13,7 +14,7 @@ services:
       retries: 5
       start_period: 60s
     volumes:
-      - database_data:/var/lib/postgresql/data:rw
+      - database_volume:/var/lib/postgresql/data:rw
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       # - ./docker/db/data:/var/lib/postgresql/data:rw
     expose:
@@ -22,6 +23,7 @@ services:
       - streamvibe
   ###< doctrine/doctrine-bundle ###
   app:
+    container_name: streamvibe_app
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -35,8 +37,11 @@ services:
 
 volumes:
 ###> doctrine/doctrine-bundle ###
-  database_data:
+  database_volume:
+    name: streamvibe_database_volume
+
 ###< doctrine/doctrine-bundle ###
 
 networks:
   streamvibe:
+    name: streamvibe_network
