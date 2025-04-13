@@ -29,7 +29,7 @@ jobs:
           - 5432:5432
         env:
           POSTGRES_USER: app
-          POSTGRES_PASSWORD: Gk7!xRz92@wM
+          POSTGRES_PASSWORD: Gk7xRz92wM
           POSTGRES_DB: app_test
         options: >-
           --health-cmd="pg_isready -d $POSTGRES_DB -U $POSTGRES_USER"
