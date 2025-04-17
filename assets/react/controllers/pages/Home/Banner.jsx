@@ -8,7 +8,7 @@ const Banner = () => {
  function getSearch(e){
   e.preventDefault() // no loading on submit
     if(query){
-      window.location.href=`/movies/show/${query}/1`
+      window.location.href=`/movies/search/${query}/1`
     }
  }
   return (

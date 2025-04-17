@@ -14,7 +14,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange, query }) => {
     if(currentPage < totalPages){
       const nextPage=currentPage + 1
       onPageChange(nextPage)
-      window.location.href=`/movies/show/${query}/${nextPage}`
+      window.location.href=`/movies/search/${query}/${nextPage}`
     }
   }
 
@@ -22,7 +22,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange, query }) => {
     if(currentPage > 1){
       const previousPage=currentPage - 1
       onPageChange(previousPage)
-      window.location.href=`/movies/show/${query}/${previousPage}`
+      window.location.href=`/movies/search/${query}/${previousPage}`
     }
   }
 
@@ -44,7 +44,7 @@ const Pagination = ({ totalPages, currentPage, onPageChange, query }) => {
             key={pageNumber}
             onClick={() => {
               onPageChange(pageNumber); // Atualiza o estado da página atual
-              window.location.href = `/movies/show/${query}/${pageNumber}`; // Redireciona para a URL correspondente
+              window.location.href = `/movies/search/${query}/${pageNumber}`; // Redireciona para a URL correspondente
             }}
             className={`px-2 text-gray-200 font-light ${
               currentPage === pageNumber ? "bg-gray-600 text-gray-200" : "text-gray-400"
