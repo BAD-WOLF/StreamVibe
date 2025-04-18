@@ -2,27 +2,52 @@ import React from "react";
 import Footer from '../../components/Footer/Footer'
 import Header from '../../components/Header/Header'
 import { renderStars } from "./renderStars";
+import { getColor } from "../../helper/getColor";
 
 
 export default function Details({movieDetails}) {
+
     const [details, setDetails] = React.useState({});
+    const [color, setColor] = React.useState(null);
+    const [loading, setLoading] = React.useState(true);
   // Assuming movieDetails is an object with the movie's details
   React.useEffect(() => {
     
     // Check if movieDetails is not null or undefined
     if (movieDetails) {
       setDetails(movieDetails);
-      console.log(details);
     }else{
       console.log("No movie details available.");
     }
   
 }, [movieDetails])
 
-    React.useEffect(() => {
-        console.log(details)
-    },[details])
+    // React.useEffect(() => {
+    //   console.log(details)
+    // },[details])
 
+    const fetchPalette=React.useCallback(async ()=>{
+
+        const palette=await getColor(`/movies/image${details.backdrop_path}`)
+
+         if(palette){
+           setColor(palette.Vibrant.hex)
+         }else{
+           console.log("No palette available.")
+         }
+
+    },[])
+
+    React.useEffect(() => {
+      fetchPalette()
+    },[fetchPalette])
+
+    // React.useEffect(() => {
+    //   if(color){
+    //     console.log(color)
+    //   }
+    // },[color])
+    
   return (
     <>
      <Header/>
@@ -31,7 +56,7 @@ export default function Details({movieDetails}) {
 
       <section className="Container w-full h-full bg-center bg-cover p-8 rounded-4xl relative my-10" style={{backgroundImage: `url(https://image.tmdb.org/t/p/w500${details.backdrop_path || details.poster_path})`}}>
 
-        <div className=" absolute inset-0 bg-blue-600/65 z-10 rounded-4xl"></div>
+        <div className=" absolute inset-0 bg-gray-900/95 z-10 rounded-4xl"></div>
         <div className=" mx-auto flex justify-center items-center gap-8 h-full z-30">
 
         {/* Show Banner */}
@@ -79,9 +104,9 @@ export default function Details({movieDetails}) {
                         <span className="text-gray-300 text-lg">Genero:</span>
                         <span className="bg-gray-700 text-gray-200 text-xs px-2 py-1 rounded-full ">
                           {Array.isArray(details.genres) && (
-                            details.genres.map((genero)=>{
+                            details.genres.map((g)=>{
                             return(
-                                <span key={genero.id} className="">{genero.name}</span>
+                                <span key={g.id} className="">{g.name}</span>
                             )
                         }))}
                         </span>
@@ -104,6 +129,7 @@ export default function Details({movieDetails}) {
                                 <span key={language.id} className="">{language.name}</span>
                               )
                             }))}
+
                         </span>
                       </p>
                   </div>
@@ -129,7 +155,12 @@ export default function Details({movieDetails}) {
 
         </div>
 
-        </section>
+      </section>
+    
+      <section className="Container">
+
+      </section>
+
     </main>
 
      <Footer/>
