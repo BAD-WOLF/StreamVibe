@@ -3,7 +3,7 @@ import React from 'react'
 //Import components
 import Header from '../../components/Header/Header'
 import Footer from '../../components/Footer/Footer'
-import Banner from '../Home/Banner'
+import Search from '../../components/Forms/Search'
 import Pagination from './Pagination'
 
 const Movies = ({movies}) => {
@@ -45,7 +45,7 @@ const Movies = ({movies}) => {
 
       {/* Show Banner */}
       <section className=''>
-        <Banner/>
+        <Search/>
       </section>
 
       <section className='Container md:px-4 px-10'>
