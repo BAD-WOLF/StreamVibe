@@ -31,22 +31,20 @@ WORKDIR /app
 
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash && apt-get install symfony-cli -y
 
+RUN apt-get update && apt-get install -y libpq-dev dos2unix nmap neovim \
+    && docker-php-ext-install pdo pdo_pgsql
+
 COPY . .
 
 COPY --from=back-builder /back .
 
 COPY --from=front-builder /front .
 
-RUN chmod +x ./docker/entrypoint.sh
+RUN chmod +x ./docker/scripts/*
 
-RUN apt-get update && apt-get install -y libpq-dev dos2unix nmap neovim fish \
-    && docker-php-ext-install pdo pdo_pgsql
+RUN dos2unix ./docker/scripts/entrypoint.sh && echo "secrets executed!!" || echo "nao execultou as secrets"
 
-RUN dos2unix ./docker/entrypoint.sh
-
-RUN echo $(which fish) >> /root/.bashrc
-
-ENTRYPOINT ["./docker/entrypoint.sh"]
+ENTRYPOINT ["./docker/scripts/entrypoint.sh"]
 
 CMD ["symfony", "serve:start", "--allow-all-ip"]
 
