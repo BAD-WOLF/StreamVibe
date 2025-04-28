@@ -24,6 +24,8 @@ services:
   ###< doctrine/doctrine-bundle ###
   app:
     container_name: streamvibe_app
+    environment:
+      APP_ENV: prod
     build:
       context: .
       dockerfile: docker/Dockerfile
