@@ -1,0 +1,35 @@
+name: "Deploy to Platform.sh"
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: StreamVibe
+    env:
+      PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORM_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Platform.sh CLI
+        run: curl -sS https://platform.sh/cli/installer | php
+
+      # Configure the project in CLI (insert the project ID)
+      - name: Set Platform.sh project
+        run: ~/.platformsh/bin/platform project:set-remote ${{ secrets.PLATFORMSH_PROJECT_ID }}
+
+      # Generate SSH certificate and add host into known_hosts
+      - name: Load Platform.sh SSH certificate
+        run: ~/.platformsh/bin/platform ssh-cert:load --new --yes
+      - name: Add Platform.sh SSH to known_hosts
+        run: |
+          host=$(git remote get-url platform | sed -E 's/.*@([^:]+):.*/\1/')
+          ssh-keyscan -t rsa "$host" >> ~/.ssh/known_hosts
+
+      # Push to environment wished (master or develop)
+      - name: Push to Platform.sh
+        run: ~/.platformsh/bin/platform push -p ${{ secrets.PLATFORMSH_PROJECT_ID }} -e ${{ github.ref_name }}
+
