@@ -23,7 +23,7 @@ jobs:
         node-version: [ 20.x, 22.x ]
 
     services:
-      postgres:
+      database:
         image: postgres:16-alpine
         ports:
           - 5432:5432
@@ -36,6 +36,15 @@ jobs:
           --health-interval=5s
           --health-timeout=10s
           --health-retries=5
+
+      mailer:
+        image: axllent/mailpit
+        ports:
+          - 1025:1025
+        env:
+          MP_SMTP_AUTH_ACCEPT_ANY: 1
+          MP_SMTP_AUTH_ALLOW_INSECURE: 1
+
 
     steps:
     - uses: actions/checkout@v4
