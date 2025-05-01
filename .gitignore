@@ -29,3 +29,4 @@ yarn-error.log
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+/test-compose.yaml
