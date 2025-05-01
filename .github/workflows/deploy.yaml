@@ -1,0 +1,25 @@
+name: "Deploy to Platform.sh"
+
+on:
+  push:
+    branches:
+      - develop
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: StreamVibe
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instaling Platform.sh CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/platformsh/cli/main/installer.sh | bash
+          echo "$HOME/.platformsh/bin" >> $GITHUB_PATH
+
+      - name: Login in Platform.sh
+        run: platform auth:api-token-login ${{ secrets.PLATFORM_API_TOKEN }}
+
+      - name: Deploy
+        run: platform push
