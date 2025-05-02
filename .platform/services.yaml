@@ -1,0 +1,13 @@
+
+database:
+    type: postgresql:16
+    disk: 1024
+    configuration:
+        databases:
+            - app
+        endpoints:
+            app:
+                default_database: app
+                privileges:
+                    app: admin
+
