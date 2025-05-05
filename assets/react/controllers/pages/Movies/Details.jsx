@@ -145,13 +145,16 @@ export default function Details({movieDetails}) {
 
                 <p className="text-gray-400 text-sm italic mb-4"> " {details.tagline} "</p>                        
                 <p className="text-lg text-gray-400 mb-2 flex flex-col justify-start items-start"> 
-              
+                              
                 <div className="flex flex-col">
                     <span className="text-lg text-gray-300">Descricao:</span> 
                     <span className="text-sm text-gray-400 text-justify">{details.overview}</span>
                 </div>
                 </p>  
-
+                
+                <div>
+                  <p className='text-red-500'>Indisponível no mometo!</p>
+                </div>
               </div>
 
           </div>
