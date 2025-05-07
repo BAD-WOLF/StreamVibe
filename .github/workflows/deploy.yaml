@@ -13,9 +13,14 @@ jobs:
     env:
       PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORM_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Install Platform.sh CLI
-        run: curl -sS https://platform.sh/cli/installer | php
+        run: | 
+          curl -sS https://platform.sh/cli/installer | php
+          echo "$HOME/.platformsh/bin" >> $GITHUB_PATH
 
       # Configure the project in CLI (insert the project ID)
       - name: Set Platform.sh project
