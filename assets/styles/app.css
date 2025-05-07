@@ -1,81 +1,14 @@
-/* Import the fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
 /* Add Tailwind */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Reset Css */
-:root{
-    --font-text:"Poppins", sans-serif;
-   --color-gray-200: #f7f8f8;
-   --color-gray-400: #262626;
-   --color-gray-500: #02060c;
+:root {
     --ciano-escuro: #0E7490;
-    --azul-petroleo: #274C7C;
-
-}
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    min-height:100vh;
-    max-width:100vw;
-    background-color:var(--color-gray-500);
-    color:var(--color-gray-200);
-    font-family:var(--font-text)
-}
-
-h1,
-h2,
-h3,
-h4{
-    display:block;
-    margin:0;
-    padding:0;
-}
-p{
-    line-height:1rem
-}
-img{
-    width:100%;
-    display:block;
-    object-fit:cover;
-}
-input,
-textarea{
-    display:block;
-    width:100%;
-    outline:none;
-    border:none;
-    background:var(--color-gray-200)
-}
-button{
-    display:block;
-    width:100%;
-    outline:none;
-    border:none
-}
-
-ul,
-li{
-    display:block;
-    list-style:none;
-}
-
-a{
-    text-decoration:none;
-}
-
-/* create Components */
-.Container{
-    max-width:65rem;
-    margin:0 auto;
-}
-.mainHeader{
-    background-color: #02060ce8;
+    --cinza-carvao: #262626;
+    --azul-petroleo: #1E3A5F;
+    --branco-gelo: #F0F4F8;
+    --violeta-escuro: #5B21B6;
+    --cinza-grafite: #3D3D3D;
+    --vermelho-rubi: #9B111E;
 }

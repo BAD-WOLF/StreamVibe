@@ -12,5 +12,9 @@
     {{ moviesFromPerson }} = all movies made by the actor in question
 #}
 {% block body %}
-
+    {# uncomment here when make the PersonController. jsx|tsx
+    <div {{ react_component('PersonController', {person:moviesFromPerson}) }}>
+           <p>Loading ...</p>
+    </div>
+    #}
 {% endblock %}
