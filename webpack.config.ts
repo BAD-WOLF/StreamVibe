@@ -1,4 +1,4 @@
-const Encore = require('@symfony/webpack-encore');
+import Encore from '@symfony/webpack-encore';
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
 // It's useful when you use tools that rely on webpack.config.js file.
@@ -17,15 +17,15 @@ Encore
     /*
      * ENTRY CONFIG
      *
-     * Each entry will result in one JavaScript file (e.g. app.js)
-     * and one CSS file (e.g. app.css) if your JavaScript imports CSS.
+     * Each entry will result in one JavaScript file (e.g. app.ts)
+     * and one CSS file (e.g. app.scss) if your JavaScript imports CSS.
      */
-    .addEntry('app', './assets/app.js')
+    .addEntry('app', './assets/app.ts')
 
     // When enabled, Webpack "splits" your files into smaller pieces for greater optimization.
     .splitEntryChunks()
 
-    // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.js)
+    // enables the Symfony UX Stimulus bridge (used in assets/bootstrap.ts)
     .enableStimulusBridge('./assets/controllers.json')
 
     // will require an extra script tag for runtime.js
@@ -51,19 +51,19 @@ Encore
     // })
 
     // enables and configure @babel/preset-env polyfills
-    .configureBabelPresetEnv((config) => {
+    .configureBabelPresetEnv((config: { useBuiltIns: string; corejs: string; }) => {
         config.useBuiltIns = 'usage';
         config.corejs = '3.38';
     })
 
     // enables Sass/SCSS support
-    // .enableSassLoader()
+    .enableSassLoader()
      
     // enables CSS support
     .enablePostCssLoader()
     
     // uncomment if you use TypeScript
-    //.enableTypeScriptLoader()
+    .enableTypeScriptLoader()
 
     // uncomment if you use React
     .enableReactPreset()
