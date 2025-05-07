@@ -190,7 +190,7 @@
             "ref": "3acc494b566816514a6873a89023a35440b6386d"
         },
         "files": [
-            "assets/bootstrap.js",
+            "assets/bootstrap.ts",
             "assets/controllers.json",
             "assets/controllers/csrf_protection_controller.js",
             "assets/controllers/hello_controller.js"
@@ -227,7 +227,7 @@
             "ref": "e970076b31d602ae6e2106cf91a82c7e1f7ddff2"
         },
         "files": [
-            "assets/react/controllers/home.jsx"
+            "assets/react/controllers/home.tsx"
         ]
     },
     "symfony/ux-turbo": {
@@ -273,11 +273,11 @@
             "ref": "35ee1edee91a1a7137095f53db7ed0c20884b745"
         },
         "files": [
-            "assets/app.js",
+            "assets/app.ts",
             "assets/styles/app.css",
             "config/packages/webpack_encore.yaml",
             "package.json",
-            "webpack.config.js"
+            "webpack.config.ts"
         ]
     },
     "symfonycasts/reset-password-bundle": {
