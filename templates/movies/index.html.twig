@@ -16,9 +16,10 @@
 {# I left this below just so you have an example #}
 {% block body %}
 
- {# Page Movie Here #}
- <div {{ react_component('pages/Movies/Movies', {movies:movies}) }}>
-        <p>Loading ...</p>
- </div>
-
+    {# Movies Page Here #}
+    {# uncomment here when make the MoviesController. jsx|tsx
+    <div {{ react_component('MoviesController', {movies:movies}) }}>
+           <p>Loading ...</p>
+    </div>
+    #}
 {% endblock %}
