@@ -12,7 +12,7 @@ FROM node:22 AS front-builder
 
 WORKDIR /front
 
-COPY package*.json webpack.config.js tailwind.config.js postcss.config.js ./
+COPY package*.json webpack.config.ts tailwind.config.js postcss.config.js tsconfig.json ./
 
 COPY assets/ ./assets/
 
