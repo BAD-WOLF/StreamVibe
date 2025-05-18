@@ -27,6 +27,8 @@ Data available for consumption in the "Home" React component:
     {% endfor %}
 
     <main {{ react_component('Home') }} class="">
-        <div class=''>Loading ...</div>
+        <div class="loader">
+            <div data-glitch="Loading..." class="glitch">Loading...</div>
+        </div>
     </main>
 {% endblock %}
