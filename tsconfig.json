@@ -3,18 +3,49 @@
     "target": "ESNext",
     "module": "ESNext",
     "jsx": "react-jsx",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": ["DOM","DOM.Iterable","ESNext"],
     "moduleResolution": "node",
     "resolveJsonModule": true,
-    "allowJs": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
+
+    /* Strict mode */
     "strict": true,
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* Unused code checks */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    /* Control flow checks */
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+
+    /* Indexed access */
+    "noUncheckedIndexedAccess": true,
+
+    /* Prevent tsc from emitting .js na pasta de origem */
+    "noEmit": true,
+
+    /* Só para o ts‑loader: gera artefatos em memória */
     "noEmitOnError": true
   },
-  "include": ["assets/**/*.ts", "assets/**/*.tsx"],
-  "exclude": ["node_modules"]
+
+  "include": [
+    "assets/**/*.ts",
+    "assets/**/*.tsx"
+  ],
+
+  "exclude": [
+    "node_modules",
+    // Se quiser, também exclua o próprio config
+    "webpack.config.ts"
+  ]
 }
