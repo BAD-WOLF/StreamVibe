@@ -1,9 +1,17 @@
 {% extends "base.html.twig" %}
 
-{# / ou /home #}
+{# / or /home #}
+{#
+Data available for consumption in the "Home" React component:
+
+{{ playing }}   = now playing movies
+{{ popular }}   = popular movies
+{{ topRated }}  = top-rated movies
+{{ upcoming }}  = upcoming movie releases
+#}
 
 {% block title %}
-  Home | StreamVibe
+    Home | StreamVibe
 {% endblock %}
 
 {% block link %}
@@ -19,6 +27,8 @@
     {% endfor %}
 
     <main {{ react_component('Home') }} class="">
-        <div class=''>Loading ...</div>
+        <div class="loader">
+            <div data-glitch="Loading..." class="glitch">Loading...</div>
+        </div>
     </main>
 {% endblock %}
