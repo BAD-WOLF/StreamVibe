@@ -18,6 +18,8 @@ COPY assets/ ./assets/
 
 COPY public/ ./public/
 
+RUN npm install -g npm@latest
+
 RUN npm i
 
 COPY --from=back-builder /back/vendor ./vendor
