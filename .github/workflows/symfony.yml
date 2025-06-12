@@ -83,6 +83,7 @@ jobs:
 
     - name: Create Database
       run: |
+        php bin/console secrets:decrypt-to-local --env=test --force
         php bin/console dotenv:show --env=test >> $GITHUB_ENV
         php bin/console doctrine:migrations:migrate --env=test --no-interaction
 

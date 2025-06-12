@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace App\Service {
 
     use Symfony\Contracts\HttpClient\Exception\{
@@ -71,7 +73,7 @@ namespace App\Service {
          */
         public function getMovies(string $search_query, $page): array
         {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/search/movie?query=$search_query&include_adult=true&language=en-US&page=$page", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/search/movie?query=$search_query&include_adult=true&page=$page", options: $this->_options);
             return $r->toArray();
         }
 
@@ -89,7 +91,7 @@ namespace App\Service {
          */
         public function getPersonsFromMovie(int $movie_id): array
         {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/$movie_id/credits?language=en-US", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/$movie_id/credits", options: $this->_options);
             return $r->toArray();
         }
 
@@ -107,7 +109,7 @@ namespace App\Service {
          */
         public function getMoviesFromPerson(int $persson_id): array
         {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/person/$persson_id/movie_credits?language=en-US", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/person/$persson_id/movie_credits", options: $this->_options);
             return $r->toArray();
         }
 
@@ -124,7 +126,58 @@ namespace App\Service {
          * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
          */
         public function getMovieDetails(int $movie_id): array {
-            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/$movie_id?language=en-US", options: $this->_options);
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/$movie_id", options: $this->_options);
+            return $r->toArray();
+        }
+
+        /**
+         * @return array
+         * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+         */
+        public function getNowPlaying(): array {
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/now_playing", options: $this->_options);
+            return $r->toArray();
+        }
+
+        /**
+         * @return array
+         * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+         */
+        public function getPopular(): array {
+            $r = $this->client->request(method: 'GET', url:"{$this->_domain_api}/movie/popular", options: $this->_options);
+            return $r->toArray();
+        }
+
+        /**
+         * @return array
+         * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+         */
+        public function getTopRated(): array {
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/top_rated", options: $this->_options);
+            return $r->toArray();
+        }
+
+        /**
+         * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+         */
+        public function getUpcoming(): array {
+            $r = $this->client->request(method: 'GET', url: "{$this->_domain_api}/movie/upcoming", options: $this->_options);
             return $r->toArray();
         }
 
@@ -132,6 +185,9 @@ namespace App\Service {
          * @param string|null $size
          * @param string $endpoint
          * @return mixed
+         * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+         * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
          * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
          */
         public function tmdb_image(?string $size, string $endpoint): mixed {
