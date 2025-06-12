@@ -1,10 +1,10 @@
 import {Component} from "react";
 import {DivineLines} from "../components/shared/DivineLines";
 import {Movie} from "../types/Movie";
-import {Header} from "../components/Home/Header";
+import {Header} from "assets/react/components/shared/Header";
 import {CategoriesSection} from "../components/Home/CategoriesSection";
 import {FeaturedMovies} from "../components/Home/FeaturedMovies";
-import {Footer} from "../components/Home/Footer";
+import {Footer} from "assets/react/components/shared/Footer";
 
 export default class extends Component<{}, { movies: Movie[] }> {
     constructor(props: {}) {
