@@ -1,10 +1,10 @@
-import {Component} from "react";
-import {DivineLines} from "../components/shared/DivineLines";
-import {Movie} from "../types/Movie";
-import {Header} from "assets/react/components/shared/Header";
+import {Component, ReactElement} from "react";
 import {CategoriesSection} from "../components/Home/CategoriesSection";
 import {FeaturedMovies} from "../components/Home/FeaturedMovies";
-import {Footer} from "assets/react/components/shared/Footer";
+import {DivineLines} from "../components/shared/DivineLines";
+import {Footer} from "../components/shared/Footer";
+import {Header} from "../components/shared/Header";
+import {Movie} from "../types/Movie";
 
 export default class extends Component<{}, { movies: Movie[] }> {
     constructor(props: {}) {
@@ -33,7 +33,7 @@ export default class extends Component<{}, { movies: Movie[] }> {
         };
     }
 
-    render(): JSX.Element {
+    render(): ReactElement {
         return (
             <div
                 className="min-h-screen bg-gradient-to-br from-[#0E7490] via-[#1E3A5F] to-[#3D3D3D] text-white font-sans overflow-x-hidden">

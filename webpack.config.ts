@@ -1,3 +1,4 @@
+// @ts-ignore
 import Encore from '@symfony/webpack-encore';
 
 // Manually configure the runtime environment if not already configured yet by the "encore" command.
@@ -47,33 +48,42 @@ Encore
 
     // configure Babel
     // .configureBabel((config) => {
-    //     config.plugins.push('@babel/a-babel-plugin');
+    //   config.plugins.push('@babel/a-babel-plugin');
     // })
 
     // enables and configure @babel/preset-env polyfills
-    .configureBabelPresetEnv((config: { useBuiltIns: string; corejs: string; }) => {
+    .configureBabelPresetEnv((config: { useBuiltIns: string; corejs: string; }): void => {
         config.useBuiltIns = 'usage';
         config.corejs = '3.38';
     })
 
     // enables Sass/SCSS support
     .enableSassLoader()
-     
-    // enables CSS support
+
+    // enables CSS support (Tailwind via postcss.config.js)
     .enablePostCssLoader()
-    
+
     // uncomment if you use TypeScript
-    .enableTypeScriptLoader()
+    .enableTypeScriptLoader((tsConfig: any): void => {
+        // Garante que o ts-loader também faça checagem de tipos,
+        // não só transpile em memória
+        tsConfig.transpileOnly = false;
+    })
+
+    // optionally enable forked TypeScript checking (separate process)
+    // requires that you have a tsconfig.json file that is setup correctly.
+    .enableForkedTypeScriptTypesChecking()
 
     // uncomment if you use React
     .enableReactPreset()
 
-    // uncomment to get integrity="..." attributes on your script & link tags
-    // requires WebpackEncoreBundle 1.4 or higher
-    //.enableIntegrityHashes(Encore.isProduction())
+// uncomment to get integrity="..." attributes on your script & link tags
+// requires WebpackEncoreBundle 1.4 or higher
+//.enableIntegrityHashes(Encore.isProduction())
 
-    // uncomment if you're having problems with a jQuery plugin
-    //.autoProvidejQuery()
+// uncomment if you're having problemas com um plugin jQuery
+//.autoProvidejQuery()
 ;
 
-module.exports = Encore.getWebpackConfig();
+// exporta a config — o ts-node/register faz tudo em memória, sem criar webpack.config.js em disco
+export default Encore.getWebpackConfig();
