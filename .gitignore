@@ -30,3 +30,7 @@ yarn-error.log
 /.phpunit.cache/
 ###< phpunit/phpunit ###
 /test-compose.yaml
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
