@@ -30,7 +30,7 @@ final class PersonController extends AbstractController
     {
         $moviesFromPerson = $tmdbApiService->getMoviesFromPerson($personId);
         dump($moviesFromPerson);
-        return $this->render('person/index.html.twig', [
+        return $this->json([
             'moviesFromPerson' => $moviesFromPerson,
         ]);
     }
