@@ -13,20 +13,24 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-        main:
-            lazy: true
-            provider: app_user_provider
-            form_login:
-                login_path: app_login
-                check_path: app_login
-                default_target_path: app_home
-                enable_csrf: true
-            logout:
-                path: app_logout
-                # where to redirect after logout
-                # target: app_any_route
-            user_checker: App\Security\UserCheckerAuthLogin
 
+        login:
+            pattern: ^/api/login
+            stateless: true
+            json_login:
+                check_path: /api/login_check
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/api
+            stateless: true
+            jwt: ~
+
+        main:
+            user_checker: App\Security\UserCheckerAuthLogin
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
