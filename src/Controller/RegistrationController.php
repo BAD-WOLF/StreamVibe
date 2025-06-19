@@ -40,6 +40,7 @@ class RegistrationController extends AbstractController {
      * @param \Symfony\Component\Serializer\SerializerInterface                    $serializer
      *
      * @return \Symfony\Component\HttpFoundation\JsonResponse
+     * @return \ApiPlatform\Validator\Exception\ValidationException
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
     #[Route(name: 'api_register', defaults: [
@@ -60,7 +61,7 @@ class RegistrationController extends AbstractController {
         $user->setPassword(password: $hasher->hashPassword(user: $user, plainPassword: $data['password'] ?? ''));
 
         // 2. Validação automática pelo API Platform
-        //    lança ApiPlatform\Exception\InvalidArgumentException em caso de erro (422)
+        //    lança ApiPlatform\Validator\Exception\ValidationException em caso de erro (422)
         $this->validator->validate(data: $user);
 
         // 3. Persiste o usuário
@@ -72,45 +73,15 @@ class RegistrationController extends AbstractController {
             verifyEmailRouteName: 'api_verify_email',
             user: $user,
             email: new TemplatedEmail()
-                ->from(new Address(address: 'matheu@vieiratechnology.shop', name: 'StreamVibe'))
-                ->to($user->getEmail())
+                ->from(addresses: new Address(address: 'matheusviaira160@gmail.com', name: 'StreamVibe'))
+                ->to(addresses: $user->getEmail())
                 ->subject(subject: 'Please confirm your email')
                 ->htmlTemplate(template: 'registration/confirmation_email.html.twig')
         );
 
         return $this->json(data: [
-            'message' => 'Usuário criado com sucesso. Verifique seu e-mail.',
+            'message' => "Usuário criado com sucesso. Verifique seu e-mail {$user->getEmail()}",
         ], status: 201);
-    }
-
-    /**
-     * @param \Symfony\Component\HttpFoundation\Request $request
-     * @param \App\Repository\UserRepository            $userRepository
-     *
-     * @return \Symfony\Component\HttpFoundation\JsonResponse
-     */
-    #[Route(path: '/api/verify/email', name: 'api_verify_email', methods: ['GET'])]
-    public function verifyUserEmail(
-        Request $request,
-        UserRepository $userRepository
-    ): JsonResponse {
-        $id = $request->query->get(key: 'id');
-        if (!$id) {
-            return $this->json(data: ['error' => 'ID inválido'], status: 400);
-        }
-
-        $user = $userRepository->find(id: $id);
-        if (!$user) {
-            return $this->json(data: ['error' => 'Usuário não encontrado'], status: 404);
-        }
-
-        try {
-            $this->emailVerifier->handleEmailConfirmation(request: $request, user: $user);
-        } catch (VerifyEmailExceptionInterface $e) {
-            return $this->json(data: ['error' => $e->getReason()], status: 400);
-        }
-
-        return $this->json(data: ['message' => 'E-mail verificado com sucesso.']);
     }
 }
 
