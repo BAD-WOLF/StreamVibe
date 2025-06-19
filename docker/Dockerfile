@@ -5,7 +5,7 @@ WORKDIR /app
 
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash && apt-get install symfony-cli -y
 
-RUN apt-get update && apt-get install -y libpq-dev dos2unix nmap neovim unzip
+RUN apt-get update && apt-get install -y libpq-dev dos2unix nmap neovim unzip fish
 RUN docker-php-ext-install pdo pdo_pgsql
 
 COPY . .
