@@ -1,7 +1,5 @@
 /* Add Tailwind */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
     --ciano-escuro: #0E7490;
