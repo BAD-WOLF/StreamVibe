@@ -29,7 +29,7 @@ namespace App\Controller\Movies {
         ])]
         public function MoviesShow(string $query, int $page, TmdbApiService $tmdbApi): Response {
             $movies = $tmdbApi->getMovies(search_query: $query, page: $page);
-            return $this->render(view: 'movies/index.html.twig', parameters: [
+            return $this->json(data: [
                 'movies' => $movies,
             ]);
         }
@@ -50,7 +50,7 @@ namespace App\Controller\Movies {
         public function MovieDetails(int $movieId, TmdbApiService $tmdbApiService): Response {
             $movieDetails = $tmdbApiService->getMovieDetails(movie_id: $movieId);
             $personsFromMovie = $tmdbApiService->getPersonsFromMovie(movie_id: $movieId);
-            return $this->render(view: 'movies/details.html.twig', parameters: [
+            return $this->json(data: [
                 'movieDetails' => $movieDetails,
                 'personsFromMovie' => $personsFromMovie,
             ]);
@@ -62,7 +62,8 @@ namespace App\Controller\Movies {
         #[Route(path: ['/image/{size}/{endpoint}', '/image/{endpoint}'], name: 'movies_img', requirements: [])]
         public function TmdbImg(?string $size, string $endpoint, TmdbApiService $tmdbApiService): Response {
             // dd($tmdbApiService->tmdb_image($size, $endpoint));
-            return new Response($tmdbApiService->tmdb_image($size, $endpoint), 200 , ['Content-Type' => 'image/jpeg']);
+            return new Response(content: $tmdbApiService->tmdb_image(size: $size, endpoint: $endpoint), status: 200,
+                                headers: ['Content-Type' => 'image/jpeg']);
         }
     }
 }

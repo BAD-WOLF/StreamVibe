@@ -1,0 +1,538 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Configuração do Symfony SecurityBundle (security.yaml)",
+  "type": "object",
+  "properties": {
+    "security": {
+      "type": "object",
+      "description": "Configurações principais de segurança do Symfony (SecurityBundle):contentReference[oaicite:15]{index=15}:contentReference[oaicite:16]{index=16}",
+      "properties": {
+        "password_hashers": {
+          "type": "object",
+          "description": "Mapeamento de classes de usuário para algoritmos de hash de senha; substitui os antigos `encoders`:contentReference[oaicite:17]{index=17}.",
+          "default": {},
+          "additionalProperties": {
+            "oneOf": [
+              { "type": "string", "description": "Algoritmo ou 'auto'" },
+              { "type": "object", "description": "Configuração avançada de hasher" }
+            ]
+          }
+        },
+        "providers": {
+          "type": "object",
+          "description": "Definição de provedores de usuário (ex.: `memory`, `entity`, `custom`, etc.). Veja a documentação para detalhes (IDs de serviços ou configuração de entidade):contentReference[oaicite:18]{index=18}.",
+          "default": {},
+          "additionalProperties": {
+            "type": ["object", "null"],
+            "description": "Configuração específica do provedor (ex: `{ memory: null }`, `{ entity: { class: ..., property: ... }}`, `{ id: service_id }`, etc.)"
+          }
+        },
+        "firewalls": {
+          "type": "object",
+          "description": "Mapeamento de firewalls por nome. Cada firewall define regras de autenticação para um padrão de URL:contentReference[oaicite:19]{index=19}.",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "description": "Configurações específicas para este firewall",
+            "properties": {
+              "pattern": {
+                "type": "string",
+                "description": "Expressão regular para URLs a serem protegidas por este firewall:contentReference[oaicite:20]{index=20}",
+                "example": "^/admin"
+              },
+              "security": {
+                "type": "boolean",
+                "description": "Se `false`, desativa a segurança neste firewall",
+                "default": true
+              },
+              "provider": {
+                "type": "string",
+                "description": "ID do provedor de usuários usado neste firewall",
+                "example": "users_in_memory"
+              },
+              "lazy": {
+                "type": "boolean",
+                "description": "Se `true`, carrega este firewall sob demanda em vez de em cada requisição",
+                "default": false
+              },
+              "stateless": {
+                "type": "boolean",
+                "description": "Se `true`, não usa sessão; útil para APIs JWT",
+                "default": false
+              },
+              "anonymous": {
+                "type": ["boolean", "object"],
+                "description": "Configura o acesso anônimo. `true` habilita anônimo simples; objeto pode ter opções avançadas.",
+                "default": false
+              },
+              "form_login": {
+                "type": "object",
+                "description": "Habilita o autenticador de formulário:contentReference[oaicite:21]{index=21}:contentReference[oaicite:22]{index=22}.",
+                "properties": {
+                  "login_path": {
+                    "type": "string",
+                    "description": "Rota ou URL do formulário de login (usuário não autenticado é redirecionado aqui).",
+                    "default": "/login",
+                    "example": "app_login"
+                  },
+                  "check_path": {
+                    "type": "string",
+                    "description": "Rota ou URL de submissão das credenciais do formulário:contentReference[oaicite:23]{index=23}.",
+                    "default": "/login_check",
+                    "example": "app_login"
+                  },
+                  "enable_csrf": {
+                    "type": "boolean",
+                    "description": "Se `true`, exige token CSRF no formulário (campo `_csrf_token`):contentReference[oaicite:24]{index=24}.",
+                    "default": false
+                  },
+                  "csrf_parameter": {
+                    "type": "string",
+                    "description": "Nome do parâmetro CSRF no formulário",
+                    "default": "_csrf_token"
+                  },
+                  "csrf_token_id": {
+                    "type": "string",
+                    "description": "ID usado para gerar o token CSRF",
+                    "default": "authenticate"
+                  },
+                  "username_parameter": {
+                    "type": "string",
+                    "description": "Nome do campo de usuário no formulário",
+                    "default": "_username"
+                  },
+                  "password_parameter": {
+                    "type": "string",
+                    "description": "Nome do campo de senha no formulário",
+                    "default": "_password"
+                  },
+                  "post_only": {
+                    "type": "boolean",
+                    "description": "Se `false`, permite requisições GET para `check_path` (padrão `true`):contentReference[oaicite:25]{index=25}.",
+                    "default": true
+                  },
+                  "use_forward": {
+                    "type": "boolean",
+                    "description": "Se `true`, encaminha (forward) para o formulário de login em vez de redirecionar:contentReference[oaicite:26]{index=26}.",
+                    "default": false
+                  },
+                  "always_use_default_target_path": {
+                    "type": "boolean",
+                    "description": "Se `true`, ignora páginas anteriores e envia sempre para o alvo padrão.",
+                    "default": false
+                  },
+                  "default_target_path": {
+                    "type": "string",
+                    "description": "URL ou rota padrão para redirecionar após login bem-sucedido.",
+                    "default": "/"
+                  },
+                  "target_path_parameter": {
+                    "type": "string",
+                    "description": "Nome do campo de formulário que define para onde redirecionar.",
+                    "default": "_target_path"
+                  },
+                  "failure_path": {
+                    "type": "string",
+                    "description": "URL ou rota para onde vai em caso de falha no login.",
+                    "default": "/login"
+                  },
+                  "failure_path_parameter": {
+                    "type": "string",
+                    "description": "Nome do campo de formulário que define URL de falha.",
+                    "default": "_failure_path"
+                  },
+                  "use_referer": {
+                    "type": "boolean",
+                    "description": "Se `true`, redireciona para HTTP_REFERER quando não há outro alvo.",
+                    "default": false
+                  }
+                },
+                "required": ["login_path", "check_path"],
+                "additionalProperties": false
+              },
+              "json_login": {
+                "type": "object",
+                "description": "Habilita autenticador de login por JSON (API):contentReference[oaicite:27]{index=27}:contentReference[oaicite:28]{index=28}.",
+                "properties": {
+                  "check_path": {
+                    "type": "string",
+                    "description": "Rota ou URL de submissão das credenciais em JSON (endereço do endpoint API).",
+                    "example": "api_login"
+                  },
+                  "username_path": {
+                    "type": "string",
+                    "description": "Nome do campo de usuário no JSON",
+                    "default": "username"
+                  },
+                  "password_path": {
+                    "type": "string",
+                    "description": "Nome do campo de senha no JSON",
+                    "default": "password"
+                  },
+                  "success_handler": {
+                    "type": "string",
+                    "description": "Serviço de manipulação de autenticação bem-sucedida"
+                  },
+                  "failure_handler": {
+                    "type": "string",
+                    "description": "Serviço de manipulação de autenticação falha"
+                  },
+                  "require_previous_session": {
+                    "type": "boolean",
+                    "description": "Se `true`, requer sessão válida antes de aceitar JSON (para evitar CSRF)",
+                    "default": true
+                  }
+                },
+                "required": ["check_path"],
+                "additionalProperties": false
+              },
+              "http_basic": {
+                "type": "object",
+                "description": "Habilita o autenticador HTTP Basic (não usa sessão):contentReference[oaicite:29]{index=29}.",
+                "properties": {
+                  "realm": {
+                    "type": "string",
+                    "description": "Nome do realm exibido pelo navegador",
+                    "default": "Secured Area"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "oauth2_login": {
+                "type": "object",
+                "description": "Habilita login OAuth2 nativo (por exemplo, Google/Facebook via OAuth2 Client). Configura URLs de autorização/token, check_path, etc.",
+                "properties": {
+                  "authorization_url": {
+                    "type": "string",
+                    "description": "URL de autorização do provedor OAuth2",
+                    "default": ""
+                  },
+                  "token_url": {
+                    "type": "string",
+                    "description": "URL para obtenção do token OAuth2",
+                    "default": ""
+                  },
+                  "check_path": {
+                    "type": "string",
+                    "description": "URL ou rota de retorno (callback) após login OAuth2",
+                    "example": "oauth_check"
+                  },
+                  "user_provider": {
+                    "type": "string",
+                    "description": "ID do provedor de usuários para autenticação OAuth2"
+                  },
+                  "default_target_path": {
+                    "type": "string",
+                    "description": "Rota para redirecionar após login OAuth2 bem-sucedido",
+                    "default": "/"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "custom_authenticators": {
+                "type": "array",
+                "description": "IDs de serviços de autenticação customizados (lista de strings):contentReference[oaicite:30]{index=30}.",
+                "items": { "type": "string" }
+              },
+              "custom_token_authenticators": {
+                "type": "array",
+                "description": "IDs de serviços que atuam como autenticadores de token customizados",
+                "items": { "type": "string" }
+              },
+              "remember_me": {
+                "type": "object",
+                "description": "Configuração de ‘Lembrar-me’ (cookies) para login persistente.",
+                "properties": {
+                  "secret": {
+                    "type": "string",
+                    "description": "Chave secreta para validar o cookie de lembrar-me (pode ser omitido se usar o APP_SECRET)."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Nome do cookie de lembrar-me",
+                    "default": "REMEMBERME"
+                  },
+                  "lifetime": {
+                    "type": "integer",
+                    "description": "Tempo de vida do cookie em segundos (default ~2 semanas)",
+                    "default": 1209600
+                  },
+                  "path": {
+                    "type": "string",
+                    "description": "Path do cookie de lembrar-me",
+                    "default": "/"
+                  },
+                  "domain": {
+                    "type": "string",
+                    "description": "Domínio do cookie"
+                  },
+                  "secure": {
+                    "type": "boolean",
+                    "description": "Se `true`, cookie seguro (HTTPS apenas)",
+                    "default": false
+                  },
+                  "http_only": {
+                    "type": "boolean",
+                    "description": "Se `true`, cookie HttpOnly",
+                    "default": true
+                  },
+                  "always_remember_me": {
+                    "type": "boolean",
+                    "description": "Se `true`, ativa lembrar-me por padrão mesmo sem marcar caixa",
+                    "default": false
+                  },
+                  "remember_me_parameter": {
+                    "type": "string",
+                    "description": "Nome do campo do formulário para lembrar-me",
+                    "default": "_remember_me"
+                  },
+                  "user_provider": {
+                    "type": "string",
+                    "description": "ID do provedor de usuários usado para lembrar-me (opcional)."
+                  }
+                },
+                "additionalProperties": false
+              },
+              "logout": {
+                "type": "object",
+                "description": "Configurações de logout (redirect, invalidar sessão, cookies, etc.):contentReference[oaicite:31]{index=31}.",
+                "properties": {
+                  "path": {
+                    "type": "string",
+                    "description": "Rota ou URL de logout",
+                    "example": "app_logout"
+                  },
+                  "target": {
+                    "type": "string",
+                    "description": "URL ou rota para redirecionar após logout"
+                  },
+                  "invalidate_session": {
+                    "type": "boolean",
+                    "description": "Se `true`, invalida a sessão após logout",
+                    "default": true
+                  },
+                  "delete_cookies": {
+                    "type": "object",
+                    "description": "Configuração de cookies a serem deletados (nome: {path, domain})",
+                    "additionalProperties": {
+                      "type": ["null", "object"],
+                      "description": "O valor `null` indica usar o default; um objeto pode especificar `path` e `domain`"
+                    }
+                  }
+                },
+                "additionalProperties": false
+              },
+              "switch_user": {
+                "type": "object",
+                "description": "Configuração de impersonação de usuário:contentReference[oaicite:32]{index=32}.",
+                "properties": {
+                  "parameter": {
+                    "type": "string",
+                    "description": "Nome do parâmetro de requisição para trocar de usuário (ex: `_switch_user`)",
+                    "default": "_switch_user"
+                  },
+                  "role": {
+                    "type": "string",
+                    "description": "Role que permite trocar de usuário (ex: `ROLE_ALLOWED_TO_SWITCH`)",
+                    "default": "ROLE_ALLOWED_TO_SWITCH"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "access_denied_handler": {
+                "type": "string",
+                "description": "ID do serviço que trata acesso negado (retorna página 403 customizada)"
+              },
+              "authentication_success_handler": {
+                "type": "string",
+                "description": "ID do serviço customizado para sucesso de autenticação"
+              },
+              "authentication_failure_handler": {
+                "type": "string",
+                "description": "ID do serviço customizado para falha de autenticação"
+              },
+              "user_checker": {
+                "type": "string",
+                "description": "ID do serviço que implementa `UserCheckerInterface` para validar o usuário"
+              },
+              "authentication_entry_point": {
+                "type": "string",
+                "description": "ID do serviço que implementa `AuthenticationEntryPointInterface`"
+              },
+              "login_throttling": {
+                "type": ["object", "null"],
+                "description": "Configurações de limitação de tentativas de login (Rate Limiter):contentReference[oaicite:33]{index=33}.",
+                "properties": {
+                  "max_attempts": {
+                    "type": "integer",
+                    "description": "Máximo de tentativas permitidas por período (default 5)",
+                    "default": 5
+                  },
+                  "interval": {
+                    "type": "string",
+                    "description": "Intervalo de tempo para `max_attempts` (ex: '15 minutes')",
+                    "default": "1 minute"
+                  },
+                  "limiter": {
+                    "type": "string",
+                    "description": "ID de um serviço customizado de RateLimiter (substitui max_attempts/interval)"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "session_fixation_strategy": {
+                "type": "string",
+                "enum": ["NONE", "MIGRATE", "INVALIDATE"],
+                "description": "Estratégia de renovo de sessão após login (default `MIGRATE`):contentReference[oaicite:34]{index=34}.",
+                "default": "MIGRATE"
+              },
+              "erase_credentials": {
+                "type": "boolean",
+                "description": "Se `true`, limpa credenciais sensíveis após autenticação:contentReference[oaicite:35]{index=35}.",
+                "default": true
+              },
+              "expose_security_errors": {
+                "type": "string",
+                "enum": ["none", "account_status", "all"],
+                "description": "Define quais erros de segurança são exibidos em falhas de login (para evitar enumeração de usuários):contentReference[oaicite:36]{index=36}.",
+                "default": "none"
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "access_control": {
+          "type": "array",
+          "description": "Lista de regras de controle de acesso (path, roles, methods, expressions, etc.):contentReference[oaicite:37]{index=37}.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": { "type": "string", "description": "Regex do caminho protegido", "example": "^/admin" },
+              "roles": {
+                "type": ["string", "array"],
+                "description": "Roles necessários (ou expressão). Pode ser único ou lista.",
+                "example": ["ROLE_ADMIN"]
+              },
+              "methods": {
+                "type": "array",
+                "description": "Lista de métodos HTTP permitidos (GET,POST,etc).",
+                "items": { "type": "string" }
+              },
+              "ips": {
+                "type": "array",
+                "description": "Lista de IPs ou CIDRs permitidos.",
+                "items": { "type": "string", "example": "192.168.1.0/24" }
+              },
+              "requires_channel": {
+                "type": "string",
+                "description": "Exige canal HTTPS (`https`) ou HTTP (`http`)"
+              },
+              "allow_if": {
+                "type": "string",
+                "description": "Expressão Symfony (ExpressionLanguage) para controle de acesso customizado"
+              }
+            },
+            "required": ["path", "roles"],
+            "additionalProperties": false
+          }
+        },
+        "role_hierarchy": {
+          "type": "object",
+          "description": "Mapeia roles compostos (ex: `ROLE_ADMIN: [ROLE_USER]`):contentReference[oaicite:38]{index=38}.",
+          "default": {},
+          "additionalProperties": {
+            "type": "array",
+            "description": "Lista de roles incluídos",
+            "items": { "type": "string" }
+          }
+        },
+        "access_denied_url": {
+          "type": "string",
+          "description": "URL para redirecionar em caso de acesso negado (falha 403).",
+          "default": null
+        }
+      },
+      "required": ["firewalls"],
+      "additionalProperties": false
+    },
+    "lexik_jwt_authentication": {
+      "type": "object",
+      "description": "Configuração do LexikJWTAuthenticationBundle (autenticação via JWT).",
+      "properties": {
+        "secret_key": {
+          "type": "string",
+          "description": "Chave privada (filepath ou ID de serviço) para assinar tokens."
+        },
+        "public_key": {
+          "type": "string",
+          "description": "Chave pública (filepath ou ID de serviço) correspondente."
+        },
+        "pass_phrase": {
+          "type": "string",
+          "description": "Senha da chave privada (se houver)."
+        },
+        "token_ttl": {
+          "type": "integer",
+          "description": "Vida útil do token em segundos.",
+          "default": 3600
+        },
+        "user_identity_field": {
+          "type": "string",
+          "description": "Campo do usuário (no User) usado como identidade no token.",
+          "default": "username"
+        }
+      },
+      "required": ["secret_key", "public_key"],
+      "additionalProperties": true
+    },
+    "hwi_oauth": {
+      "type": "object",
+      "description": "Configuração do HWIOAuthBundle (OAuth2 tradicional, login social).",
+      "properties": {
+        "firewall_names": {
+          "type": "array",
+          "description": "Lista de nomes de firewalls que usarão o HWIOAuth.",
+          "items": { "type": "string" }
+        },
+        "resource_owners": {
+          "type": "object",
+          "description": "Configuração de provedores OAuth (Google, Facebook etc.).",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "client_id": { "type": "string" },
+              "client_secret": { "type": "string" },
+              "scope": { "type": "string" }
+            },
+            "required": ["type", "client_id", "client_secret"],
+            "additionalProperties": true
+          }
+        },
+        "connect": {
+          "type": "object",
+          "description": "Opções de conexão (ex.: `confirmation: true`).",
+          "properties": {
+            "confirmation": { "type": "boolean", "default": false }
+          },
+          "additionalProperties": true
+        },
+        "fosub": {
+          "type": "object",
+          "description": "Configuração para integração com FOSUserBundle (mapa de campos).",
+          "properties": {
+            "username_iterations": { "type": "integer" },
+            "properties": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "required": ["security"],
+  "additionalProperties": false
+}

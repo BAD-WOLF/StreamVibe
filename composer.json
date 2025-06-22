@@ -7,26 +7,25 @@
         "php": ">=8.4",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "api-platform/doctrine-orm": "^4.1.5",
-        "api-platform/graphql": "^4.1.5",
-        "api-platform/symfony": "^4.1.5",
+        "api-platform/doctrine-orm": "^4.1.9",
+        "api-platform/graphql": "^4.1.9",
+        "api-platform/symfony": "^4.1.9",
         "doctrine/dbal": "^3.9.4",
         "doctrine/doctrine-bundle": "^2.14",
-        "doctrine/doctrine-migrations-bundle": "^3.4.1",
-        "doctrine/orm": "^3.3.2",
+        "doctrine/doctrine-migrations-bundle": "^3.4.2",
+        "doctrine/orm": "^3.3.3",
+        "lexik/jwt-authentication-bundle": "^3.1",
         "nelmio/cors-bundle": "^2.5",
         "paragonie/sodium_compat": "^2.1",
-        "phpdocumentor/reflection-docblock": "^5.6.1",
+        "phpdocumentor/reflection-docblock": "^5.6.2",
         "phpstan/phpdoc-parser": "^2.1",
-        "phpunit/phpunit": "^12.1",
+        "phpunit/phpunit": "^12.1.5",
         "sentry/sentry-symfony": "^5.2",
         "symfony/asset": "7.2.*",
         "symfony/console": "7.2.*",
-        "symfony/css-selector": "7.2.*",
         "symfony/dotenv": "7.2.*",
         "symfony/expression-language": "7.2.*",
-        "symfony/flex": "^2.5",
-        "symfony/form": "7.2.*",
+        "symfony/flex": "^2.5.1",
         "symfony/framework-bundle": "7.2.*",
         "symfony/http-client": "7.2.*",
         "symfony/mailer": "7.2.*",
@@ -35,23 +34,20 @@
         "symfony/runtime": "7.2.*",
         "symfony/security-bundle": "7.2.*",
         "symfony/serializer": "7.2.*",
-        "symfony/stimulus-bundle": "^2.23",
         "symfony/twig-bundle": "7.2.*",
-        "symfony/ux-react": "^2.23",
-        "symfony/ux-turbo": "^2.23",
         "symfony/validator": "7.2.*",
-        "symfony/webpack-encore-bundle": "^2.2",
         "symfony/yaml": "7.2.*",
         "symfonycasts/reset-password-bundle": "^1.23.1",
         "symfonycasts/verify-email-bundle": "^1.17.3",
-        "twig/extra-bundle": "^2.12|^3.20",
-        "twig/twig": "^2.12|^3.20"
+        "twig/extra-bundle": "^2.12|^3.21",
+        "twig/twig": "^2.12|^3.21.1"
     },
     "config": {
         "allow-plugins": {
             "php-http/discovery": true,
             "symfony/flex": true,
-            "symfony/runtime": true
+            "symfony/runtime": true,
+            "brainmaestro/composer-git-hooks": true
         },
         "bump-after-update": true,
         "sort-packages": true
@@ -82,10 +78,12 @@
             "assets:install %PUBLIC_DIR%": "symfony-cmd"
         },
         "post-install-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "cghooks add --ignore-lock"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@auto-scripts",
+            "cghooks update"
         ],
         "start": [
             "symfony serve:start"
@@ -98,11 +96,22 @@
         "symfony": {
             "allow-contrib": false,
             "require": "7.2.*"
+        },
+        "hooks": {
+            "post-checkout": [
+                "git submodule update --init --recursive",
+                "git status"
+                ],
+            "post-merge": [
+                "git submodule update --init --recursive",
+                "git status"
+            ]
         }
     },
     "require-dev": {
+        "brainmaestro/composer-git-hooks": "^3.0",
         "symfony/browser-kit": "7.2.*",
-        "symfony/maker-bundle": "^1.62.1",
+        "symfony/maker-bundle": "^1.63.0",
         "symfony/stopwatch": "7.2.*",
         "symfony/web-profiler-bundle": "7.2.*"
     }
