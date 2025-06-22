@@ -1,8 +1,8 @@
-import React from "react";
+import React, { type JSX } from "react";
 import { motion } from "framer-motion";
-import { Movie } from "../../types/Movie";
+import type { Movie } from "../../types/Movie";
 
-export const MovieCard: React.FC<{ movie: Movie }> = ({movie}): JSX.Element => {
+export const MovieCard: React.FC<{ movie: Movie }> = ({ movie }): JSX.Element => {
     return (
         <motion.div
             whileHover={{ scale: 1.05 }}
