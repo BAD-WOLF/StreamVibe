@@ -1,6 +1,6 @@
-import { Component } from "react";
+import { Component, type JSX } from "react";
 import { DivineLines } from "../../components/shared/DivineLines";
-import { Movie } from "../../types/Movie";
+import type { Movie } from "../../types/Movie";
 import { Header } from "../../components/Home/Header";
 import { CategoriesSection } from "../../components/Home/CategoriesSection";
 import { FeaturedMovies } from "../../components/Home/FeaturedMovies";

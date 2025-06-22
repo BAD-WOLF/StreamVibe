@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { type FC, type JSX } from "react";
 import { motion } from "framer-motion";
 
 export const CategoriesSection: FC = (): JSX.Element => {
@@ -11,7 +11,7 @@ export const CategoriesSection: FC = (): JSX.Element => {
                     <h2 className="text-4xl font-black mb-4 text-[#F0F4F8] tracking-wide drop-shadow-xl">
                         {sectionTitle}
                     </h2>
-                    <div className="flex overflow-x-auto gap-6 pb-2">
+                    <div className="flex overflow-x-auto overflow-y-hidden gap-6 pb-2">
                         {[...Array(10)].map((_: unknown, idx: number): JSX.Element => (
                             <motion.div
                                 key={idx}

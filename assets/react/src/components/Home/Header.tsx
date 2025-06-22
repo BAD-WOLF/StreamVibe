@@ -1,8 +1,8 @@
-import { FC } from "react";
+import { type FC, type JSX } from "react";
 import { motion } from "framer-motion";
 
 export const Header: FC = (): JSX.Element => {
-    const navItems: string[] = ["Home", "Trending", "Categories", "My List"];
+    const navItems: string[] = ["Home", "Trending", "Categories", "My List", "Login"];
 
     return (
         <header className="relative z-10 flex justify-between items-center px-8 py-6 backdrop-blur-sm">
@@ -14,15 +14,15 @@ export const Header: FC = (): JSX.Element => {
                 <span className="text-sm font-bold">SV</span>
             </motion.div>
 
-            <nav className="flex gap-6 text-sm font-medium">
+            <nav role="Navigation" aria-label="Main Navigation" className="flex gap-6 text-sm font-medium">
                 {navItems.map((item: string) => (
-                    <motion.button
+                    <motion.a
                         key={item}
                         whileTap={{ scale: 0.9 }}
                         className="hover:text-[#F0F4F8]"
                     >
                         {item}
-                    </motion.button>
+                    </motion.a>
                 ))}
             </nav>
 
