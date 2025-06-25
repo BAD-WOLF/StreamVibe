@@ -1,24 +1,31 @@
-# APP
-FROM php:8.4.4-cli AS app
+FROM php:8.4-cli AS app
 
 WORKDIR /app
 
-RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash && apt-get install symfony-cli -y
+# Instala dependências de SO básicas
+RUN apt-get update && apt-get install -y \
+      libpq-dev dos2unix nmap neovim unzip fish \
+  && docker-php-ext-install pdo pdo_pgsql \
+  && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y libpq-dev dos2unix nmap neovim unzip fish
-RUN docker-php-ext-install pdo pdo_pgsql
+# Instala symfony-cli (pode invalidar cache se confiar pouco na URL; mas normalmente OK)
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
+  && apt-get update && apt-get install -y symfony-cli \
+  && rm -rf /var/lib/apt/lists/*
 
-COPY . .
-
+# Trazer o Composer para dentro da imagem
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN composer install
+# Copia all código
+COPY . .
 
-RUN chmod +x ./docker/scripts/*
+# Usa cache de composer (~/.composer) via BuildKit cache mount
+RUN --mount=type=cache,target=/root/.composer/cache \
+    composer install --optimize-autoloader
 
-RUN dos2unix ./docker/scripts/entrypoint.sh && echo "secrets executed!!" || echo "nao execultou as secrets"
+# Ajustes de scripts
+COPY --chmod=0755 docker/scripts/entrypoint.sh ./docker/scripts/entrypoint.sh
+RUN dos2unix ./docker/scripts/entrypoint.sh
 
 ENTRYPOINT ["./docker/scripts/entrypoint.sh"]
-
 CMD ["symfony", "serve:start", "--allow-all-ip"]
-
