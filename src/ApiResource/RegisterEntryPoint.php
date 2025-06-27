@@ -14,13 +14,13 @@ use ApiPlatform\Metadata\ApiProperty;
             uriTemplate: '/register',
             status: 201,
             controller: RegistrationController::class,
-            input: RegistrationInput::class,
-            output: RegistrationOutput::class,
+            input: RegisterUserInput::class,
+            output: RegisterUserResponse::class,
             name: 'post_register',
         ),
     ],
 )]
-final class RegistrationDTO
+final class RegisterEntryPoint
 {
     // Classe vazia porque "Registration" é apenas um agrupador lógico.
     // Sua entrada e saída são definidas separadamente.

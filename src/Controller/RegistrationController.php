@@ -19,7 +19,7 @@ use ApiPlatform\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use App\ApiResource\RegistrationDTO;
+use App\ApiResource\RegisterEntryPoint;
 
 #[AsController]
 class RegistrationController extends AbstractController {
@@ -44,7 +44,7 @@ class RegistrationController extends AbstractController {
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
     #[Route(name: 'api_register', defaults: [
-        '_api_resource_class' => RegistrationDTO::class,
+        '_api_resource_class' => RegisterEntryPoint::class,
         '_api_operation_name' => 'post_register',
     ], methods: ['POST'])]
     public function __invoke(
