@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ApiResource;
+namespace App\ApiResource\Auth\Register;
 
 use ApiPlatform\Metadata\ApiProperty;
 
