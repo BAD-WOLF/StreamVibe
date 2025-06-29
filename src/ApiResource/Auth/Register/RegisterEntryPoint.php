@@ -1,12 +1,10 @@
 <?php
 
-namespace App\ApiResource;
+namespace App\ApiResource\Auth\Register;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
 use App\Controller\RegistrationController;
-use Symfony\Component\Validator\Constraints as Assert;
-use ApiPlatform\Metadata\ApiProperty;
 
 #[ApiResource(
     operations: [

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\ApiResource;
+namespace App\ApiResource\Auth\Register;
 
 use ApiPlatform\Metadata\ApiProperty;
+use App\ApiResource\Assert;
 
 final class RegisterUserInput
 {

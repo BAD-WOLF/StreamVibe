@@ -5,7 +5,6 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -17,9 +16,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use ApiPlatform\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use App\ApiResource\RegisterEntryPoint;
+use App\ApiResource\Auth\Register\RegisterEntryPoint;
 
 #[AsController]
 class RegistrationController extends AbstractController {
