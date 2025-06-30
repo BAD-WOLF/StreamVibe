@@ -13,6 +13,13 @@ use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 class EmailVerificationController extends AbstractController {
+    /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \App\Repository\UserRepository            $userRepository
+     * @param \App\Security\EmailVerifier               $emailVerifier
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
     #[Route(path: '/api/verify/email', name: 'api_verify_email', methods: ['GET'])]
     public function verifyUserEmail(
         Request $request,
