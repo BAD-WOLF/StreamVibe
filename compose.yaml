@@ -29,6 +29,8 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
+      args:
+        COMPOSER_NO_DEV: "1"
     ports:
       - "8000:8000"
     networks:

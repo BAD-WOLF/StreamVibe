@@ -28,7 +28,13 @@ security:
         api:
             pattern: ^/api
             stateless: true
+            entry_point: jwt
+            provider: app_user_provider
             jwt: ~
+            refresh_jwt:
+                check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
+                # or if you have more than one user provider
+                # provider: user_provider_name
 
         main:
             # activate different ways to authenticate
