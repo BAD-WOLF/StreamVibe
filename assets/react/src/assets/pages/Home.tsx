@@ -1,10 +1,10 @@
-import {Component, ReactElement} from "react";
-import {CategoriesSection} from "../components/Home/CategoriesSection";
-import {FeaturedMovies} from "../components/Home/FeaturedMovies";
-import {DivineLines} from "../components/shared/DivineLines";
-import {Footer} from "../components/shared/Footer";
-import {Header} from "../components/shared/Header";
-import {Movie} from "../types/Movie";
+import { Component, type JSX } from "react";
+import { DivineLines } from "../../components/shared/DivineLines";
+import type { Movie } from "../../types/Movie";
+import { Header } from "../../components/Home/Header";
+import { CategoriesSection } from "../../components/Home/CategoriesSection";
+import { FeaturedMovies } from "../../components/Home/FeaturedMovies";
+import { Footer } from "../../components/Home/Footer";
 
 export default class extends Component<{}, { movies: Movie[] }> {
     constructor(props: {}) {
@@ -33,25 +33,25 @@ export default class extends Component<{}, { movies: Movie[] }> {
         };
     }
 
-    render(): ReactElement {
+    render(): JSX.Element {
         return (
             <div
                 className="min-h-screen bg-gradient-to-br from-[#0E7490] via-[#1E3A5F] to-[#3D3D3D] text-white font-sans overflow-x-hidden">
 
                 {/* Header */}
-                <Header/>
+                <Header />
 
                 {/* Featured */}
-                <FeaturedMovies movies={this.state.movies}/>
+                <FeaturedMovies movies={this.state.movies} />
 
                 {/* Divider */}
-                <DivineLines/>
+                <DivineLines />
 
                 {/* Categories */}
-                <CategoriesSection/>
+                <CategoriesSection />
 
                 {/* Footer */}
-                <Footer/>
+                <Footer />
 
             </div>
         );
