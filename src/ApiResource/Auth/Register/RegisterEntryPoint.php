@@ -4,7 +4,7 @@ namespace App\ApiResource\Auth\Register;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
-use App\Controller\RegistrationController;
+use App\Controller\Auth\Register\RegistrationController;
 
 #[ApiResource(
     operations: [

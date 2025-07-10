@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Auth\Register;
 
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
@@ -52,6 +52,11 @@ class EmailVerificationController extends AbstractController {
     }
 
     /**
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param \App\Repository\UserRepository            $userRepository
+     * @param \App\Security\EmailVerifier               $emailVerifier
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
     #[Route(path: '/api/resend/verify/email', name: 'api_reverify_email', methods: ['POST'])]
@@ -82,7 +87,7 @@ class EmailVerificationController extends AbstractController {
             verifyEmailRouteName: 'api_verify_email',
             user: $user,
             email: new TemplatedEmail()
-                ->from(addresses: new Address(address: 'matheu@vieiratechnology.shop', name: 'StreamVibe'))
+                ->from(addresses: new Address(address: 'matheusviaira160@gmail.com', name: 'StreamVibe'))
                 ->to(addresses: $user->getEmail())
                 ->subject(subject: 'Confirme seu e-mail')
                 ->htmlTemplate(template: 'registration/confirmation_email.html.twig')
