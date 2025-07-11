@@ -33,10 +33,12 @@ final class PersonController extends AbstractController
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function __invoke(int $personId, TmdbApiService $tmdbApiService): Response {
-        $moviesFromPerson = $tmdbApiService->getMoviesFromPerson($personId);
+        $personDetails = $tmdbApiService->getPersonDetails($personId);
+        $moviesSummary = $tmdbApiService->getMoviesFromPerson($personId);
 
         return $this->json([
-            'moviesFromPerson' => $moviesFromPerson,
+            'personDetails' => $personDetails,
+            'moviesSummary' => $moviesSummary,
         ]);
     }
 }
