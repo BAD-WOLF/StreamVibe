@@ -33,11 +33,11 @@ class MovieDetailsController extends AbstractController {
      */
     public function __invoke(int $movieId, TmdbApiService $tmdbApiService): Response {
         $movieDetails = $tmdbApiService->getMovieDetails(movie_id: $movieId);
-        $personsFromMovie = $tmdbApiService->getPersonsFromMovie(movie_id: $movieId);
+        $personSummary = $tmdbApiService->getPersonsFromMovie(movie_id: $movieId);
 
         return $this->json([
             'movieDetails' => $movieDetails,
-            'personSummary' => $personsFromMovie,
+            'personSummary' => $personSummary,
         ]);
     }
 }
