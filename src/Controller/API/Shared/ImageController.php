@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Movies;
+namespace App\Controller\API\Shared;
 
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
         '_api_operation_name' => 'api_movies_img',
     ], methods: ['GET']
 )]
-class MovieImageController extends AbstractController {
+class ImageController extends AbstractController {
     /**
      * @param string|null                 $size
      * @param string                      $endpoint

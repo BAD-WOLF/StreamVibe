@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Person;
+namespace App\Controller\API\Content\Person;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
