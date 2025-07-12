@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Auth\ResetPassword;
+namespace App\Controller\API\Auth\ResetPassword;
 
 
 use Symfony\Component\Routing\Attribute\Route;

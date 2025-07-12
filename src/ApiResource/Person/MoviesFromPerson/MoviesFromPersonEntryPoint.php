@@ -4,7 +4,7 @@ namespace App\ApiResource\Person\MoviesFromPerson;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
-use App\Controller\Person\PersonController;
+use App\Controller\API\Content\Person\PersonController;
 
 #[ApiResource(
     operations: [

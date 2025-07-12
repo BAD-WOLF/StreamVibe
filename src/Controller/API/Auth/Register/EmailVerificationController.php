@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Auth\Register;
+namespace App\Controller\API\Auth\Register;
 
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Movies;
+namespace App\Controller\API\Content\Movies;
 
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\Routing\Attribute\Route;
