@@ -1,17 +1,19 @@
 <?php
 
-namespace App\ApiResource\Person\MoviesFromPerson;
+namespace App\ApiResource\Person\Details\Model\MoviesSummary\CrewMember;
 
 use ApiPlatform\Metadata\ApiProperty;
 
-final class CastItem {
+final class CrewMember {
     #[ApiProperty]
     public private(set) bool $adult;
 
     #[ApiProperty]
     public private(set) ?string $backdrop_path = null;
 
-    /** @var int[] $genre_ids */
+    /**
+     * @var array<int> $genre_ids
+     */
     #[ApiProperty]
     public private(set) array $genre_ids;
 
@@ -49,11 +51,11 @@ final class CastItem {
     public private(set) int $vote_count;
 
     #[ApiProperty]
-    public private(set) ?string $character = null;
+    public private(set) string $credit_id;
 
     #[ApiProperty]
-    public private(set) ?string $credit_id = null;
+    public private(set) string $department;
 
     #[ApiProperty]
-    public private(set) ?int $order = null;
+    public private(set) string $job;
 }

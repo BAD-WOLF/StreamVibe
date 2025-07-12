@@ -7,8 +7,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\TmdbApiService;
-use App\ApiResource\Person\MoviesFromPerson\MoviesFromPersonEntryPoint;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use App\ApiResource\Person\PersonEntryPoint;
 
 #[AsController]
 #[Route(name: 'movies',
@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
         'personId' => Requirement::DIGITS,
     ],
     defaults: [
-        '_api_resource_class' => MoviesFromPersonEntryPoint::class,
+        '_api_resource_class' => PersonEntryPoint::class,
         '_api_operation_name' => 'get_movie_from_person',
     ]
 )]
