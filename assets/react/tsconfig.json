@@ -1,7 +1,30 @@
 {
   "files": [],
+  "compilerOptions": {
+    "paths": {
+      "@app/*": [
+        "src/app/*"
+      ],
+      "@auth/*": [
+        "src/features/auth/*"
+      ],
+      "@content/*": [
+        "src/features/Content/*"
+      ],
+      "@layout/*": [
+        "src/features/layout/*"
+      ],
+      "@shared/*": [
+        "src/shared/*"
+      ]
+    }
+  },
   "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
   ]
 }
