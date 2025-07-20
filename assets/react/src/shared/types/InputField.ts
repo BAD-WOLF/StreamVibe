@@ -5,7 +5,7 @@ export type InputField = {
     type: string;
     placeholder: string;
     value: string;
-    setter: Dispatch<SetStateAction<string>>;
+    setter: Dispatch<SetStateAction<string>> | ((value: string) => void);
     icon: ReactElement;
     error?: string;
 }
