@@ -19,9 +19,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Copia all código
 COPY . .
 
-# Usa cache de composer (~/.composer) via BuildKit cache mount
-RUN --mount=type=cache,target=/root/.composer/cache \
-    composer install --optimize-autoloader
+RUN composer install
 
 # Ajustes de scripts
 COPY --chmod=0755 docker/scripts/entrypoint.sh ./docker/scripts/entrypoint.sh
