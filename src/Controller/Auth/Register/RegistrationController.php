@@ -2,10 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller;
+namespace App\Controller\Auth\Register;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -17,9 +16,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use ApiPlatform\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
-use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
-use App\ApiResource\RegistrationDTO;
+use App\ApiResource\Auth\Register\RegisterEntryPoint;
 
 #[AsController]
 class RegistrationController extends AbstractController {
@@ -44,7 +42,7 @@ class RegistrationController extends AbstractController {
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
     #[Route(name: 'api_register', defaults: [
-        '_api_resource_class' => RegistrationDTO::class,
+        '_api_resource_class' => RegisterEntryPoint::class,
         '_api_operation_name' => 'post_register',
     ], methods: ['POST'])]
     public function __invoke(
