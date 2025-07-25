@@ -1,7 +1,7 @@
 import type {Dispatch, ReactElement, SetStateAction} from "react";
 
 export type InputField = {
-    id: "email" | "password";
+    id: "email" | "password" | "confirmPassword";
     type: string;
     placeholder: string;
     value: string;
