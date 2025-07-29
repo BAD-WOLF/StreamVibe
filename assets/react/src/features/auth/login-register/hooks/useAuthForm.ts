@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { calculatePasswordStrength } from "@auth/login-register/services/passwordStrength.service.ts";
+import { calculatePasswordStrength } from "@auth/utils/passwordStrength.service.ts";
 import { validateAuth } from "@auth/login-register/utils/validateAuth.ts";
 import type { UseAuthFormReturn } from "@auth/login-register/types/UseAuthFormReturn.ts";
 import type { AuthMode } from "@auth/login-register/types/AuthMode.ts";
