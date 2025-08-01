@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        FRONTEND_UI_DOMAIN: '%env(FRONTEND_UI_DOMAIN)%'
 
 when@test:
     twig:

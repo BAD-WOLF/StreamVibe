@@ -1,11 +1,12 @@
-import PasswordStrengthBar from "@auth/login-register/components/PasswordStrengthBar.tsx";
 import {useAuthForm} from "@auth/login-register/hooks/useAuthForm.ts";
 import type {AuthMode} from "@auth/login-register/types/AuthMode.ts";
+import type {UseAuthFormReturn} from '@auth/login-register/types/UseAuthFormReturn.ts'
+import InputFieldGroup from '@shared/components/auth/InputFieldGroup.tsx'
+import PasswordStrengthBar from "@shared/components/auth/PasswordStrengthBar.tsx";
 import * as styles from "@shared/styles/ts/login/LoginPageStyles.ts";
 import type {InputField} from "@shared/types/InputField.ts";
-import type {ChangeEvent, HTMLAttributes, ReactElement} from "react";
-import {cloneElement} from "react";
-import {FaEnvelope, FaEye, FaEyeSlash, FaLock} from "react-icons/fa";
+import type {ReactElement} from "react";
+import {FaEnvelope, FaLock} from "react-icons/fa";
 
 export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode: AuthMode; }): ReactElement {
     const {
@@ -20,7 +21,7 @@ export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode:
         setConfirmPassword,
         setShowPassword,
         handleSubmit,
-    } = useAuthForm(onSubmit, mode);
+    }: UseAuthFormReturn = useAuthForm(onSubmit, mode);
 
     const fields: InputField[] = [
         {
@@ -56,35 +57,21 @@ export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode:
 
     return (
         <form onSubmit={handleSubmit} noValidate>
-            {fields.map((field) => {
-                const focused = document.activeElement?.id === field.id;
-                const hasError = !!field.error;
-                const attrClass: HTMLAttributes<HTMLElement> = {className: `${styles.iconBase} left-3`};
-
-                return (
-                    <div key={field.id}
-                         className={`${hasError ? "shake" : ""} ${styles.inputContainer(focused, hasError)}`}>
-                        {cloneElement(field.icon, attrClass)}
-                        <input
-                            id={field.id}
-                            type={field.type}
-                            placeholder={field.placeholder}
-                            value={field.value}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => field.setter(e.target.value)}
-                            className={styles.inputClasses(hasError)}
-                        />
-                        {field.id.includes("password") && (
-                            <span
-                                onClick={() => setShowPassword(!showPassword)}
-                                className={`${styles.iconBase} right-3 cursor-pointer`}
-                            >
-                {showPassword ? <FaEyeSlash/> : <FaEye/>}
-              </span>
-                        )}
-                        {field.error && <p className="text-red-500 text-sm mt-1">{field.error}</p>}
-                    </div>
-                );
-            })}
+            {fields.map((field: InputField): ReactElement => (
+                <InputFieldGroup
+                    key={field.id}
+                    id={field.id}
+                    type={field.type}
+                    placeholder={field.placeholder}
+                    value={field.value}
+                    setter={field.setter}
+                    icon={field.icon}
+                    error={field.error}
+                    isLoading={false}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                />
+            ))}
 
             {password && <PasswordStrengthBar strength={strength}/>}
 
