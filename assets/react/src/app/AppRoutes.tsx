@@ -15,7 +15,7 @@ export default function AppRoutes(): ReactElement {
             {/*{shouldShowHeader && <Header/>}*/}
             <BrowserRouter>
                 <Routes>
-                    <Route path='/' element={<Home/>}/>
+                    <Route path='/home' element={<Home/>}/>
                     <Route path='/auth' element={<Auth/>}/>
                     <Route path="/auth/repassword/:token?" element={<Repassword/>}/>
                 </Routes>

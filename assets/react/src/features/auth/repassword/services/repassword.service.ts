@@ -1,6 +1,11 @@
-import type {RepasswordRequestPayload, RepasswordRequestResponse} from "@auth/repassword/types/RepasswordRequest.ts";
-import type {RepasswordValidateResponse} from "@auth/repassword/types/RepasswordValidateResponse.ts";
-import type {ResetPasswordPayload, ResetPasswordResponse,} from "@auth/repassword/types/ResetPasswordResponse.ts";
+import type {
+    RepasswordRequestPayload,
+    RepasswordRequestResponse,
+    RepasswordValidateResponse,
+    RepasswordValidatePayload,
+    RepasswordResetPayload,
+    RepasswordResetResponse
+} from "@shared/types/auth";
 
 const VITE_BACKEND_API_DOMAIN: string = import.meta.env.VITE_BACKEND_API_DOMAIN;
 
@@ -23,9 +28,9 @@ export async function requestPasswordReset(
  * Validate the token resaved by email
  */
 export async function validateResetToken(
-    token: string
+    payload: RepasswordValidatePayload
 ): Promise<RepasswordValidateResponse> {
-    const resp: Response = await fetch(`${VITE_BACKEND_API_DOMAIN}/api/reset-password/validate/${token}`);
+    const resp: Response = await fetch(`${VITE_BACKEND_API_DOMAIN}/api/reset-password/validate/${payload.token}`);
     if (!resp.ok) throw new Error("Token inválido ou expirado");
     return resp.json();
 }
@@ -34,8 +39,8 @@ export async function validateResetToken(
  * Send a new pass along with the token
  */
 export async function resetPassword(
-    payload: ResetPasswordPayload
-): Promise<ResetPasswordResponse> {
+    payload: RepasswordResetPayload
+): Promise<RepasswordResetResponse> {
     const resp: Response = await fetch(`${VITE_BACKEND_API_DOMAIN}/api/reset-password/reset`, {
         method: "POST",
         headers: {"Content-Type": "application/json"},
