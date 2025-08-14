@@ -2,8 +2,7 @@ import {
     requestPasswordReset, resetPassword, validateResetToken,
 } from "@auth/repassword/services/repassword.service.ts";
 import {RepasswordMode, type RepasswordModeType,} from "@auth/repassword/types/RepasswordMode.ts";
-import type {RepasswordRequestResponse} from '@auth/repassword/types/RepasswordRequest.ts'
-import type {RepasswordValidateResponse} from '@auth/repassword/types/RepasswordValidateResponse.ts'
+import type {RepasswordRequestResponse, RepasswordValidateResponse} from "@shared/types/auth"
 import type {UseRepasswordReturn} from "@auth/repassword/types/UseRepasswordReturn.ts";
 import {validateRepasswordFields} from "@auth/repassword/utils/validateRepassword.ts";
 import {calculatePasswordStrength} from '@auth/utils/passwordStrength.service.ts'
@@ -15,7 +14,7 @@ export function useRepassword(
 ): UseRepasswordReturn {
     const hasToken: boolean = Boolean(initialToken);
 
-    const [mode, setMode]: ("request" | "validate" | "reset" | Dispatch<SetStateAction<RepasswordModeType>>)[] = useState<RepasswordModeType>(
+    const [mode, setMode]: (RepasswordModeType | Dispatch<SetStateAction<RepasswordModeType>>)[] = useState<RepasswordModeType>(
         hasToken ? RepasswordMode.Validate : RepasswordMode.Request
     );
     const [isRequested, setIsRequested]: (boolean | Dispatch<SetStateAction<boolean>>)[] = useState(hasToken);
@@ -75,7 +74,7 @@ export function useRepassword(
     const handleValidate: () => Promise<void> = useCallback(async (): Promise<void> => {
         setIsLoading(true);
         try {
-            const resp: RepasswordValidateResponse = await validateResetToken(token);
+            const resp: RepasswordValidateResponse = await validateResetToken({token: token});
             if (resp.success) {
                 setMode(RepasswordMode.Reset);
             } else {

@@ -1,14 +1,21 @@
-import {useAuthForm} from "@auth/login-register/hooks/useAuthForm.ts";
-import type {AuthMode} from "@auth/login-register/types/AuthMode.ts";
-import type {UseAuthFormReturn} from '@auth/login-register/types/UseAuthFormReturn.ts'
-import InputFieldGroup from '@shared/components/auth/InputFieldGroup.tsx'
+// src/features/auth/login-register/components/AuthForm.tsx
+import { type ReactElement } from "react";
+import { useAuthForm } from "@auth/login-register/hooks/useAuthForm.ts";
+import { AuthMode } from "@auth/login-register/types/AuthMode.ts";
+import type { UseAuthFormReturn } from "@auth/login-register/types/UseAuthFormReturn.ts";
+import InputFieldGroup from "@shared/components/auth/InputFieldGroup.tsx";
 import PasswordStrengthBar from "@shared/components/auth/PasswordStrengthBar.tsx";
 import * as styles from "@shared/styles/ts/login/LoginPageStyles.ts";
-import type {InputField} from "@shared/types/InputField.ts";
-import type {ReactElement} from "react";
-import {FaEnvelope, FaLock} from "react-icons/fa";
+import type { InputField } from "@shared/types/InputField.ts";
+import { FaEnvelope, FaLock } from "react-icons/fa";
 
-export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode: AuthMode; }): ReactElement {
+export default function AuthForm({
+    onSubmit,
+    mode,
+}: {
+    onSubmit: () => void;
+    mode: AuthMode;
+}): ReactElement {
     const {
         email,
         password,
@@ -16,6 +23,7 @@ export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode:
         errors,
         strength,
         showPassword,
+        isLoading,
         setEmail,
         setPassword,
         setConfirmPassword,
@@ -30,7 +38,7 @@ export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode:
             placeholder: "Email",
             value: email,
             setter: setEmail,
-            icon: <FaEnvelope/>,
+            icon: <FaEnvelope />,
             error: errors.email,
         },
         {
@@ -39,20 +47,21 @@ export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode:
             placeholder: "Senha",
             value: password,
             setter: setPassword,
-            icon: <FaLock/>,
+            icon: <FaLock />,
             error: errors.password,
         },
-        ...(mode === "register"
-                ? [{
+        ...(mode === AuthMode.Register
+            ? [
+                {
                     id: "confirmPassword",
                     type: showPassword ? "text" : "password",
                     placeholder: "Confirmar Senha",
                     value: confirmPassword,
                     setter: setConfirmPassword,
-                    icon: <FaLock/>,
+                    icon: <FaLock />,
                     error: errors.confirmPassword,
-                }] as const : []
-        ),
+                },
+            ] as const: []),
     ];
 
     return (
@@ -67,16 +76,22 @@ export default function AuthForm({onSubmit, mode}: { onSubmit: () => void; mode:
                     setter={field.setter}
                     icon={field.icon}
                     error={field.error}
-                    isLoading={false}
+                    isLoading={isLoading}
                     showPassword={showPassword}
                     setShowPassword={setShowPassword}
                 />
             ))}
 
-            {password && <PasswordStrengthBar strength={strength}/>}
+            {password && <PasswordStrengthBar strength={strength} />}
 
-            <button type="submit" className={`${styles.buttonBase} ${styles.gradients?.gradiente1 || ""} text-white`}>
-                {mode === "login" ? "Entrar" : "Registrar"}
+            {errors.form && <p className="text-red-500 text-sm mt-2">{errors.form}</p>}
+
+            <button
+                type="submit"
+                disabled={isLoading}
+                className={`${styles.buttonBase} ${styles.gradients?.gradiente1 || ""} text-white disabled:opacity-60`}
+            >
+                {mode === AuthMode.Login ? "Entrar" : "Registrar"}
             </button>
         </form>
     );

@@ -1,7 +1,20 @@
 api_platform:
     title: StreamVibe API
     version: 1.0.0
+    enable_swagger: true        # mantém a geração do spec OpenAPI
+    enable_swagger_ui: false    # desativa a UI embutida (vamos montar manualmente)
+    enable_re_doc: false        # opcional
     defaults:
         stateless: true
         cache_headers:
             vary: ['Content-Type', 'Authorization', 'Origin']
+
+    swagger:
+        api_keys:
+            JWT:
+                name: Authorization
+                type: header
+
+    openapi:
+        swagger_ui_extra_configuration:
+            persistAuthorization: true
