@@ -4,6 +4,9 @@ import {defineConfig} from 'vite';
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+    server: {
+        allowedHosts: ['ui-streamvibe.duckdns.org']
+    },
     plugins: [
         react(),
         tailwindcss(),

@@ -1,1 +1,4 @@
-export type AuthMode = 'login' | 'register';
+export enum AuthMode {
+    Login = "login",
+    Register = "register",
+}
