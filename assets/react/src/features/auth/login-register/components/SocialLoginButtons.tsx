@@ -1,6 +1,6 @@
 // Buttons for social login (Google, GitHub, etc.)
 
-import type {Icon} from "@shared/types/login/Icon.ts";
+import type {Icon} from "@shared/types/Icon.ts";
 import type {ReactElement} from "react";
 import {FaGithub, FaGoogle} from "react-icons/fa";
 

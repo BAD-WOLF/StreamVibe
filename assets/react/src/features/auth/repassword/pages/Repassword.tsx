@@ -38,7 +38,7 @@ export default function Repassword(): ReactElement {
             setToken(paramToken);
             handleValidate();
         }
-    }, [handleValidate, paramToken, setToken]);
+    }, [paramToken]);
 
     // mapeia cada modo ao seu conteúdo
     const panels: Record<RepasswordModeType, ReactElement | null> = {
