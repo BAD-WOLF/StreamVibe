@@ -15,6 +15,10 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
+###> front ###
+/assets/
+###< front ###
+
 ###> symfony/webpack-encore-bundle ###
 /node_modules/
 /public/build/
