@@ -1,7 +1,7 @@
 <?php
 declare(strict_types = 1);
 
-namespace App\Controller\Auth\ResetPassword;
+namespace App\Controller\API\Auth\ResetPassword;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\ApiResource\Movies\Image;
+namespace App\ApiResource\Image\Model;
 
 use ApiPlatform\Metadata\ApiResource;
 
-class MovieImageOutput {
+class ImageOutput {
     #[ApiResource]
     public ?string $base64;
 }

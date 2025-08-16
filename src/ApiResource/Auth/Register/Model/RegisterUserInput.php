@@ -1,6 +1,6 @@
 <?php
 
-namespace App\ApiResource\Auth\Register;
+namespace App\ApiResource\Auth\Register\Model;
 
 use ApiPlatform\Metadata\ApiProperty;
 use App\ApiResource\Assert;
