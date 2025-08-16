@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\Auth\Register;
+namespace App\Controller\API\Auth\Register;
 
 use App\Entity\User;
 use App\Security\EmailVerifier;

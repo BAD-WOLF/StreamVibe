@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Controller\Person;
+namespace App\Controller\API\Content\Person;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 use Symfony\Component\HttpFoundation\Response;
 use App\Service\TmdbApiService;
-use App\ApiResource\Person\MoviesFromPerson\MoviesFromPersonEntryPoint;
 use Symfony\Component\HttpKernel\Attribute\AsController;
+use App\ApiResource\Person\PersonEntryPoint;
 
 #[AsController]
 #[Route(name: 'movies',
@@ -16,7 +16,7 @@ use Symfony\Component\HttpKernel\Attribute\AsController;
         'personId' => Requirement::DIGITS,
     ],
     defaults: [
-        '_api_resource_class' => MoviesFromPersonEntryPoint::class,
+        '_api_resource_class' => PersonEntryPoint::class,
         '_api_operation_name' => 'get_movie_from_person',
     ]
 )]
@@ -33,10 +33,12 @@ final class PersonController extends AbstractController
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
     public function __invoke(int $personId, TmdbApiService $tmdbApiService): Response {
-        $moviesFromPerson = $tmdbApiService->getMoviesFromPerson($personId);
+        $personDetails = $tmdbApiService->getPersonDetails($personId);
+        $moviesSummary = $tmdbApiService->getMoviesFromPerson($personId);
 
         return $this->json([
-            'moviesFromPerson' => $moviesFromPerson,
+            'personDetails' => $personDetails,
+            'moviesSummary' => $moviesSummary,
         ]);
     }
 }
