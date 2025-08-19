@@ -10,6 +10,7 @@ import {type Dispatch, type FormEvent, type SetStateAction, useCallback, useEffe
 
 export function useRepassword(
     onSuccess: () => void,
+    locale: string,
     initialToken?: string
 ): UseRepasswordReturn {
     const hasToken: boolean = Boolean(initialToken);
@@ -53,7 +54,7 @@ export function useRepassword(
 
             setIsLoading(true);
             try {
-                const resp: RepasswordRequestResponse = await requestPasswordReset({email});
+                const resp: RepasswordRequestResponse = await requestPasswordReset(locale, {email});
                 if (resp.success) {
                     setIsRequested(true);
                 } else {
@@ -74,7 +75,7 @@ export function useRepassword(
     const handleValidate: () => Promise<void> = useCallback(async (): Promise<void> => {
         setIsLoading(true);
         try {
-            const resp: RepasswordValidateResponse = await validateResetToken({token: token});
+            const resp: RepasswordValidateResponse = await validateResetToken(locale, {token: token});
             if (resp.success) {
                 setMode(RepasswordMode.Reset);
             } else {
@@ -104,7 +105,7 @@ export function useRepassword(
 
             setIsLoading(true);
             try {
-                await resetPassword({token, plainPassword: password});
+                await resetPassword(locale, {token, plainPassword: password});
                 setIsDone(true);
                 onSuccess();
             } catch (err: unknown) {

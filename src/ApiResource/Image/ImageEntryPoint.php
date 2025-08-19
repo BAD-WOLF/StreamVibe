@@ -17,6 +17,15 @@ use App\ApiResource\Image\Model\ImageOutput;
             openapi: new Operation(
                 parameters: [
                     (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
+                    (new Parameter(
                         name: 'endpoint',
                         in: 'path',
                         description: 'Identificador do recurso de imagem',

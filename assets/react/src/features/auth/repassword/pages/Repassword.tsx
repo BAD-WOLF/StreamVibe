@@ -9,7 +9,13 @@ import {type ReactElement, useEffect} from "react";
 import {useParams} from "react-router-dom";
 
 export default function Repassword(): ReactElement {
-    const {token: paramToken}: Readonly<Partial<{ token?: string | undefined }>> = useParams<{ token?: string }>();
+    const { locale: paramLocale, token: paramToken }: Readonly<Partial<{
+        locale?: string | undefined;
+        token?: string | undefined
+    }>> = useParams<{ locale?: string; token?: string; }>();
+
+    const locale: string = paramLocale ?? "pt_BR";
+
     const {
         mode,
         isRequested,
@@ -29,8 +35,7 @@ export default function Repassword(): ReactElement {
         handleRequest,
         handleValidate,
         handleReset,
-    }: UseRepasswordReturn = useRepassword((): void => {
-    }, paramToken);
+    }: UseRepasswordReturn = useRepassword((): void => {}, locale ?? "pt_BR", paramToken);
 
     // dispara validação automaticamente se houver token na URL
     useEffect((): void => {

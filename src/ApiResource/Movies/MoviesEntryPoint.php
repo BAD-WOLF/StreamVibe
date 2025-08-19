@@ -21,6 +21,15 @@ use App\Controller\API\Content\Movies\MovieDetailsController;
             openapi: new Operation(
                 parameters: [
                     (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
+                    (new Parameter(
                         name: 'movieId',
                         in: 'path',
                         required: true,
@@ -36,6 +45,15 @@ use App\Controller\API\Content\Movies\MovieDetailsController;
             controller: SearchMoviesController::class,
             openapi: new Operation(
                 parameters: [
+                    (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
                     (new Parameter(
                         name: 'page',
                         in: 'path',

@@ -1,6 +1,7 @@
 import type {AuthMode} from "@auth/login-register/types/AuthMode.ts";
 
 export function validateAuth(
+
     email: string,
     password: string,
     confirmPassword: string,
