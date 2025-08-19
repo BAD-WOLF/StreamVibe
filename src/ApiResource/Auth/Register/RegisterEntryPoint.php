@@ -6,6 +6,8 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
 use App\ApiResource\Auth\Register\Model\RegisterUserInput;
 use App\ApiResource\Auth\Register\Model\RegisterUserResponse;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Parameter;
 
 #[ApiResource(
     operations: [
@@ -13,6 +15,19 @@ use App\ApiResource\Auth\Register\Model\RegisterUserResponse;
             uriTemplate: '/register',
             status: 201,
             controller: \App\Controller\API\Auth\Register\RegistrationController::class,
+            openapi: new Operation(
+                parameters: [
+                    (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
+                ]
+            ),
             input: RegisterUserInput::class,
             output: RegisterUserResponse::class,
             name: 'post_register',

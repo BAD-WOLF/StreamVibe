@@ -1,0 +1,13 @@
+diff --git a/vendor/symfony/translation/Loader/ArrayLoader.php b/vendor/symfony/translation/Loader/ArrayLoader.php
+index 08b862f..e63a7d0 100644
+--- a/vendor/symfony/translation/Loader/ArrayLoader.php
++++ b/vendor/symfony/translation/Loader/ArrayLoader.php
+@@ -44,7 +44,7 @@ class ArrayLoader implements LoaderInterface
+             if (\is_array($value)) {
+                 foreach ($this->flatten($value) as $k => $v) {
+                     if (null !== $v) {
+-                        $result[$key.'.'.$k] = $v;
++                        $result[$key.' '.$k] = $v;
+                     }
+                 }
+             } elseif (null !== $value) {

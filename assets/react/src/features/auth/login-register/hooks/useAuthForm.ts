@@ -15,7 +15,7 @@ import type { LoginResponse } from "@shared/types/auth/responses/login-register/
  * - quando login for bem sucedido, armazena token + refresh_token no localStorage (padrão)
  *   — você pode trocar para cookie seguro ou outro storage conforme política do app
  */
-export function useAuthForm(onSubmit: () => void, mode: AuthMode): UseAuthFormReturn {
+export function useAuthForm(onSubmit: () => void, locale: string, mode: AuthMode): UseAuthFormReturn {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -43,7 +43,7 @@ export function useAuthForm(onSubmit: () => void, mode: AuthMode): UseAuthFormRe
             try {
                 if (mode === "login") {
                     // chama o serviço real de login
-                    const resp: LoginResponse = await loginService({ email, password });
+                    const resp: LoginResponse = await loginService(locale, { email, password });
 
                     // armazenar tokens: por simplicidade usamos localStorage aqui,
                     // mas em produção privilegie cookie httpOnly+secure ou um storage seguro.
@@ -64,7 +64,7 @@ export function useAuthForm(onSubmit: () => void, mode: AuthMode): UseAuthFormRe
                     onSubmit();
                 } else {
                     // register -> apenas chama o serviço e espera mensagem de sucesso
-                    await registerService({ email, password });
+                    await registerService(locale, { email, password });
                     // após registro, você pode:
                     // - redirecionar para login;
                     // - automaticamente logar o usuário (se a API retornar token);

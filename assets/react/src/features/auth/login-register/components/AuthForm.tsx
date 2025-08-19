@@ -11,9 +11,11 @@ import { FaEnvelope, FaLock } from "react-icons/fa";
 
 export default function AuthForm({
     onSubmit,
+    locale,
     mode,
 }: {
     onSubmit: () => void;
+    locale: string,
     mode: AuthMode;
 }): ReactElement {
     const {
@@ -29,7 +31,7 @@ export default function AuthForm({
         setConfirmPassword,
         setShowPassword,
         handleSubmit,
-    }: UseAuthFormReturn = useAuthForm(onSubmit, mode);
+    }: UseAuthFormReturn = useAuthForm(onSubmit, locale, mode);
 
     const fields: InputField[] = [
         {

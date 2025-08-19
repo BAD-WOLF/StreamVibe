@@ -10,6 +10,8 @@ use App\ApiResource\Auth\ResetPassword\Model\Request\RequestPasswordResetInput;
 use App\ApiResource\Auth\ResetPassword\Model\Request\RequestPasswordResetOutput;
 use App\ApiResource\Auth\ResetPassword\Model\Reset\ResetPasswordInput;
 use App\ApiResource\Auth\ResetPassword\Model\Reset\ResetPasswordOutput;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Parameter;
 
 #[ApiResource(
     operations: [
@@ -17,25 +19,64 @@ use App\ApiResource\Auth\ResetPassword\Model\Reset\ResetPasswordOutput;
             uriTemplate: '/reset-password/request',
             status: 200,
             controller: \App\Controller\API\Auth\ResetPassword\ResetPasswordRequestController::class,
+            openapi: new Operation(
+                parameters: [
+                    (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
+                ]
+            ),
             input: RequestPasswordResetInput::class,
             output: RequestPasswordResetOutput::class,
-            name: 'post_reset_password_request'
+            name: 'post_reset_password_request',
         ),
         new Get(
             uriTemplate: '/reset-password/validate/{token}',
             status: 200,
             controller: \App\Controller\API\Auth\ResetPassword\ResetPasswordResetController::class,
+            openapi: new Operation(
+                parameters: [
+                    (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
+                ]
+            ),
             output: ValidateResetTokenResponse::class,
             read: false,
-            name: 'get_validate_reset_token'
+            name: 'get_validate_reset_token',
         ),
         new Post(
             uriTemplate: '/reset-password/reset',
             status: 200,
             controller: \App\Controller\API\Auth\ResetPassword\ResetPasswordResetController::class,
+            openapi: new Operation(
+                parameters: [
+                    (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
+                ]
+            ),
             input: ResetPasswordInput::class,
             output: ResetPasswordOutput::class,
-            name: 'post_reset_password'
+            name: 'post_reset_password',
         ),
     ],
 )]
