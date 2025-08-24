@@ -11,6 +11,7 @@ use Symfony\Component\Mime\Address;
 use Symfony\Component\Routing\Attribute\Route;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class EmailVerificationController extends AbstractController {
     /**
@@ -24,18 +25,19 @@ class EmailVerificationController extends AbstractController {
     public function verifyUserEmail(
         Request $request,
         UserRepository $userRepository,
-        EmailVerifier $emailVerifier
+        EmailVerifier $emailVerifier,
+        TranslatorInterface $translator
     ): JsonResponse {
         $id = $request->query->get(key: 'id');
 
         if (!$id) {
-            return $this->json(data: ['error' => 'ID não informado'], status: 400);
+            return $this->json(data: ['error' => $translator->trans('ID not informed')], status: 400);
         }
 
         $user = $userRepository->find(id: $id);
 
         if (!$user) {
-            return $this->json(data: ['error' => 'Usuário não encontrado'], status: 404);
+            return $this->json(data: ['error' => $translator->trans('User not found')], status: 404);
         }
 
         try {
@@ -47,7 +49,7 @@ class EmailVerificationController extends AbstractController {
         }
 
         return $this->json(data: [
-            'message' => 'E-mail verificado com sucesso.',
+            'message' => $translator->trans('E-mail verified successfully.'),
         ]);
     }
 
@@ -63,38 +65,39 @@ class EmailVerificationController extends AbstractController {
     public function reverifyUserEmail(
         Request $request,
         UserRepository $userRepository,
-        EmailVerifier $emailVerifier
+        EmailVerifier $emailVerifier,
+        TranslatorInterface $translator
     ): JsonResponse {
         $data = json_decode(json: $request->getContent(), associative: true);
         $email = $data['email'] ?? null;
 
         if (!$email) {
-            return $this->json(data: ['error' => 'E-mail não fornecido.'], status: 400);
+            return $this->json(data: ['error' => $translator->trans('E-mail not provided.')], status: 400);
         }
 
         $user = $userRepository->findOneBy(criteria: ['email' => $email]);
 
         if (!$user) {
-            return $this->json(data: ['error' => 'Usuário não encontrado.'], status: 404);
+            return $this->json(data: ['error' => $translator->trans('User not found.')], status: 404);
         }
 
         if ($user->isVerified()) {
-            return $this->json(data: ['message' => 'E-mail já verificado.'], status: 200);
+            return $this->json(data: ['message' => $translator->trans('E-mail already verified.')], status: 200);
         }
 
-        // Reenvia o e-mail de verificação
+        // Resend the verification email
         $emailVerifier->sendEmailConfirmation(
             verifyEmailRouteName: 'api_verify_email',
             user: $user,
             email: new TemplatedEmail()
                 ->from(addresses: new Address(address: 'matheusviaira160@gmail.com', name: 'StreamVibe'))
                 ->to(addresses: $user->getEmail())
-                ->subject(subject: 'Confirme seu e-mail')
+                ->subject(subject: $translator->trans('Confirm your email'))
                 ->htmlTemplate(template: 'registration/confirmation_email.html.twig')
         );
 
         return $this->json(data: [
-            'message' => 'E-mail de verificação reenviado.',
+            'message' => $translator->trans('Verification email resent.'),
         ]);
     }
 }

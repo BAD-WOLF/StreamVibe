@@ -36,7 +36,7 @@ use ApiPlatform\OpenApi\Model\Parameter;
 )]
 final class RegisterEntryPoint
 {
-    // Classe vazia porque "Registration" é apenas um agrupador lógico.
-    // Sua entrada e saída são definidas separadamente.
+    // Empty class, because "Register" is just a logical grouping.
+    // Its input and output are defined separately.
 }
 

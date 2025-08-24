@@ -82,5 +82,5 @@ use ApiPlatform\OpenApi\Model\Parameter;
 )]
 final class ResetPasswordEntryPoint
 {
-    // vazio: configura apenas rota, input e output
+    // Empty: configures only routes, input and output
 }

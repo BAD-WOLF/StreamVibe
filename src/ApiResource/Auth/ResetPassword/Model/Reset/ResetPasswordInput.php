@@ -8,11 +8,11 @@ use ApiPlatform\Metadata\ApiProperty;
 final class ResetPasswordInput
 {
     #[Assert\NotBlank]
-    #[ApiProperty(description: 'Token de reset recebido por e-mail')]
+    #[ApiProperty(description: 'Reset token received by email')]
     public string $token;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 6)]
-    #[ApiProperty(description: 'Nova senha (mínimo 6 caracteres)')]
+    #[ApiProperty(description: 'New password (minimum 6 characters)')]
     public string $plainPassword;
 }

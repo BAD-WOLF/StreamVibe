@@ -9,11 +9,11 @@ final class RegisterUserInput
 {
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[ApiProperty(description: 'E-mail do usuário', example: 'exemple@gmail.com')]
+    #[ApiProperty(description: 'User\'s email', example: 'exemple@gmail.com')]
     public string $email;
 
     #[Assert\NotBlank]
     #[Assert\Length(min: 6)]
-    #[ApiProperty(description: 'Senha (mínimo 6 caracteres)')]
+    #[ApiProperty(description: 'User\'s password (minimum 6 characters)')]
     public string $password;
 }

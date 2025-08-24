@@ -18,6 +18,7 @@ use ApiPlatform\Validator\ValidatorInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use App\ApiResource\Auth\Register\RegisterEntryPoint;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[AsController]
 class RegistrationController extends AbstractController {
@@ -27,7 +28,7 @@ class RegistrationController extends AbstractController {
      */
     public function __construct(
         private EmailVerifier $emailVerifier,
-        private ValidatorInterface $validator // injetando o validator do API Platform
+        private ValidatorInterface $validator // injecting the API Platform validator
     ) {
     }
 
@@ -49,36 +50,37 @@ class RegistrationController extends AbstractController {
         Request $request,
         EntityManagerInterface $em,
         UserPasswordHasherInterface $hasher,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        TranslatorInterface $translator
     ): JsonResponse {
         $data = json_decode(json: $request->getContent(), associative: true);
 
-        // 1. Preenche a entidade User com os dados recebidos
+        // 1. Fill the User entity with the received data
         $user = new User();
         $user->setEmail(email: $data['email'] ?? '');
         $user->setPassword(password: $hasher->hashPassword(user: $user, plainPassword: $data['password'] ?? ''));
 
-        // 2. Validação automática pelo API Platform
-        //    lança ApiPlatform\Validator\Exception\ValidationException em caso de erro (422)
+        // 2. Automatic validation by API Platform
+        //    throws ApiPlatform\Validator\Exception\ValidationException on error (422)
         $this->validator->validate(data: $user);
 
-        // 3. Persiste o usuário
+        // 3. Persist the user
         $em->persist(object: $user);
         $em->flush();
 
-        // 4. Envia e-mail de confirmação
+        // 4. Send confirmation email
         $this->emailVerifier->sendEmailConfirmation(
             verifyEmailRouteName: 'api_verify_email',
             user: $user,
             email: new TemplatedEmail()
                 ->from(addresses: new Address(address: 'matheusviaira160@gmail.com', name: 'StreamVibe'))
                 ->to(addresses: $user->getEmail())
-                ->subject(subject: 'Please confirm your email')
+                ->subject(subject: $translator->trans('Please confirm your email'))
                 ->htmlTemplate(template: 'registration/confirmation_email.html.twig')
         );
 
         return $this->json(data: [
-            'message' => "Usuário criado com sucesso. Verifique seu e-mail {$user->getEmail()}",
+            'message' => $translator->trans("User registered successfully. Check your email"),
         ], status: 201);
     }
 }
