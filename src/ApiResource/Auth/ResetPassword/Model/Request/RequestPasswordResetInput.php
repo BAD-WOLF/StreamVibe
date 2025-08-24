@@ -8,6 +8,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class RequestPasswordResetInput {
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[ApiProperty(description: 'E-mail do usuário solicitando reset', example: 'user@example.com')]
+    #[ApiProperty(description: 'User\'s email requesting reset', example: 'user@example.com')]
     public string $email;
 }

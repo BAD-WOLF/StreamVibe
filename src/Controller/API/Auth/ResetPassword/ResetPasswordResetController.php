@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use App\Entity\User;
 use App\ApiResource\Auth\ResetPassword\ResetPasswordEntryPoint;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 // 2. Validate & Perform Password Reset
 #[Route(name: 'api_validate_reset_token',
@@ -48,40 +49,41 @@ class ResetPasswordResetController extends AbstractController {
     public function __invoke(
         Request $request,
         ?string $token,
-        UserPasswordHasherInterface $hasher
+        UserPasswordHasherInterface $hasher,
+        TranslatorInterface $translator
     ): JsonResponse {
         if ($request->isMethod('GET')) {
             // Validate token without state
             if (!$token) {
-                return $this->json(['success' => false, 'error' => 'Token is required'], 400);
+                return $this->json(['success' => false, 'error' => $translator->trans('Token is required')], 400);
             }
             try {
                 $this->resetPasswordHelper->validateTokenAndFetchUser($token);
 
                 return $this->json(['success' => true, 'result' => ['status' => 'token_valid']], 200);
             } catch (ResetPasswordExceptionInterface $e) {
-                return $this->json(['success' => false, 'error' => 'Invalid or expired token'], 400);
+                return $this->json(['success' => false, 'error' => $translator->trans('Invalid or expired token')], 400);
             }
         }
 
         // POST: perform reset
         $data = json_decode($request->getContent(), true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return $this->json(['success' => false, 'error' => 'Invalid JSON payload'], 400);
+            return $this->json(['success' => false, 'error' => $translator->trans('Invalid JSON payload')], 400);
         }
 
         $reqToken = $data['token'] ?? null;
         $plainPassword = $data['plainPassword'] ?? null;
 
         if (!$reqToken || !$plainPassword) {
-            return $this->json(['success' => false, 'error' => 'Token and plainPassword are required'], 400);
+            return $this->json(['success' => false, 'error' => $translator->trans('Token and plainPassword are required')], 400);
         }
 
         try {
             /** @var User $user */
             $user = $this->resetPasswordHelper->validateTokenAndFetchUser($reqToken);
         } catch (ResetPasswordExceptionInterface) {
-            return $this->json(['success' => false, 'error' => 'Invalid or expired token'], 400);
+            return $this->json(['success' => false, 'error' => $translator->trans('Invalid or expired token')], 400);
         }
 
         $user->setPassword($hasher->hashPassword($user, $plainPassword));

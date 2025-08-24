@@ -13,6 +13,7 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use App\Repository\UserRepository;
 use App\ApiResource\Auth\ResetPassword\ResetPasswordEntryPoint;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 // 1. Request Password Reset
 #[Route(name: 'api_reset_password_request',
@@ -38,15 +39,15 @@ class ResetPasswordRequestController extends AbstractController {
      * @return \Symfony\Component\HttpFoundation\JsonResponse
      * @throws \Symfony\Component\Mailer\Exception\TransportExceptionInterface
      */
-    public function __invoke(Request $request, UserRepository $userRepository, MailerInterface $mailer): JsonResponse {
+    public function __invoke(Request $request, UserRepository $userRepository, MailerInterface $mailer, TranslatorInterface $translator): JsonResponse {
         $payload = json_decode(json: $request->getContent(), associative: true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return $this->json(data: ['success' => false, 'error' => 'Invalid JSON payload'], status: 400);
+            return $this->json(data: ['success' => false, 'error' => $translator->trans('Invalid JSON payload')], status: 400);
         }
 
         $email = $payload['email'] ?? null;
         if (!$email) {
-            return $this->json(data: ['success' => false, 'error' => 'Email is required'], status: 400);
+            return $this->json(data: ['success' => false, 'error' => $translator->trans('Email is required')], status: 400);
         }
 
         $user = $userRepository->findOneBy(criteria: ['email' => $email]);
@@ -56,7 +57,7 @@ class ResetPasswordRequestController extends AbstractController {
             $emailMessage = new TemplatedEmail()
                 ->from(new Address('matheusviaira160@gmail.com', 'StreamVibe'))
                 ->to($email)
-                ->subject('Your password reset request')
+                ->subject($translator->trans('Your password reset request'))
                 ->htmlTemplate('reset_password/email.html.twig')
                 ->context(['resetToken' => $resetToken]);
 

@@ -10,21 +10,22 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class ReverifyFormType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm(FormBuilderInterface $builder, array $options, TranslatorInterface $translator): void
     {
         $builder
             ->add('email', EmailType::class, [
-                "label" => "resend email verify ",
+                "label" => $translator->trans("resend email verify "),
                 "attr" => [
                     "autocomplete" => "email",
-                    "placeholder" => "Sey me your email ..."
+                    "placeholder" => $translator->trans("Type your email ...")
                 ],
                 "constraints" => [
                     new NotBlank([
-                        "message" => "You have sey me your email"
+                        "message" => $translator->trans("You have to type your email")
                     ])
                 ]
             ])

@@ -28,14 +28,14 @@ use App\ApiResource\Image\Model\ImageOutput;
                     (new Parameter(
                         name: 'endpoint',
                         in: 'path',
-                        description: 'Identificador do recurso de imagem',
+                        description: 'Image resource identifier',
                         required: true,
                         schema: ['type' => 'string',]
                     )),
                     (new Parameter(
                         name: 'size',
                         in: 'path',
-                        description: 'Tamanho da imagem (opcional)',
+                        description: 'Image size (optional)',
                         required: false,
                         schema: [
                             'type' => 'string',
