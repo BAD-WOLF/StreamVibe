@@ -10,10 +10,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserCheckerAuthLogin implements UserCheckerInterface {
 
-    private TranslatorInterface $translator;
-
-    public function __construct(TranslatorInterface $translator) {
-        $this->translator = $translator;
+    public function __construct(private TranslatorInterface $translator) {
     }
 
     public function checkPreAuth(UserInterface $user): void {
