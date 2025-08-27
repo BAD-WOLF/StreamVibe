@@ -15,13 +15,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    private TranslatorInterface $translator;
 
-    public function __construct(ManagerRegistry $registry, TranslatorInterface $translator)
+    public function __construct(ManagerRegistry $registry, private TranslatorInterface $translator)
     {
         parent::__construct($registry, User::class);
-        $this->translator = $translator;
-    }
+    }   
 
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
