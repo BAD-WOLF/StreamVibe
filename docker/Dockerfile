@@ -22,8 +22,8 @@ COPY . .
 RUN composer install
 
 # Ajustes de scripts
-COPY --chmod=0755 docker/scripts/entrypoint.sh ./docker/scripts/entrypoint.sh
-RUN dos2unix ./docker/scripts/entrypoint.sh
+RUN dos2unix /app/docker/scripts/entrypoint.sh
+RUN chmod 751 /app/docker/scripts/entrypoint.sh
 
-ENTRYPOINT ["./docker/scripts/entrypoint.sh"]
+ENTRYPOINT ["/app/docker/scripts/entrypoint.sh"]
 CMD ["symfony", "serve:start", "--allow-all-ip"]
