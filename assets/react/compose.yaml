@@ -1,0 +1,12 @@
+services:
+  app:
+    container_name: react_app
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: prod
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
