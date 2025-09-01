@@ -30,14 +30,14 @@ VARIAVEIS=(
   # Adicione mais aqui
 )
 
+symfony console secrets:decrypt-to-local --force
+
 # Processa todas
 for item in "${VARIAVEIS[@]}"; do
     VAR_NAME=$(echo "$item" | cut -d':' -f1)
     NEW_HOST=$(echo "$item" | cut -d':' -f2)
     update_env_var "$VAR_NAME" "$NEW_HOST"
 done
-
-symfony console secrets:decrypt-to-local --force
 
 symfony console doctrine:migrations:migrate --no-interaction
 
