@@ -1,3 +1,9 @@
+# Self docker
+.git
+docker/Dockerfile
+docker-compose.yaml
+docker-compose.override.yaml
+
 # Logs
 logs
 *.log
