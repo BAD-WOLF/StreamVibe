@@ -10,6 +10,9 @@ COPY package.json yarn.lock ./
 ENV YARN_CACHE_FOLDER=/usr/local/share/.yarn-cache
 RUN mkdir -p $YARN_CACHE_FOLDER && yarn install --immutable
 
+# apt install
+RUN apt update -y && apt install curl git fish neovim -y
+
 # Copy the rest of the project and build
 COPY . .
 
