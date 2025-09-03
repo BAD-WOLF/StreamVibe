@@ -20,5 +20,7 @@ services:
 ###< symfony/mailer ###
 
   app:
+    volumes:
+      - ./vendor:/app/vendor
     environment:
       APP_ENV: dev
