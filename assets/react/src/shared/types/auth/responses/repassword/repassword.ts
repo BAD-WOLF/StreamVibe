@@ -3,7 +3,7 @@ export type RepasswordRequestResponse = {
     result: { status: string };
 };
 
-// resposta reset: { status: string }
+// response reset: { status: string }
 export type RepasswordResetResponse = {
     status: string;
 }

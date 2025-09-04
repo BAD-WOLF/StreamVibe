@@ -48,7 +48,7 @@ await i18n.use(initReactI18next).init({
     defaultNS: 'messages',
     keySeparator: ' ',
     interpolation: {escapeValue: false},
-    debug: false, // pode deixar true se quiser logs do i18n
+    debug: false, // Use true for i18n debugging
 });
 
 declare global {

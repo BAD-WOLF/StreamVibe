@@ -1,14 +1,15 @@
 import {motion} from "framer-motion";
 import type {FC, ReactElement} from "react";
+import { t } from 'i18next';
 
 export const Footer: FC = (): ReactElement => {
     const links: string[] = [
-        "Privacy",
-        "Terms",
-        "Support",
-        "Contact",
-        "License",
-        "API",
+        t("Privacy"),
+        t("Terms"),
+        t("Support"),
+        t("Contact"),
+        t("License"),
+        t("API")
     ];
 
     return (

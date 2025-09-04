@@ -1,4 +1,4 @@
-// payload para /api/login_check
+// payload for /api/login_check
 export type LoginPayload = {
     email: string;
     password: string;

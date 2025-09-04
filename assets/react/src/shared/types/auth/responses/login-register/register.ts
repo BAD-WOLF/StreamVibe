@@ -1,4 +1,4 @@
-// resposta de /api/register
+// response of /api/register
 export type RegisterResponse = {
     message: string;
 }

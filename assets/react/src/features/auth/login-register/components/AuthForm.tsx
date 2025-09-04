@@ -8,6 +8,7 @@ import PasswordStrengthBar from "@shared/components/auth/PasswordStrengthBar.tsx
 import * as styles from "@shared/styles/ts/login/LoginPageStyles.ts";
 import type { InputField } from "@shared/types/InputField.ts";
 import { FaEnvelope, FaLock } from "react-icons/fa";
+import { t } from "i18next";
 
 export default function AuthForm({
     onSubmit,
@@ -46,7 +47,7 @@ export default function AuthForm({
         {
             id: "password",
             type: showPassword ? "text" : "password",
-            placeholder: "Senha",
+            placeholder: t("Password"),
             value: password,
             setter: setPassword,
             icon: <FaLock />,
@@ -57,7 +58,7 @@ export default function AuthForm({
                 {
                     id: "confirmPassword",
                     type: showPassword ? "text" : "password",
-                    placeholder: "Confirmar Senha",
+                    placeholder: t("Confirm Password"),
                     value: confirmPassword,
                     setter: setConfirmPassword,
                     icon: <FaLock />,
@@ -93,7 +94,7 @@ export default function AuthForm({
                 disabled={isLoading}
                 className={`${styles.buttonBase} ${styles.gradients?.gradiente1 || ""} text-white disabled:opacity-60`}
             >
-                {mode === AuthMode.Login ? "Entrar" : "Registrar"}
+                {mode === AuthMode.Login ? t("Log In") : t("Register")}
             </button>
         </form>
     );

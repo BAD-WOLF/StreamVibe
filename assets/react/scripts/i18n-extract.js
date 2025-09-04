@@ -5,9 +5,9 @@ import path from "path";
 import {spawnSync} from "child_process";
 
 /**
- * Lê argumento --locales:
- * - Primeiro tenta process.env.npm_config_locales (npm passa --locales=... aqui)
- * - Depois tenta argv (--locales=value ou --locales value)
+ * Read argument --locales:
+ * - First tries process.env.npm_config_locales (npm sends --locales=... here)
+ * - Then tries argv (--locales=value or --locales value)
  */
 function readLocalesArg() {
     const envVal = process.env.npm_config_locales;
@@ -34,12 +34,12 @@ async function updateLocalesFile(newLocales) {
     const filePath = path.resolve(process.cwd(), "locales.json");
     let data = {locales: []};
 
-    // garante que existe o arquivo, se não cria vazio
+    // make sure the file exists
     if (!fsSync.existsSync(filePath)) {
         await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf8");
     }
 
-    // agora tenta ler o que tem dentro
+    // now try to read the contents
     try {
         const txt = await fs.readFile(filePath, "utf8");
         const parsed = JSON.parse(txt);
@@ -47,17 +47,17 @@ async function updateLocalesFile(newLocales) {
             data.locales = parsed.locales.slice();
         }
     } catch {
-        // se o conteúdo estiver inválido, recria vazio
+        // if the content is invalid, recreate empty
         data = {locales: []};
         await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf8");
     }
 
-    // adiciona os novos idiomas
+    // add the new locales
     for (const loc of newLocales) {
         if (!data.locales.includes(loc)) data.locales.push(loc);
     }
 
-    // sobrescreve sempre com a versão atualizada
+    // always overwrite with the updated version
     await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf8");
     return data.locales;
 }
