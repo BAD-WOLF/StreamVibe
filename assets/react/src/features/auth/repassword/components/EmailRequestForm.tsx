@@ -1,5 +1,6 @@
 import type {UseRepasswordReturn} from '@auth/repassword/types/UseRepasswordReturn.ts';
 import type {ChangeEvent, ReactElement} from "react";
+import { t } from "i18next";
 
 export default function EmailRequestForm({
     email, errors, isLoading, setEmail, handleRequest,
@@ -8,7 +9,7 @@ export default function EmailRequestForm({
         <form onSubmit={handleRequest} className="space-y-4">
             <input
                 type="email"
-                placeholder="Seu email"
+                placeholder={t("Your email")}
                 value={email}
                 onChange={(e: ChangeEvent<HTMLInputElement>): void => setEmail(e.target.value)}
                 disabled={isLoading}
@@ -20,7 +21,7 @@ export default function EmailRequestForm({
                 disabled={isLoading}
                 className="w-full py-2 bg-blue-600 text-white rounded"
             >
-                {isLoading ? "Enviando..." : "Enviar email de redefinição"}
+                {isLoading ? t("Sending...") : t("Send password reset email")}
             </button>
         </form>
     );

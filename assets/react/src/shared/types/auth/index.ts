@@ -1,4 +1,4 @@
-// re-exports - facilita imports
+// re-exports - facilitates imports
 export * from "@shared/types/auth/payloads/login-register/login.ts";
 export * from "@shared/types/auth/responses/login-register/login.ts";
 

@@ -1,4 +1,5 @@
 import type {LoginPayload, LoginResponse, RegisterPayload, RegisterResponse,} from "@shared/types/auth";
+import { t } from "i18next";
 
 const VITE_BACKEND_API_DOMAIN: string = import.meta.env.VITE_BACKEND_API_DOMAIN;
 
@@ -18,7 +19,7 @@ export async function loginService(
 
     if (!res.ok) {
         const errorData: any = await res.json();
-        throw new Error(errorData.message || "Login failed");
+        throw new Error(errorData.message || t("Login failed"));
     }
 
     return res.json();
@@ -40,7 +41,8 @@ export async function registerService(
     if (!res.ok) {
         const errorData: any = await res.json();
         throw new Error(
-            errorData.message || "Registration failed, if you received a email confirmation you can confirm then");
+            errorData.message || t("Registration failed, if you received a email confirmation you can confirm then")
+        );
     }
 
     return res.json();
@@ -62,7 +64,7 @@ export async function refreshTokenService(
 
     if (!res.ok) {
         const errorData: any = await res.json();
-        throw new Error(errorData.message || "Token refresh failed");
+        throw new Error(errorData.message || t("Token refresh failed"));
     }
 
     return res.json();

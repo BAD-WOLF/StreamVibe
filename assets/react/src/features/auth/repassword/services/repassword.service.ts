@@ -6,6 +6,7 @@ import type {
     RepasswordResetPayload,
     RepasswordResetResponse
 } from "@shared/types/auth";
+import { t } from "i18next";
 
 const VITE_BACKEND_API_DOMAIN: string = import.meta.env.VITE_BACKEND_API_DOMAIN;
 
@@ -21,7 +22,7 @@ export async function requestPasswordReset(
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
     });
-    if (!resp.ok) throw new Error("Erro ao solicitar reset de senha");
+    if (!resp.ok) throw new Error(t("Failed to send reset email"));
     return resp.json();
 }
 
@@ -33,7 +34,7 @@ export async function validateResetToken(
     payload: RepasswordValidatePayload
 ): Promise<RepasswordValidateResponse> {
     const resp: Response = await fetch(`${VITE_BACKEND_API_DOMAIN}/${locale}/api/reset-password/validate/${payload.token}`);
-    if (!resp.ok) throw new Error("Token inválido ou expirado");
+    if (!resp.ok) throw new Error(t("Invalid token or expired"));
     return resp.json();
 }
 
@@ -49,6 +50,6 @@ export async function resetPassword(
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(payload),
     });
-    if (!resp.ok) throw new Error("Erro ao redefinir senha");
+    if (!resp.ok) throw new Error(t("Failed to reset password"));
     return resp.json();
 }

@@ -7,6 +7,7 @@ import {RepasswordMode, type RepasswordModeType} from "@auth/repassword/types/Re
 import type {UseRepasswordReturn} from '@auth/repassword/types/UseRepasswordReturn.ts'
 import {type ReactElement, useEffect} from "react";
 import {useParams} from "react-router-dom";
+import { Trans } from "react-i18next";
 
 export default function Repassword(): ReactElement {
     const { locale: paramLocale, token: paramToken }: Readonly<Partial<{
@@ -37,7 +38,7 @@ export default function Repassword(): ReactElement {
         handleReset,
     }: UseRepasswordReturn = useRepassword((): void => {}, locale ?? "pt_BR", paramToken);
 
-    // dispara validação automaticamente se houver token na URL
+    // triggers validation automatically if there is a token in the URL
     useEffect((): void => {
         if (paramToken) {
             setToken(paramToken);
@@ -45,7 +46,7 @@ export default function Repassword(): ReactElement {
         }
     }, [paramToken]);
 
-    // mapeia cada modo ao seu conteúdo
+    // maps each mode to its content
     const panels: Record<RepasswordModeType, ReactElement | null> = {
         [RepasswordMode.Request]: !isRequested ? (
             <EmailRequestForm
@@ -57,13 +58,15 @@ export default function Repassword(): ReactElement {
             />
         ) : (
             <p className="text-center text-white/80">
-                Se existir conta em <b>{email}</b>, você receberá um email com o link
-                de redefinição.
+                <Trans>
+                    If there is an account with <b>{email}</b>, you will receive an email with the reset link.
+                </Trans>
+
             </p>
         ),
 
         [RepasswordMode.Validate]: isLoading ? (
-            <p className="text-center text-white">Validando token…</p>
+            <p className="text-center text-white"><Trans>Validating token…</Trans></p>
         ) : errors.token ? (
             <p className="text-red-500 text-center">{errors.token}</p>
         ) : null,
@@ -87,7 +90,7 @@ export default function Repassword(): ReactElement {
         ),
     };
 
-    // se finalizado, mostra sucesso; senão, o painel do modo atual
+    // shows success if done, otherwise the current mode panel
     const content: ReactElement | null = isDone ? <RepasswordSuccess/> : panels[mode];
 
     return (

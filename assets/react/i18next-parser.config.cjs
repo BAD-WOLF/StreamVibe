@@ -11,7 +11,7 @@ module.exports = {
     keySeparator: ' ',
     nsSeparator: false,
 
-    useKeysAsDefaultValue: false, // não copia chave crua
+    useKeysAsDefaultValue: false, // don't copy the raw key
     defaultValue: (lng, ns, key) => key.replace(/\./g, ' '),
 
     lexers: {

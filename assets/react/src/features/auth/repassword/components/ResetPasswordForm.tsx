@@ -5,6 +5,7 @@ import * as styles from "@shared/styles/ts/login/LoginPageStyles";
 import type {InputField} from '@shared/types/InputField';
 import type {ReactElement} from 'react';
 import {FaLock} from 'react-icons/fa';
+import { t } from "i18next";
 
 export default function ResetPasswordForm({
     password,
@@ -34,7 +35,7 @@ export default function ResetPasswordForm({
         {
             id: 'password',
             type: showPassword ? 'text' : 'password',
-            placeholder: 'Nova senha',
+            placeholder: t('New password'),
             value: password,
             setter: setPassword,
             icon: <FaLock/>,
@@ -43,7 +44,7 @@ export default function ResetPasswordForm({
         {
             id: 'confirmPassword',
             type: 'confirmPassword',
-            placeholder: 'Confirmar nova senha',
+            placeholder: t('Confirm new password'),
             value: confirmPassword,
             setter: setConfirmPassword,
             icon: <FaLock/>,
@@ -78,7 +79,7 @@ export default function ResetPasswordForm({
                     isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'
                 }`}
             >
-                {isLoading ? 'Redefinindo...' : 'Redefinir senha'}
+                {isLoading ? t('Resetting...') : t('Reset password')}
             </button>
         </form>
     );

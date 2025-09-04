@@ -1,4 +1,4 @@
-// payloads para fluxo de reset
+// payloads for the reset flow
 export type RepasswordRequestPayload = {
     email: string
 };

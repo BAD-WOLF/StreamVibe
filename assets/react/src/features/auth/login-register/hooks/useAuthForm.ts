@@ -4,16 +4,17 @@ import { calculatePasswordStrength } from "@auth/utils/passwordStrength.service.
 import { validateAuth } from "@auth/login-register/utils/validateAuth.ts";
 import type { UseAuthFormReturn } from "@auth/login-register/types/UseAuthFormReturn.ts";
 import type { AuthMode } from "@auth/login-register/types/AuthMode.ts";
+import { t } from "i18next";
 
-// serviços que conversam com a API
+// services that communicate with the API
 import { loginService, registerService } from "@auth/login-register/services/auth.service.ts";
 import type { LoginResponse } from "@shared/types/auth/responses/login-register/login.ts";
 
 /**
- * Hook compartilhado para Login / Register
- * - não altera a assinatura (onSubmit: () => void)
- * - quando login for bem sucedido, armazena token + refresh_token no localStorage (padrão)
- *   — você pode trocar para cookie seguro ou outro storage conforme política do app
+ * Hook shared for Login / Register
+ * - does not change the signature (onSubmit: () => void)
+ * - when login is successful, stores token + refresh_token in localStorage (default)
+ *   — you can switch to secure cookie or other storage according to app policy
  */
 export function useAuthForm(onSubmit: () => void, locale: string, mode: AuthMode): UseAuthFormReturn {
     const [email, setEmail] = useState<string>("");
@@ -24,17 +25,17 @@ export function useAuthForm(onSubmit: () => void, locale: string, mode: AuthMode
     const [strength, setStrength] = useState<number>(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    // calcula força da senha reativamente
+    // calculates password strength reactively
     useEffect(() => {
         setStrength(calculatePasswordStrength(password));
     }, [password]);
 
-    // handler memoizado para evitar re-criação a cada render
+    // memoized handler to avoid re-creation on every render
     const handleSubmit = useCallback(
         async (e: FormEvent<HTMLFormElement>) => {
             e.preventDefault();
 
-            // validação local antes de chamar a API
+            // local validation before calling the API
             const validation = validateAuth(email, password, confirmPassword, mode);
             setErrors(validation);
             if (Object.keys(validation).length !== 0) return;
@@ -42,42 +43,42 @@ export function useAuthForm(onSubmit: () => void, locale: string, mode: AuthMode
             setIsLoading(true);
             try {
                 if (mode === "login") {
-                    // chama o serviço real de login
+                    // calls the real login service
                     const resp: LoginResponse = await loginService(locale, { email, password });
 
-                    // armazenar tokens: por simplicidade usamos localStorage aqui,
-                    // mas em produção privilegie cookie httpOnly+secure ou um storage seguro.
+                    // store tokens: for simplicity we use localStorage here,
+                    // but in production prefer httpOnly+secure cookie or a secure storage.
                     try {
                         localStorage.setItem("token", resp.token);
                         localStorage.setItem("refresh_token", resp.refresh_token);
                     } catch {
-                        // se storage falhar, não impede o fluxo; mas registre se quiser
+                        // if storage fails, does not block flow; but log if you want
                         // console.warn("Failed to persist tokens to storage");
                     }
 
-                    // opcional: configurar um cliente HTTP global (axios/fetch wrapper)
-                    // para enviar Authorization header automatiquement.
-                    // Exemplo comentado:
+                    // optional: configure a global HTTP client (axios/fetch wrapper)
+                    // to automatically send Authorization header.
+                    // Commented example:
                     // apiClient.defaults.headers.common['Authorization'] = `Bearer ${resp.token}`;
 
-                    // notifica consumidor do hook que login foi bem sucedido
+                    // notifies hook consumer that login was successful
                     onSubmit();
                 } else {
-                    // register -> apenas chama o serviço e espera mensagem de sucesso
+                    // register -> just calls the service and waits for success message
                     await registerService(locale, { email, password });
-                    // após registro, você pode:
-                    // - redirecionar para login;
-                    // - automaticamente logar o usuário (se a API retornar token);
-                    // aqui chamamos onSubmit para ação definida pelo consumidor (redirect, toast, etc.)
+                    // after registration, you can:
+                    // - redirect to login;
+                    // - automatically log the user in (if API returns token);
+                    // here we call onSubmit for action defined by consumer (redirect, toast, etc.)
                     onSubmit();
                 }
             } catch (err: unknown) {
-                // uniformiza mensagem de erro
+                // standard error message
                 const message =
                     err instanceof Error
                         ? err.message
-                        : "Erro inesperado. Tente novamente mais tarde.";
-                // setamos erro na chave `form` para mensagens globais
+                        : t("Unexpected error. Please try again later.");
+                // set error on `form` key for global messages
                 setErrors((prev) => ({ ...prev, form: message }));
             } finally {
                 setIsLoading(false);
