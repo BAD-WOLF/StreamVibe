@@ -47,7 +47,7 @@ export default function AuthForm({
         {
             id: "password",
             type: showPassword ? "text" : "password",
-            placeholder: t("Password"),
+            placeholder: t("Tell me your password"),
             value: password,
             setter: setPassword,
             icon: <FaLock />,
