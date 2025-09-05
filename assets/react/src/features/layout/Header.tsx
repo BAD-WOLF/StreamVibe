@@ -1,9 +1,10 @@
 import {motion} from "framer-motion";
 import {type FC, type ReactElement, useEffect, useState} from "react";
+import { t } from 'i18next';
 
 export const Header: FC = (): ReactElement => {
     const [scrolled, setScrolled] = useState(false);
-    const navItems: string[] = ["Home", "Trending", "Categories", "My List"];
+    const navItems: string[] = [t("Home"), t("Trending"), t("Categories"), t("My List")];
     const projectLogoUrl = "https://files.catbox.moe/txrqod.png";
     // Placeholder for user profile initials or image
     const userInitials = "SV";
@@ -28,7 +29,7 @@ export const Header: FC = (): ReactElement => {
             <div className="flex items-center">
                 <img
                     src={projectLogoUrl}
-                    alt="Project Logo"
+                    alt={t("Project Logo")}
                     className="h-10 w-auto object-contain"
                 />
             </div>
@@ -49,7 +50,7 @@ export const Header: FC = (): ReactElement => {
                 {/* Search Input */}
                 <motion.input
                     type="text"
-                    placeholder="Search movies, shows..."
+                    placeholder={t("Search movies, shows...")}
                     className="bg-[#3D3D3D]/50 px-5 py-2 rounded-full backdrop-blur text-sm outline-none border border-[#5B21B6] placeholder-white"
                     whileFocus={{scale: 1.05}}
                     transition={{duration: 0.3}}

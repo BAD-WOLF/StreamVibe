@@ -2,8 +2,14 @@ import type {FC, ReactElement} from "react";
 import {motion} from "framer-motion";
 import {SectionTitle} from "@content/components/SectionTitle";
 import {MovieGrid} from "@content/components/MovieGrid";
+import { Trans } from 'react-i18next';
+import { t } from 'i18next';
 
-const sectionTitles: string[] = ["Trending Now", "New Releases", "Sci‑Fi Realms"];
+const sectionTitles: string[] = [
+    t("Trending Now"), 
+    t("New Releases"), 
+    t("Sci‑Fi Realms")
+];
 
 export const CategoriesSection: FC = (): ReactElement => (
     <section className="px-6 py-20 space-y-24">
@@ -19,11 +25,11 @@ export const CategoriesSection: FC = (): ReactElement => (
                         >
                             <div
                                 className="w-full h-full bg-gradient-to-br from-[#5B21B6]/40 to-[#9B111E]/20 flex items-center justify-center text-center text-white/90">
-                                Movie {idx + 1}
+                                <Trans>Movie</Trans> {idx + 1}
                             </div>
                             <div
                                 className="absolute inset-0 bg-black/30 backdrop-blur-sm opacity-0 hover:opacity-100 transition-all duration-300 flex items-center justify-center text-sm text-white">
-                                View Details
+                                <Trans>View Details</Trans>
                             </div>
                         </motion.div>
                     ))}

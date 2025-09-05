@@ -7,9 +7,11 @@ import type {UseRepasswordReturn} from "@auth/repassword/types/UseRepasswordRetu
 import {validateRepasswordFields} from "@auth/repassword/utils/validateRepassword.ts";
 import {calculatePasswordStrength} from '@auth/utils/passwordStrength.service.ts'
 import {type Dispatch, type FormEvent, type SetStateAction, useCallback, useEffect, useState} from "react";
+import { t } from "i18next";
 
 export function useRepassword(
     onSuccess: () => void,
+    locale: string,
     initialToken?: string
 ): UseRepasswordReturn {
     const hasToken: boolean = Boolean(initialToken);
@@ -33,7 +35,7 @@ export function useRepassword(
         setStrength(calculatePasswordStrength(password));
     }, [password]);
 
-    // limpa erros sempre que você muda o modo
+    // clear errors whenever the mode changes
     useEffect((): void => {
         setErrors({});
     }, [mode]);
@@ -53,15 +55,15 @@ export function useRepassword(
 
             setIsLoading(true);
             try {
-                const resp: RepasswordRequestResponse = await requestPasswordReset({email});
+                const resp: RepasswordRequestResponse = await requestPasswordReset(locale, {email});
                 if (resp.success) {
                     setIsRequested(true);
                 } else {
-                    setErrors({email: "Falha ao enviar email"});
+                    setErrors({email: t("Failed to send email")});
                 }
             } catch (err: unknown) {
                 const message: string =
-                    err instanceof Error ? err.message : "Erro inesperado. Tente novamente.";
+                    err instanceof Error ? err.message : t("Unexpected error. Please try again.");
                 setErrors({email: message});
             } finally {
                 setIsLoading(false);
@@ -74,15 +76,15 @@ export function useRepassword(
     const handleValidate: () => Promise<void> = useCallback(async (): Promise<void> => {
         setIsLoading(true);
         try {
-            const resp: RepasswordValidateResponse = await validateResetToken({token: token});
+            const resp: RepasswordValidateResponse = await validateResetToken(locale, {token: token});
             if (resp.success) {
                 setMode(RepasswordMode.Reset);
             } else {
-                setErrors({token: "Token inválido ou expirado"});
+                setErrors({token: t("Invalid or expired token")});
             }
         } catch (err: unknown) {
             const message: string =
-                err instanceof Error ? err.message : "Erro inesperado. Tente novamente.";
+                err instanceof Error ? err.message : t("Unexpected error. Please try again.");
             setErrors({token: message});
         } finally {
             setIsLoading(false);
@@ -104,12 +106,12 @@ export function useRepassword(
 
             setIsLoading(true);
             try {
-                await resetPassword({token, plainPassword: password});
+                await resetPassword(locale, {token, plainPassword: password});
                 setIsDone(true);
                 onSuccess();
             } catch (err: unknown) {
                 const message: string =
-                    err instanceof Error ? err.message : "Erro inesperado. Tente novamente.";
+                    err instanceof Error ? err.message : t("Unexpected error. Please try again.");
                 setErrors({password: message});
             } finally {
                 setIsLoading(false);
