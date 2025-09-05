@@ -4,21 +4,26 @@ import AuthForm from "@auth/login-register/components/AuthForm.tsx";
 import AuthSuccess from "@auth/login-register/components/AuthSuccess.tsx";
 import SocialLoginButtons from "@auth/login-register/components/SocialLoginButtons.tsx";
 import { AuthMode } from "@auth/login-register/types/AuthMode.ts";
+import {useParams} from 'react-router-dom';
+import { t } from "i18next";
 
 export default function AuthPage(): ReactElement {
     const [getAuthMode, setAuthMode]: (AuthMode | Dispatch<SetStateAction<AuthMode>>)[] = useState<AuthMode>(AuthMode.Login);
     const [isDone, setIsDone]: (boolean | Dispatch<SetStateAction<boolean>>)[] = useState(false);
 
+    const { _locale: paramLocale }: Readonly<Partial<{ _locale?: string | undefined }>> = useParams<{ _locale?: string }>();
+    const locale: string = paramLocale ?? "pt_BR";
+
     const handleSuccess: () => void = (): void => {
         setIsDone(true);
         if(getAuthMode !== AuthMode.Register) {
             setTimeout((): void => {
-                window.location.href = "/home";
+                window.location.href = `/${locale}/home`;
             }, 2000);
             return;
         }
         setTimeout((): void => {
-            window.location.href = "/auth";
+            window.location.href = `/${locale}/auth`;
         }, 2000);
     };
 
@@ -32,18 +37,18 @@ export default function AuthPage(): ReactElement {
                     <AuthSuccess authMode={getAuthMode} />
                 ) : (
                     <>
-                        <AuthForm onSubmit={handleSuccess} mode={getAuthMode} />
+                        <AuthForm onSubmit={handleSuccess} locale={locale} mode={getAuthMode} />
                         <div className="my-4 border-t border-white/10" />
                         <SocialLoginButtons />
                         <p className="text-sm text-center text-white/70 mt-4">
-                            {getAuthMode === AuthMode.Login ? "Ainda não tem uma conta?" : "Já tem uma conta?"}{" "}
+                            {getAuthMode === AuthMode.Login ? t("Doesn't have an account?") : t("Already have an account?")}{" "}
                             <button
                                 className="text-cyan-400 underline"
                                 onClick={(): void =>
                                     setAuthMode(getAuthMode === AuthMode.Login ? AuthMode.Register : AuthMode.Login)
                                 }
                             >
-                                {getAuthMode === AuthMode.Login ? "Crie uma agora" : "Entrar"}
+                                {getAuthMode === AuthMode.Login ? t("Sign up") : t("Log in")}
                             </button>
                         </p>
                     </>

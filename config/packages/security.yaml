@@ -15,10 +15,10 @@ security:
             security: false
 
         login:
-            pattern: ^/api/login
+            pattern: "^/api/login"
             stateless: true
             json_login:
-                check_path: /api/login_check
+                check_path: "/api/login_check"
                 username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
@@ -26,13 +26,13 @@ security:
             user_checker: App\Security\UserCheckerAuthLogin
 
         api:
-            pattern: ^/api
+            pattern: "^/{_locale}/api"
             stateless: true
             entry_point: jwt
             provider: app_user_provider
             jwt: ~
             refresh_jwt:
-                check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
+                check_path: "/{_locale}/api/token/refresh" # or, you may use the `api_refresh_token` route name
                 # or if you have more than one user provider
                 # provider: user_provider_name
 
@@ -46,8 +46,8 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api/(reset-password|register|verify|doc), roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: "^/{_locale}/api/(reset-password|register|verify|doc|login_check)", roles: PUBLIC_ACCESS }
+        - { path: "^/{_locale}/api", roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

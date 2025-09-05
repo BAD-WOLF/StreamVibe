@@ -6,6 +6,6 @@ use ApiPlatform\Metadata\ApiProperty;
 
 final class ResetPasswordOutput
 {
-    #[ApiProperty(description: 'Status da operação', example: 'password_changed')]
+    #[ApiProperty(description: 'Operation status', example: 'password_changed')]
     public private(set) string $status;
 }

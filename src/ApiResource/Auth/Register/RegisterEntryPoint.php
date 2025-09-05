@@ -4,14 +4,30 @@ namespace App\ApiResource\Auth\Register;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Post;
-use App\Controller\Auth\Register\RegistrationController;
+use App\ApiResource\Auth\Register\Model\RegisterUserInput;
+use App\ApiResource\Auth\Register\Model\RegisterUserResponse;
+use ApiPlatform\OpenApi\Model\Operation;
+use ApiPlatform\OpenApi\Model\Parameter;
 
 #[ApiResource(
     operations: [
         new Post(
             uriTemplate: '/register',
             status: 201,
-            controller: RegistrationController::class,
+            controller: \App\Controller\API\Auth\Register\RegistrationController::class,
+            openapi: new Operation(
+                parameters: [
+                    (new Parameter(
+                        name: '_locale',
+                        in: 'path',
+                        required: true,
+                        schema: [
+                            'type' => 'string',
+                            'default' => 'pt_BR',
+                        ]
+                    )),
+                ]
+            ),
             input: RegisterUserInput::class,
             output: RegisterUserResponse::class,
             name: 'post_register',
@@ -20,7 +36,7 @@ use App\Controller\Auth\Register\RegistrationController;
 )]
 final class RegisterEntryPoint
 {
-    // Classe vazia porque "Registration" é apenas um agrupador lógico.
-    // Sua entrada e saída são definidas separadamente.
+    // Empty class, because "Register" is just a logical grouping.
+    // Its input and output are defined separately.
 }
 

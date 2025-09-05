@@ -3,6 +3,7 @@
 import type {Icon} from "@shared/types/Icon.ts";
 import type {ReactElement} from "react";
 import {FaGithub, FaGoogle} from "react-icons/fa";
+import { Trans } from 'react-i18next';
 
 export default function SocialLoginButtons(): ReactElement {
     const providers: Array<Icon> = [
@@ -19,7 +20,7 @@ export default function SocialLoginButtons(): ReactElement {
                     className={`flex items-center justify-center gap-3 px-4 py-2 rounded-md ${color} text-white shadow-md hover:opacity-90 transition`}
                 >
                     {icon}
-                    Entrar com {name}
+                    <Trans>Log in with</Trans> {name}
                 </button>
             ))}
         </div>
