@@ -64,7 +64,7 @@ async function updateLocalesFile(newLocales) {
 
 function runI18nextParser() {
     const cmd = "npx";
-    const args = ["i18next", "--config", "i18next-parser.config.cjs"];
+    const args = ["i18next-parser", "--config", "i18next-parser.config.cjs"];
     const res = spawnSync(cmd, args, {stdio: "inherit", shell: true});
     return res.status ?? 1;
 }
