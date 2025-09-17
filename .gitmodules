@@ -1,3 +1,6 @@
 [submodule "StreamVibe.wiki"]
 	path = StreamVibe.wiki
 	url = https://github.com/BAD-WOLF/StreamVibe.wiki.git
+[submodule "assets/react"]
+	path = assets/react
+	url = git@github.com:BAD-WOLF/react-front-streamvibe.git
