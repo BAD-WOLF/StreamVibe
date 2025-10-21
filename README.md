@@ -9,3 +9,5 @@ It’s a project that speaks to those who’ve been around the dev world for a w
 If you enjoy well-organized backend, clear structure and a project that feels good to maintain, take a look with care, it was made with that in mind
 
 ---
+
+See the wiki in [StreamVibe.wiki/](https://github.com/BAD-WOLF/StreamVibe/wiki) for architecture, structure, features, setup, and development guide.
