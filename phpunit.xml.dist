@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         displayDetailsOnTestsThatTriggerDeprecations="true"
+         displayDetailsOnTestsThatTriggerErrors="true"
+         displayDetailsOnTestsThatTriggerNotices="true"
+         displayDetailsOnTestsThatTriggerWarnings="true"
+         failOnDeprecation="false"
+         failOnEmptyTestSuite="false"
+         failOnIncomplete="false"
+         failOnNotice="false"
+         failOnRisky="false"
+         failOnSkipped="false"
+         failOnWarning="false">
+
+    <!-- Test suites configuration -->
+    <testsuites>
+
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+
+        <testsuite name="Integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+
+        <testsuite name="Application">
+            <directory>tests/Application</directory>
+        </testsuite>
+
+    </testsuites>
+
+    <!-- Source code for coverage -->
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+
+        <exclude>
+            <directory>src/DependencyInjection</directory>
+            <directory>src/Domain/*/Entity</directory>
+            <file>src/Kernel.php</file>
+        </exclude>
+    </source>
+
+    <!-- PHP configuration -->
+    <php>
+        <!-- Environment variables for tests -->
+        <env name="APP_ENV" value="test"/>
+        <env name="APP_DEBUG" value="1"/>
+        <env name="KERNEL_CLASS" value="App\Kernel"/>
+
+        <!-- Database configuration for tests -->
+        <env name="DATABASE_URL" value="postgresql://app:Gk7xRz92wM@database:5432/app_test?serverVersion=16&amp;charset=utf8"/>
+
+        <!-- Disable Symfony deprecations during tests -->
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+
+        <!-- Mailer configuration for tests -->
+        <env name="MAILER_DSN" value="smtp://mailer:1025"/>
+
+        <!-- API Keys for external services (use test/mock values) -->
+        <env name="TMDB_TOKEN" value="test_token_for_integration_tests"/>
+
+        <!-- JWT configuration -->
+        <env name="JWT_SECRET_KEY" value="config/jwt/private.pem"/>
+        <env name="JWT_PUBLIC_KEY" value="config/jwt/public.pem"/>
+        <env name="JWT_PASSPHRASE" value="test"/>
+
+        <!-- Other test environment variables -->
+        <env name="CORS_ALLOW_ORIGIN" value="*"/>
+    </php>
+
+    <!-- Coverage reports configuration -->
+    <coverage>
+        <report>
+            <html outputDirectory="var/coverage/html" lowUpperBound="50" highLowerBound="80"/>
+            <clover outputFile="var/coverage/clover.xml"/>
+            <xml outputDirectory="var/coverage/xml"/>
+        </report>
+    </coverage>
+
+    <!-- Logging configuration -->
+    <logging>
+        <junit outputFile="var/log/junit.xml"/>
+    </logging>
+
+    <!-- Extensions -->
+    <extensions>
+        <!-- DAMA Doctrine Test Bundle for database transaction isolation -->
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
+</phpunit>

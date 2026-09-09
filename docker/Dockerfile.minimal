@@ -1,0 +1,70 @@
+FROM php:8.4-cli
+
+WORKDIR /app
+
+# Install only essential dependencies
+RUN apt-get update \
+    && apt-get install -y \
+        curl \
+        libpq-dev \
+        libicu-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        unzip \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql intl gd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Symfony CLI
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
+    && apt-get update \
+    && apt-get install -y symfony-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy patches
+COPY patches/ patches/
+
+# Copy Composer files
+COPY composer.json composer.lock ./
+
+# Resolve/update composer.lock without installing yet
+# TODO: This needs to be changed as soon as possible; an update is a maintenance or development operation, not something that should normally happen with every build.This should be handled by Renovate or Dependabot.
+RUN composer update \
+    --with-all-dependencies \
+    --bump-after-update \
+    --no-interaction \
+    --no-scripts \
+    --no-install
+
+# Install dependencies using the newly generated lock file
+RUN composer install \
+    --no-interaction \
+    --no-scripts \
+    --optimize-autoloader
+
+# Copy source code
+COPY . .
+
+# Install Symfony assets
+RUN symfony console assets:install
+
+# Regenerate optimized autoloader
+RUN composer dump-autoload --optimize
+
+# Fix script (entrypoint) permissions
+RUN chmod +x /app/docker/scripts/entrypoint.sh
+
+EXPOSE 8000
+
+RUN /app/bin/console secrets:decrypt
+
+# Define Entrypoint
+ENTRYPOINT ["/app/docker/scripts/entrypoint.sh"]
+
+# Start Symfony server
+CMD ["symfony", "serve:start", "--allow-all-ip", "--port=8000"]

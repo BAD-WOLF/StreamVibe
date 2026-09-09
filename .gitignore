@@ -12,6 +12,7 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
 ###> symfony/asset-mapper ###
 /public/assets/
 /assets/vendor/
@@ -26,3 +27,7 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+###> docker bind-mount ###
+/docker/db/data/
+###< docker bind-mount ###

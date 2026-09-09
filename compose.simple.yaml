@@ -1,0 +1,78 @@
+services:
+  ###> doctrine/doctrine-bundle ###
+  database:
+    container_name: streamvibe_psql_database
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Gk7xRz92wM}
+      POSTGRES_USER: ${POSTGRES_USER:-app}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-d",
+          "${POSTGRES_DB:-app}",
+          "-U",
+          "${POSTGRES_USER:-app}",
+        ]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_volume:/var/lib/postgresql/data:rw
+    expose:
+      - "5432"
+    networks:
+      - streamvibe
+  ###< doctrine/doctrine-bundle ###
+
+  app:
+    container_name: streamvibe_app
+    image: thecodingmachine/php:8.4-v4-cli
+    environment:
+      APP_ENV: dev
+      DATABASE_URL: postgresql://app:Gk7xRz92wM@database:5432/app?serverVersion=16&charset=utf8
+      TMDB_TOKEN: ${TMDB_TOKEN:-}
+      APP_SECRET: ${APP_SECRET:-6725b7a7b974f79f19a157b9a4e82ff3}
+      PHP_EXTENSION_PGSQL: 1
+      PHP_EXTENSION_PDO_PGSQL: 1
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    ports:
+      - "8000:8000"
+    networks:
+      - streamvibe
+    depends_on:
+      database:
+        condition: service_healthy
+    command: >
+      bash -c "
+        composer install --no-interaction &&
+        php -S 0.0.0.0:8000 -t public
+      "
+
+  ###> symfony/mailer ###
+  mailer:
+    container_name: mailer
+    image: axllent/mailpit
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "0"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "0"
+    expose:
+      - "1025"
+    networks:
+      - streamvibe
+  ###< symfony/mailer ###
+
+volumes:
+  ###> doctrine/doctrine-bundle ###
+  database_volume:
+    name: streamvibe_database_volume
+  ###< doctrine/doctrine-bundle ###
+
+networks:
+  streamvibe:
+    name: streamvibe_network

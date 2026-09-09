@@ -1,0 +1,47 @@
+services:
+  app:
+    container_name: streamvibe_app_dev
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.test
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      DATABASE_URL: postgresql://app:Gk7xRz92wM@database:5432/app?serverVersion=16&charset=utf8
+      DATABASE_TEST_URL: postgresql://app:Gk7xRz92wM@database:5432/app_test?serverVersion=16&charset=utf8
+      TMDB_TOKEN: ${TMDB_TOKEN:-test_token}
+      APP_SECRET: ${APP_SECRET:-6725b7a7b974f79f19a157b9a4e82ff3}
+      XDEBUG_MODE: coverage,debug
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./src:/app/src:rw
+      - ./config:/app/config:ro
+      - ./phpunit.xml.dist:/app/phpunit.xml.dist:ro
+      - ./var:/app/var:rw
+    ports:
+      - "8000:8000"
+      - "9004:9003" # Xdebug port
+    networks:
+      - streamvibe
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_PASSWORD: Gk7xRz92wM
+      POSTGRES_USER: app
+    ports:
+      - "5432:5432"
+    command: >
+      postgres -c shared_preload_libraries=pg_stat_statements
+               -c pg_stat_statements.max=10000
+               -c pg_stat_statements.track=all
+               -c log_statement=all
+               -c log_duration=on
+
+  mailer:
+    ports:
+      - "1025:1025"
+      - "8025:8025"

@@ -1,0 +1,61 @@
+doctrine:
+  dbal:
+    # Use PostgreSQL test database
+    dbname_suffix: "_test"
+
+    # Enable logging for debugging test failures
+    logging: true
+    profiling: true
+    profiling_collect_backtrace: true
+
+  orm:
+
+    # Validate XML mapping
+    validate_xml_mapping: true
+
+    # Use underscore naming strategy
+    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+
+    # Auto mapping enabled
+    auto_mapping: true
+
+    # Entity mappings for test environment
+    mappings:
+      User:
+        type: attribute
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Domain/User/Entity"
+        prefix: 'App\Domain\User\Entity'
+        alias: User
+        mapping: true
+
+      Authentication:
+        type: attribute
+        is_bundle: false
+        dir: "%kernel.project_dir%/src/Domain/Authentication/Entity"
+        prefix: 'App\Domain\Authentication\Entity'
+        alias: Authentication
+        mapping: true
+
+    # Disable query cache for tests
+    query_cache_driver:
+      type: null
+
+    # Disable result cache for tests
+    result_cache_driver:
+      type: null
+
+    # Default repository class
+    default_repository_class: Doctrine\ORM\EntityRepository
+
+    # Quote strategy
+    quote_strategy: doctrine.orm.quote_strategy.default
+
+    # Enable strict mode for better test validation
+    dql:
+      string_functions:
+        # Add any custom DQL functions if needed
+      numeric_functions:
+        # Add any custom numeric functions if needed
+      datetime_functions:
+        # Add any custom datetime functions if needed

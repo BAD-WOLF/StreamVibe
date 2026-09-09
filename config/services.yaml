@@ -1,24 +1,59 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  App\:
+    resource: "../src/"
+    exclude:
+      - "../src/DependencyInjection/"
+      - "../src/Domain/*/Entity/"
+      - "../src/Kernel.php"
+
+  # Domain repositories interface bindings
+  App\Domain\User\Repository\UserRepositoryInterface:
+    class: App\Infrastructure\Persistence\Repository\UserRepository
+
+  # Domain interface bindings
+  App\Domain\Authentication\Repository\ResetPasswordSolicitationRepositoryInterface:
+    class: App\Infrastructure\Persistence\Repository\ResetPasswordSolicitationRepository
+
+  # SymfonyCasts ResetPassword bundle interface binding
+  SymfonyCasts\Bundle\ResetPassword\Persistence\ResetPasswordRequestRepositoryInterface:
+    alias: App\Infrastructure\Persistence\Repository\ResetPasswordSolicitationRepository
+
+  # TMDB API Service configuration
+  App\Infrastructure\ExternalServices\TmdbApiService:
+    arguments:
+      $tmdbToken: "%env(TMDB_TOKEN)%"
+
+  # Exception Listener configuration
+  App\Infrastructure\Http\EventListener\ExceptionListener:
+    arguments:
+      $debug: "%kernel.debug%"
+    tags:
+      - name: kernel.event_listener
+        event: kernel.exception
+        method: onKernelException
+
+  # Output Mapper Registry configuration (mappers auto-discovered via attributes)
+  App\Infrastructure\ApiPlatform\Shared\Mapper\OutputMapperRegistry:
+    arguments:
+      $mappers: !tagged_iterator "app.output_mapper"
+
+  # add more service definitions when explicit configuration is needed
+  # please note that last definitions always *replace* previous ones

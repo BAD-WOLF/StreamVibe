@@ -1,11 +1,16 @@
 ###> IDEs and text editors ###
 /.idea/
 /.vscode/
+/.phpactor.json
+*.swp
+*.swo
+*~
 ###< IDEs and text editors ###
 
 ###> git ###
 /.gitignore
-/.github
+/.gitattributes
+/.github/
 /.git/
 ###< git ###
 
@@ -35,3 +40,44 @@ yarn-error.log
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+###> development files ###
+/docker/db/data/
+/docker/ssl/
+*.log
+*.pid
+*.seed
+*.pid.lock
+/tmp/
+/.env.*.local
+/.env.test.local
+/.env.local
+README.md
+CHANGELOG.md
+LICENSE
+CODE_OF_CONDUCT.md
+CLEAN_ARCHITECTURE.md
+DOCKER_DEPLOYMENT_SUCCESS.md
+*.md
+.DS_Store
+Thumbs.db
+###< development files ###
+
+###> build and deployment ###
+/docker-compose*.yml
+/compose*.yaml
+/compose*.yml
+/.platform/
+/.platform.app.yaml
+/qodana.yaml
+/run-tests.sh
+docker-health-check.sh
+pre-build-check.sh
+###< build and deployment ###
+
+###> patches and temporary ###
+*.orig
+*.rej
+/.phpunit.result.cache
+/coverage/
+###< patches and temporary ###

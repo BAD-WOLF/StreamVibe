@@ -2,28 +2,41 @@ FROM php:8.4-cli AS app
 
 WORKDIR /app
 
-# Instala dependências de SO básicas
-RUN apt-get update && apt-get install -y \
-      libpq-dev dos2unix nmap neovim unzip fish \
-  && docker-php-ext-install pdo pdo_pgsql \
-  && rm -rf /var/lib/apt/lists/*
+# Install system dependencies in separate steps to avoid timeouts
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    dos2unix \
+    unzip \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Instala symfony-cli (pode invalidar cache se confiar pouco na URL; mas normalmente OK)
+# Install PHP extensions
+RUN docker-php-ext-install pdo pdo_pgsql intl
+
+# Install Symfony CLI
 RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
-  && apt-get update && apt-get install -y symfony-cli \
-  && rm -rf /var/lib/apt/lists/*
+    && apt-get update && apt-get install -y --no-install-recommends symfony-cli \
+    && rm -rf /var/lib/apt/lists/*
 
-# Trazer o Composer para dentro da imagem
+# Copy composer from official image
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copia all código
+# Copy patches to be aplay
+COPY patches/ patches/
+
+# Copy composer files first for better caching
+COPY composer.json composer.lock ./
+
+# Install dependencies
+RUN composer install --optimize-autoloader --no-interaction
+
+# Copy application code
 COPY . .
 
-RUN composer install
+# Fix script permissions
+RUN chmod +x /app/docker/scripts/entrypoint.sh
 
-# Ajustes de scripts
-RUN dos2unix /app/docker/scripts/entrypoint.sh
-RUN chmod 751 /app/docker/scripts/entrypoint.sh
+EXPOSE 8000
 
 ENTRYPOINT ["/app/docker/scripts/entrypoint.sh"]
-CMD ["symfony", "serve:start", "--allow-all-ip"]
+CMD ["symfony", "serve:start", "--allow-all-ip", "--port=8000"]

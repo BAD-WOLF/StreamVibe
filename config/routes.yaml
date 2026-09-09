@@ -1,7 +1,7 @@
 controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
-    requirements:
-      _locale: en|pt_BR|es
+  resource:
+    path: ../src/Infrastructure/Http/Controller/
+    namespace: App\Infrastructure\Http\Controller
+  type: attribute
+  requirements:
+    _locale: en|pt_BR|es

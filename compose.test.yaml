@@ -1,0 +1,19 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.test
+    environment:
+      APP_ENV: test
+      XDEBUG_MODE: coverage
+    volumes:
+      - ./tests:/app/tests:rw
+  database:
+    image: postgres:16-alpine
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: Gk7xRz92wM
+      POSTGRES_DB: app_test
+

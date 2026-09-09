@@ -1,0 +1,163 @@
+services:
+  ###> doctrine/doctrine-bundle ###
+  database:
+    container_name: streamvibe_psql_database_prod
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-streamvibe_prod}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-}
+      POSTGRES_USER: ${POSTGRES_USER:-streamvibe}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-d",
+          "${POSTGRES_DB:-streamvibe_prod}",
+          "-U",
+          "${POSTGRES_USER:-streamvibe}",
+        ]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_volume:/var/lib/postgresql/data:rw
+    expose:
+      - "5432"
+    networks:
+      - streamvibe
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+  ###< doctrine/doctrine-bundle ###
+
+  app:
+    container_name: streamvibe_app_prod
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: "0"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-streamvibe}:${POSTGRES_PASSWORD}@database:5432/${POSTGRES_DB:-streamvibe_prod}?serverVersion=16&charset=utf8
+      MAILER_DSN: ${MAILER_DSN:-smtp://localhost:1025}
+      TMDB_TOKEN: ${TMDB_TOKEN:-}
+      APP_SECRET: ${APP_SECRET:-}
+      # Security headers
+      TRUSTED_PROXIES: ${TRUSTED_PROXIES:-}
+      TRUSTED_HOSTS: ${TRUSTED_HOSTS:-localhost}
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-warning}
+      # Cache configuration
+      CACHE_DSN: ${CACHE_DSN:-filesystem}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        COMPOSER_NO_DEV: "1"
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    networks:
+      - streamvibe
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/images/sizes"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  ###> symfony/mailer ###
+  mailer:
+    container_name: streamvibe_mailer_prod
+    image: axllent/mailpit
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: "0"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "0"
+      MP_MAX_MESSAGES: ${MAILER_MAX_MESSAGES:-1000}
+      MP_DATABASE: ${MAILER_DATABASE:-/data/mailpit.db}
+      MP_SMTP_AUTH_USERNAME: ${MAILER_AUTH_USERNAME:-}
+      MP_SMTP_AUTH_PASSWORD: ${MAILER_AUTH_PASSWORD:-}
+    expose:
+      - "1025"
+    networks:
+      - streamvibe
+    volumes:
+      - mailer_data:/data
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.2'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+  ###< symfony/mailer ###
+
+  ###> reverse-proxy ###
+  nginx:
+    container_name: streamvibe_nginx_prod
+    image: nginx:alpine
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./public:/app/public:ro
+      - nginx_logs:/var/log/nginx
+      # SSL certificates (uncomment in production)
+      # - ./docker/ssl:/etc/nginx/ssl:ro
+    networks:
+      - streamvibe
+    depends_on:
+      - app
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.3'
+        reservations:
+          memory: 64M
+          cpus: '0.1'
+  ###< reverse-proxy ###
+
+volumes:
+  ###> doctrine/doctrine-bundle ###
+  database_volume:
+    name: streamvibe_database_volume_prod
+    driver: local
+  ###< doctrine/doctrine-bundle ###
+
+  ###> symfony/mailer ###
+  mailer_data:
+    name: streamvibe_mailer_data_prod
+    driver: local
+  ###< symfony/mailer ###
+
+  ###> nginx logs ###
+  nginx_logs:
+    name: streamvibe_nginx_logs_prod
+    driver: local
+  ###< nginx logs ###
+
+networks:
+  streamvibe:
+    name: streamvibe_network_prod
+    driver: bridge

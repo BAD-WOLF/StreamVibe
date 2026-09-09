@@ -1,65 +1,70 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
-    password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
-    providers:
-        # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+  # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-        login:
-            pattern: "^/api/login"
-            stateless: true
-            json_login:
-                check_path: "/api/login_check"
-                username_path: email
-                password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            user_checker: App\Security\UserCheckerAuthLogin
+  # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+  providers:
+    # used to reload user from session & other features (e.g. switch_user)
+    app_user_provider:
+      entity:
+        class: App\Domain\User\Entity\User
+        property: email
 
-        api:
-            pattern: "^/{_locale}/api"
-            stateless: true
-            entry_point: jwt
-            provider: app_user_provider
-            jwt: ~
-            refresh_jwt:
-                check_path: "/{_locale}/api/token/refresh" # or, you may use the `api_refresh_token` route name
-                # or if you have more than one user provider
-                # provider: user_provider_name
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js|assets|build)/
+      security: false
 
-        main:
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
+    login:
+      pattern: '^/api/login'
+      stateless: true
+      json_login:
+        check_path: '/api/login_check'
+        username_path: email
+        password_path: password
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+      user_checker: App\Infrastructure\Security\UserCheckerAuthLogin
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+    api:
+      pattern: '^/[a-z]{2}(_[A-Z]{2})?/api'
+      stateless: true
+      entry_point: jwt
+      provider: app_user_provider
+      jwt: ~
+      refresh_jwt:
+        check_path: '/api/token/refresh'
+        # or if you have more than one user provider
+        # provider: user_provider_name
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
-    access_control:
-        - { path: "^/{_locale}/api/(reset-password|register|verify|doc|login_check)", roles: PUBLIC_ACCESS }
-        - { path: "^/{_locale}/api", roles: IS_AUTHENTICATED_FULLY }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+    main:
+      stateless: true
+      lazy: true
+    # activate different ways to authenticate
+    # https://symfony.com/doc/current/security.html#the-firewall
+
+    # https://symfony.com/doc/current/security/impersonating_user.html
+    # switch_user: true
+
+  # Easy way to control access for large sections of your site
+  # Note: Only the *first* access control that matches will be used
+  access_control:
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/(reset-password$|register|verify|doc)', roles: PUBLIC_ACCESS }
+    - { path: '^/api/login_check', roles: PUBLIC_ACCESS }
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api', roles: IS_AUTHENTICATED_FULLY }
+    # - { path: ^/admin, roles: ROLE_ADMIN }
+    # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
-    security:
-        password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
-            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-                algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+  security:
+    password_hashers:
+      # By default, password hashers are resource intensive and take time. This is
+      # important to generate secure password hashes. In tests however, secure hashes
+      # are not important, waste resources and increase test times. The following
+      # reduces the work factor to the lowest possible values.
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+        algorithm: auto
+        cost: 4 # Lowest possible value for bcrypt
+        time_cost: 3 # Lowest possible value for argon
+        memory_cost: 10 # Lowest possible value for argon
