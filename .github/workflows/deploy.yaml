@@ -13,7 +13,7 @@ jobs:
     env:
       PLATFORMSH_CLI_TOKEN: ${{ secrets.PLATFORM_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
