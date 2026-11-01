@@ -51,6 +51,11 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.4'
+          # NOTA (out/2026): extensões explícitas — o composer.json exige intl
+          # e gd, e o Postgres do job precisa do pdo_pgsql. Sem cobertura no
+          # CI (mais rápido).
+          extensions: intl, gd, pdo_pgsql, sodium, zip
+          coverage: none
 
       - name: Copy .env.test.local
         run: |
@@ -69,11 +74,29 @@ jobs:
         run: |
           composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
+      # NOTA (out/2026): saiu o "dotenv:show --env=test >> $GITHUB_ENV". A
+      # saída do comando tem título e resumo ("Environment Variables",
+      # "[OK] Found ..."), que não são linhas NOME=valor, e o GitHub recusa o
+      # arquivo — o passo falhava ali. Também não é preciso: o bin/console e
+      # o PHPUnit leem .env, .env.test e .env.test.local sozinhos (o
+      # DATABASE_URL do .env.test aponta para o Postgres deste job).
       - name: Create Database
         run: |
           php bin/console secrets:decrypt-to-local --env=test --force
-          php bin/console dotenv:show --env=test >> $GITHUB_ENV
           php bin/console doctrine:migrations:migrate --env=test --no-interaction
 
-      # - name: Execute tests (Unit and Feature tests) via PHPUnit
-        # run: vendor/bin/phpunit
+      # NOTA (out/2026): ligado, uma suíte por passo, como no run-tests.sh. Sem
+      # --testsuite o PHPUnit carrega todas as suítes do phpunit.dist.xml, e
+      # All/Safe repetem arquivos das outras (um aviso por arquivo repetido).
+      # --no-coverage: o phpunit.dist.xml pede relatórios de cobertura e o CI
+      # roda sem driver (coverage: none), o que seria outro aviso. Os testes
+      # que falam com o TMDB usam o token do cofre de teste e precisam de
+      # internet (o runner tem).
+      - name: Unit tests
+        run: vendor/bin/phpunit --testsuite=Unit --no-coverage
+
+      - name: Integration tests
+        run: vendor/bin/phpunit --testsuite=Integration --no-coverage
+
+      - name: Application tests
+        run: vendor/bin/phpunit --testsuite=Application --no-coverage

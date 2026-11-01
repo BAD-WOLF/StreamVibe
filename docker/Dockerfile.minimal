@@ -1,0 +1,81 @@
+FROM php:8.4-cli
+
+WORKDIR /app
+
+# Install only essential dependencies
+RUN apt-get update \
+    && apt-get install -y \
+        curl \
+        libpq-dev \
+        libicu-dev \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        unzip \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql intl gd \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Symfony CLI
+RUN curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
+    && apt-get update \
+    && apt-get install -y symfony-cli \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Dev dependencies by default; compose.override.yaml passes COMPOSER_NO_DEV
+# explicitly (Composer reads it as the --no-dev flag)
+ARG COMPOSER_NO_DEV=0
+
+# Copy patches
+COPY patches/ patches/
+
+# Copy Composer files
+COPY composer.json composer.lock symfony.lock ./
+
+# NOTA (out/2026): saiu o "composer update --with-all-dependencies
+# --bump-after-update" que rodava antes deste install (o TODO daqui já
+# pedia isso). Cada build resolvia versões novas e reescrevia o
+# composer.json/composer.lock só dentro da imagem, então o contêiner de dev
+# rodava pacotes diferentes dos travados no git — e dos que os testes e o
+# CI usam. Agora a imagem instala exatamente o composer.lock; as
+# atualizações chegam por PR do Dependabot (.github/dependabot.yml).
+# Install dependencies from the lock file
+RUN composer install \
+    --no-interaction \
+    --no-scripts \
+    --optimize-autoloader
+
+# Copy source code
+COPY . .
+
+# Install Symfony assets
+RUN symfony console assets:install
+
+# Regenerate optimized autoloader
+RUN composer dump-autoload --optimize
+
+# Fix script (entrypoint) permissions
+RUN chmod +x /app/docker/scripts/entrypoint.sh
+
+EXPOSE 8000
+
+# NOTA (out/2026): era "/app/bin/console secrets:decrypt". Esse comando não
+# existe: o Console aceitava a abreviação e rodava o
+# secrets:decrypt-to-local, no ambiente dev (o APP_ENV do .env, já que o
+# build não define outro) — grava os segredos do cofre de dev num
+# .env.dev.local dentro da imagem. Agora com o nome completo, e via
+# "php bin/console": no git o bin/console não tem permissão de execução, e
+# chamá-lo direto falha num clone em Linux. Em tempo de execução o Symfony
+# lê o cofre direto (a chave de dev está no git), então este passo é
+# redundante; ficou para não mudar o comportamento.
+RUN php bin/console secrets:decrypt-to-local
+
+# Define Entrypoint
+ENTRYPOINT ["/app/docker/scripts/entrypoint.sh"]
+
+# Start Symfony server
+CMD ["symfony", "serve:start", "--allow-all-ip", "--port=8000"]

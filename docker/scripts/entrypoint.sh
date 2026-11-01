@@ -1,44 +1,30 @@
-#!/usr/bin/env bash
+#!/bin/bash
+set -e
 
-# Função para atualizar variável de ambiente
-update_env_var() {
-    VAR_NAME=$1
-    NEW_HOST=$2
+echo "🚀 Starting StreamVibe..."
 
-    VAR_VALUE=$(symfony console dotenv:show | grep "^${VAR_NAME}=" | cut -d '=' -f2-)
+# NOTA (out/2026): as chaves JWT não vêm mais dentro da imagem
+# (.dockerignore). Em dev e teste elas chegam pela montagem de ./config; em
+# produção ficam no volume jwt_keys (compose.prod.yaml). Com
+# --skip-if-exists o comando não mexe num par que já existe: só gera chaves
+# na primeira subida de produção ou num clone novo sem config/jwt/*.pem
+# (com a JWT_PASSPHRASE do ambiente).
+echo "🔑 Checking JWT keys..."
+php bin/console lexik:jwt:generate-keypair --skip-if-exists
 
-    if [ -n "$VAR_VALUE" ]; then
-        if [[ "$VAR_VALUE" == *"localhost:"* || "$VAR_VALUE" == *"127.0.0.1:"* ]]; then
-            NEW_VAR_VALUE=$(echo "$VAR_VALUE" | sed -E "s/(localhost|127\.0\.0\.1)/$NEW_HOST/")
+echo "🔄 Running database migrations..."
+php bin/console doctrine:migrations:migrate --no-interaction
 
-            sed -i "/^export ${VAR_NAME}=/d" ~/.bashrc
-            echo "export ${VAR_NAME}=\"$NEW_VAR_VALUE\"" >> ~/.bashrc
-            source ~/.bashrc
+echo "🧹 Clearing and warming cache..."
+php bin/console cache:clear
 
-            echo "${VAR_NAME} atualizado para:"
-            echo "$NEW_VAR_VALUE"
-        fi
-    else
-        echo "Variável ${VAR_NAME} não encontrada."
-    fi
-}
+# NOTA (out/2026): o PHP-FPM da imagem de produção roda os workers como
+# www-data, e o cache acima foi gerado como root. Sem isto os workers não
+# conseguem escrever em var/ (cache pools, logs). O servidor do Symfony CLI
+# (dev e teste) roda como root e não precisa.
+if [ "$1" = "php-fpm" ]; then
+    chown -R www-data:www-data var
+fi
 
-# Define variáveis e hosts
-VARIAVEIS=(
-  "DATABASE_URL:database"
-  "MAILER_DSN:mailer"
-  # Adicione mais aqui
-)
-
-symfony console secrets:decrypt-to-local --force
-
-# Processa todas
-for item in "${VARIAVEIS[@]}"; do
-    VAR_NAME=$(echo "$item" | cut -d':' -f1)
-    NEW_HOST=$(echo "$item" | cut -d':' -f2)
-    update_env_var "$VAR_NAME" "$NEW_HOST"
-done
-
-symfony console doctrine:migrations:migrate --no-interaction
-
+echo "🎉 Starting $1..."
 exec "$@"

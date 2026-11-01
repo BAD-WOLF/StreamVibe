@@ -1,34 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         backupGlobals="false"
-         colors="true"
-         bootstrap="tests/bootstrap.php"
-         cacheDirectory=".phpunit.cache"
->
-    <php>
-        <ini name="display_errors" value="1" />
-        <ini name="error_reporting" value="-1" />
-        <server name="APP_ENV" value="test" force="true" />
-        <server name="SHELL_VERBOSITY" value="-1" />
-        <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
-        <server name="SYMFONY_PHPUNIT_VERSION" value="10.5" />
-    </php>
-
-    <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
-        </testsuite>
-    </testsuites>
-
-    <source restrictDeprecations="true" restrictNotices="true" restrictWarnings="true">
-        <include>
-            <directory>src</directory>
-        </include>
-    </source>
-
-    <extensions>
-    </extensions>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd" backupGlobals="false" colors="true" bootstrap="tests/bootstrap.php" cacheDirectory=".phpunit.cache">
+  <php>
+    <ini name="display_errors" value="1"/>
+    <ini name="error_reporting" value="-1"/>
+    <server name="APP_ENV" value="test" force="true"/>
+    <server name="SHELL_VERBOSITY" value="-1"/>
+    <server name="SYMFONY_PHPUNIT_REMOVE" value=""/>
+    <server name="SYMFONY_PHPUNIT_VERSION" value="10.5"/>
+    <!--
+      NOTA (out/2026): saiu o DATABASE_URL daqui. Ele apontava para o
+      banco app_test, e no ambiente test o Doctrine ainda acrescenta o
+      sufixo _test (config/packages/test/doctrine.yaml) — daria
+      app_test_test. Nos contêineres ele nem valia (a variável real do
+      compose ganha de um <env> sem force), e fora deles o .env.test
+      já define o endereço certo (banco app + sufixo = app_test).
+    -->
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+    <!--
+      NOTA (out/2026): null://null forçado. Era smtp://mailer:1025, sem
+      force: os testes mandavam email de verdade para o Mailpit e
+      quebravam (503) onde não há mailer, como no stack de teste
+      isolado. Os testes leem os emails pelo coletor do Symfony
+      (assertEmailCount, getMailerMessage), que não depende do envio.
+    -->
+    <env name="MAILER_DSN" value="null://null" force="true"/>
+    <!--
+      NOTA (out/2026): sem TMDB_TOKEN aqui de propósito. O valor falso
+      "test_token_for_integration_tests" tinha prioridade sobre o token do
+      cofre de teste (config/secrets/test), então todo teste que chama o
+      TMDB recebia 401 de lá. Sem a linha, %env(TMDB_TOKEN)% cai no cofre.
+    -->
+    <!--
+      NOTA (out/2026): par de chaves JWT só para testes, gerado por
+      tests/bootstrap.php em var/jwt-test/ com a JWT_PASSPHRASE abaixo.
+      A passphrase "test" não abre config/jwt/private.pem (chave de dev,
+      fora do git), então criar um token dentro dos testes falhava.
+      Com force="true": uma JWT_* do ambiente (contêiner, CI) não troca
+      o par de teste pelo de dev.
+    -->
+    <env name="JWT_SECRET_KEY" value="%kernel.project_dir%/var/jwt-test/private.pem" force="true"/>
+    <env name="JWT_PUBLIC_KEY" value="%kernel.project_dir%/var/jwt-test/public.pem" force="true"/>
+    <env name="JWT_PASSPHRASE" value="test" force="true"/>
+    <env name="CORS_ALLOW_ORIGIN" value="*"/>
+  </php>
+  <testsuites>
+    <testsuite name="Unit">
+      <directory>tests/Unit</directory>
+    </testsuite>
+    <testsuite name="Integration">
+      <directory>tests/Integration</directory>
+    </testsuite>
+    <testsuite name="Application">
+      <directory>tests/Application</directory>
+    </testsuite>
+    <testsuite name="All">
+      <directory>tests</directory>
+    </testsuite>
+    <testsuite name="Safe">
+      <directory>tests/Unit</directory>
+      <file>tests/Integration/SimpleRepositoryTest.php</file>
+    </testsuite>
+  </testsuites>
+  <source restrictNotices="true" restrictWarnings="true" ignoreIndirectDeprecations="true">
+    <include>
+      <directory>src</directory>
+    </include>
+  </source>
+  <extensions>
+    <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+  </extensions>
+  <coverage>
+    <report>
+      <html outputDirectory="var/coverage/html"/>
+      <text outputFile="var/coverage/coverage.txt"/>
+      <clover outputFile="var/coverage/clover.xml"/>
+    </report>
+  </coverage>
+  <logging>
+    <junit outputFile="var/log/junit.xml"/>
+  </logging>
 </phpunit>

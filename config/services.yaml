@@ -1,24 +1,109 @@
+# yaml-language-server: $schema=../vendor/symfony/dependency-injection/Loader/schema/services.schema.json
+
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
+# See also https://symfony.com/doc/current/service_container/import.html
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+  # NOTA (out/2026): remetente dos emails (confirmação de cadastro e troca
+  # de senha). Estava repetido como texto fixo no RegisterUserUseCase e no
+  # ResetUserPasswordUseCase.
+  app.mailer.sender_address: 'noreply@streamvibe.com'
+  app.mailer.sender_name: 'StreamVibe'
 
 services:
-    # default configuration for services in *this* file
-    _defaults:
-        autowire: true      # Automatically injects dependencies in your services.
-        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    # makes classes in src/ available to be used as services
-    # this creates a service per class whose id is the fully-qualified class name
-    App\:
-        resource: '../src/'
-        exclude:
-            - '../src/DependencyInjection/'
-            - '../src/Entity/'
-            - '../src/Kernel.php'
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  # NOTA (out/2026): o exclude apontava para ../src/DependencyInjection/,
+  # que não existe — o compiler pass fica em
+  # src/Infrastructure/DependencyInjection/ e virava serviço à toa.
+  App\:
+    resource: "../src/"
+    exclude:
+      - "../src/Infrastructure/DependencyInjection/"
+      - "../src/Domain/*/Entity/"
+      - "../src/Kernel.php"
+
+  # ---------------------------------------------------------------------
+  # Portas (interfaces do Domain e do Application) -> adaptadores
+  # (Infrastructure).
+  #
+  # NOTA (out/2026): os repositórios eram declarados com `class:`, o que
+  # criava um SEGUNDO serviço com a mesma classe (o do `App\:` acima e o
+  # da interface). Com `alias:`, interface e classe são o mesmo serviço.
+  # As portas novas (gateway do TMDB, imagem, verificação de email, troca
+  # de senha, refresh tokens) ficam explícitas aqui — o autowiring até
+  # resolveria uma interface com uma implementação só, mas assim a troca
+  # de adaptador é uma linha neste arquivo.
+  # ---------------------------------------------------------------------
+
+  # Domain
+  App\Domain\User\Repository\UserRepositoryInterface:
+    alias: App\Infrastructure\Persistence\Repository\UserRepository
+
+  App\Domain\Authentication\Repository\ResetPasswordSolicitationRepositoryInterface:
+    alias: App\Infrastructure\Persistence\Repository\ResetPasswordSolicitationRepository
+
+  # Application
+  App\Application\Shared\Gateway\MovieDatabaseGatewayInterface:
+    alias: App\Infrastructure\ExternalServices\TmdbApiService
+
+  App\Application\Image\Port\ImageProcessorInterface:
+    alias: App\Infrastructure\Image\GdImageProcessor
+
+  App\Application\Authentication\Port\EmailVerificationInterface:
+    alias: App\Infrastructure\Security\EmailVerifier
+
+  App\Application\Authentication\Port\PasswordResetInterface:
+    alias: App\Infrastructure\Security\PasswordResetManager
+
+  App\Application\Authentication\Port\RefreshTokenRevokerInterface:
+    alias: App\Infrastructure\Security\RefreshTokenRevoker
+
+  # SymfonyCasts ResetPassword bundle interface binding
+  SymfonyCasts\Bundle\ResetPassword\Persistence\ResetPasswordRequestRepositoryInterface:
+    alias: App\Infrastructure\Persistence\Repository\ResetPasswordSolicitationRepository
+
+  # ---------------------------------------------------------------------
+  # Adaptadores que precisam de configuração
+  # ---------------------------------------------------------------------
+
+  # TMDB API Service configuration
+  App\Infrastructure\ExternalServices\TmdbApiService:
+    arguments:
+      $tmdbToken: "%env(TMDB_TOKEN)%"
+
+  App\Infrastructure\Security\EmailVerifier:
+    arguments:
+      $senderAddress: "%app.mailer.sender_address%"
+      $senderName: "%app.mailer.sender_name%"
+
+  App\Infrastructure\Security\PasswordResetManager:
+    arguments:
+      $senderAddress: "%app.mailer.sender_address%"
+      $senderName: "%app.mailer.sender_name%"
+
+  # Exception Listener configuration
+  App\Infrastructure\Http\EventListener\ExceptionListener:
+    arguments:
+      $debug: "%kernel.debug%"
+    tags:
+      - name: kernel.event_listener
+        event: kernel.exception
+        method: onKernelException
+
+  # Output Mapper Registry configuration (mappers auto-discovered via attributes)
+  App\Infrastructure\ApiPlatform\Shared\Mapper\OutputMapperRegistry:
+    arguments:
+      $mappers: !tagged_iterator "app.output_mapper"
+
+  # add more service definitions when explicit configuration is needed
+  # please note that last definitions always *replace* previous ones

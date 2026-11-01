@@ -1,24 +1,66 @@
 services:
-###> doctrine/doctrine-bundle ###
+  ###> doctrine/doctrine-bundle ###
   database:
     ports:
       - "5432:5432"
-###< doctrine/doctrine-bundle ###
+    volumes:
+      # Bind mount for easier database inspection in development
+      - ./docker/db/data:/var/lib/postgresql/data:rw
+  ###< doctrine/doctrine-bundle ###
 
-###> symfony/mailer ###
+  ###> symfony/mailer ###
   mailer:
-    container_name: mailer
-    image: axllent/mailpit
-    networks:
-      - streamvibe
-    ports:
-      - "1025"
-      - "8025"
     environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
-###< symfony/mailer ###
+      MP_SMTP_AUTH_ACCEPT_ANY: "1"
+      MP_SMTP_AUTH_ALLOW_INSECURE: "1"
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+  ###< symfony/mailer ###
 
   app:
     environment:
       APP_ENV: dev
+      MAILER_DSN: smtp://mailer:1025
+      # Enable Symfony debugging in development
+      APP_DEBUG: "1"
+      # Override for development with no-dev disabled
+    build:
+      args:
+        COMPOSER_NO_DEV: "0"
+    volumes:
+      # Mount source code for live development
+      - ./src:/app/src:rw
+      - ./config:/app/config:rw
+      - ./templates:/app/templates:rw
+      - ./translations:/app/translations:rw
+      # Mount vendor for access (if enable execute 'composer install' again)
+      # - ./vendor:/app/vendor:rw
+    depends_on:
+      database:
+        condition: service_healthy
+      mailer:
+        condition: service_started
+
+  ###> Development tools ###
+  # Uncomment the following services for additional development tools
+
+  # adminer:
+  #   container_name: streamvibe_adminer
+  #   image: adminer
+  #   ports:
+  #     - "8080:8080"
+  #   networks:
+  #     - streamvibe
+  #   depends_on:
+  #     database:
+  #       condition: service_healthy
+
+  # redis:
+  #   container_name: streamvibe_redis
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - streamvibe
+  ###< Development tools ###

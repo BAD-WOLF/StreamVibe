@@ -1,19 +1,40 @@
 ###> IDEs and text editors ###
 /.idea/
 /.vscode/
+/.phpactor.json
+*.swp
+*.swo
+*~
 ###< IDEs and text editors ###
 
 ###> git ###
 /.gitignore
-/.github
+/.gitattributes
+/.github/
 /.git/
 ###< git ###
 
 ###> symfony/framework-bundle ###
+/.env.local.php
 /public/bundles/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> secrets (never inside an image) ###
+# NOTA (out/2026): as chaves JWT (config/jwt/*.pem) e a chave que abre o
+# cofre de produção já ficavam fora do git (.gitignore), mas entravam em
+# toda imagem pelo COPY . . — quem tivesse a imagem podia assinar tokens
+# válidos e ler os segredos de produção. O .env.local.php (gerado pelo
+# "composer dump-env", com os valores já resolvidos) entrou junto, como no
+# .gitignore. Dev e teste recebem config/ pela montagem do compose; em
+# produção o entrypoint gera o par JWT no volume jwt_keys e o cofre abre
+# pela variável SYMFONY_DECRYPTION_SECRET (compose.prod.yaml). As chaves
+# dos cofres de dev e de teste continuam na imagem: já estão no git e os
+# Dockerfiles de dev e teste as usam no build (secrets:decrypt-to-local).
+/config/jwt/*.pem
+/config/secrets/prod/prod.decrypt.private.php
+###< secrets ###
 
 ###> front ###
 /assets/
@@ -35,3 +56,44 @@ yarn-error.log
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+###> development files ###
+/docker/db/data/
+/docker/ssl/
+*.log
+*.pid
+*.seed
+*.pid.lock
+/tmp/
+/.env.*.local
+/.env.test.local
+/.env.local
+README.md
+CHANGELOG.md
+LICENSE
+CODE_OF_CONDUCT.md
+CLEAN_ARCHITECTURE.md
+DOCKER_DEPLOYMENT_SUCCESS.md
+*.md
+.DS_Store
+Thumbs.db
+###< development files ###
+
+###> build and deployment ###
+/docker-compose*.yml
+/compose*.yaml
+/compose*.yml
+/.platform/
+/.platform.app.yaml
+/qodana.yaml
+/run-tests.sh
+docker-health-check.sh
+pre-build-check.sh
+###< build and deployment ###
+
+###> patches and temporary ###
+*.orig
+*.rej
+/.phpunit.result.cache
+/coverage/
+###< patches and temporary ###

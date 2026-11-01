@@ -1,4 +1,15 @@
+# NOTA (out/2026): requirement no {_locale}. Sem ele, o prefixo aceitava
+# qualquer segmento (/xyz/api/movies/popular, /pt-BR/api/...,
+# /en_us/api/...) e a rota casava do mesmo jeito — mas o firewall "api" e
+# o access_control (config/packages/security.yaml) só reconhecem prefixos
+# no formato "xx" ou "xx_XX" ('^/[a-z]{2}(_[A-Z]{2})?/api'). Com outro
+# formato a requisição caía no firewall "main", nenhuma regra de acesso
+# casava e as rotas que exigem JWT (filmes, pessoas, imagens) respondiam
+# sem token. Agora um locale fora da lista é 404. Mesma lista de
+# config/routes.yaml e do ParameterSchema::LOCALE.
 api_platform:
     resource: .
     type: api_platform
     prefix: /{_locale}/api
+    requirements:
+        _locale: en|pt_BR|es

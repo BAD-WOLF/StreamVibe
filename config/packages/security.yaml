@@ -1,65 +1,100 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
-    password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
-    providers:
-        # used to reload user from session & other features (e.g. switch_user)
-        app_user_provider:
-            entity:
-                class: App\Entity\User
-                property: email
-    firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt)|css|images|js)/
-            security: false
+  # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
 
-        login:
-            pattern: "^/api/login"
-            stateless: true
-            json_login:
-                check_path: "/api/login_check"
-                username_path: email
-                password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            user_checker: App\Security\UserCheckerAuthLogin
+  # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+  providers:
+    # used to reload user from session & other features (e.g. switch_user)
+    app_user_provider:
+      entity:
+        class: App\Domain\User\Entity\User
+        property: email
 
-        api:
-            pattern: "^/{_locale}/api"
-            stateless: true
-            entry_point: jwt
-            provider: app_user_provider
-            jwt: ~
-            refresh_jwt:
-                check_path: "/{_locale}/api/token/refresh" # or, you may use the `api_refresh_token` route name
-                # or if you have more than one user provider
-                # provider: user_provider_name
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js|assets|build)/
+      security: false
 
-        main:
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
+    login:
+      pattern: '^/api/login'
+      stateless: true
+      json_login:
+        check_path: '/api/login_check'
+        username_path: email
+        password_path: password
+        success_handler: lexik_jwt_authentication.handler.authentication_success
+        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+      user_checker: App\Infrastructure\Security\UserCheckerAuthLogin
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+    api:
+      pattern: '^/[a-z]{2}(_[A-Z]{2})?/api'
+      stateless: true
+      entry_point: jwt
+      provider: app_user_provider
+      jwt: ~
+      refresh_jwt:
+        # NOTA (out/2026): nome da rota, não o path. A rota real é
+        # /{_locale}/api/token/refresh (config/routes/gesdinet_jwt_refresh_token.yaml),
+        # e um check_path que começa com "/" é comparado com o path de forma
+        # literal (HttpUtils::checkRequestPath): '/api/token/refresh' nunca
+        # batia com /pt_BR/api/token/refresh, então o refresh nunca era
+        # atendido. Pelo nome da rota, vale para qualquer locale.
+        check_path: gesdinet_jwt_refresh_token
+        # or if you have more than one user provider
+        # provider: user_provider_name
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
-    access_control:
-        - { path: "^/{_locale}/api/(reset-password|register|verify|doc|login_check)", roles: PUBLIC_ACCESS }
-        - { path: "^/{_locale}/api", roles: IS_AUTHENTICATED_FULLY }
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+    main:
+      stateless: true
+      lazy: true
+    # activate different ways to authenticate
+    # https://symfony.com/doc/current/security.html#the-firewall
+
+    # https://symfony.com/doc/current/security/impersonating_user.html
+    # switch_user: true
+
+  # Easy way to control access for large sections of your site
+  # Note: Only the *first* access control that matches will be used
+  #
+  # NOTA (out/2026): a última regra (tudo em /{locale}/api exige JWT) é a
+  # decisão do commit aaa2637 ("tighten API security"). Ela só passou a
+  # valer de fato quando o pattern deixou de ter "{_locale}" literal
+  # (dentro de regex isso é texto, então nada casava e a API inteira
+  # ficava aberta). Com a proteção ativa, os fluxos abaixo precisam
+  # continuar públicos, porque quem os usa não tem (ou não tem mais) JWT.
+  access_control:
+    # Conta: cadastro, verificação de email (/verify/email, /status/{userId}
+    # e /validate), reenvio da verificação e docs. resend-verification
+    # precisa ser público: o UserCheckerAuthLogin bloqueia o login de quem
+    # ainda não verificou o email.
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/(register|verify|resend-verification|doc)', roles: PUBLIC_ACCESS }
+    # Reset de senha: pedir (/reset-password), checar o token que chegou por
+    # email (/status/{token}), cancelar (/cancel) e definir a senha nova
+    # (/confirm). Quem está trocando a senha não está logado.
+    # /reset-password/requests/{userId} continua protegido (lista os
+    # pedidos de um usuário; só o próprio ou ROLE_ADMIN).
+    # NOTA (out/2026): /confirm entrou com o endpoint novo de troca de
+    # senha. A verificação de email saiu de /api/verify/... (sem locale,
+    # fora deste firewall) para /{locale}/api/verify/..., coberta pela
+    # regra acima.
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/reset-password(/status/[^/]+|/cancel|/confirm)?$', roles: PUBLIC_ACCESS }
+    # Renovação do JWT: quem chama está com o access token vencido.
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/token/refresh$', roles: PUBLIC_ACCESS }
+    - { path: '^/api/login_check', roles: PUBLIC_ACCESS }
+    # Todo o resto da API (filmes, pessoas, imagens...) exige JWT.
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api', roles: IS_AUTHENTICATED_FULLY }
+    # - { path: ^/admin, roles: ROLE_ADMIN }
+    # - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
-    security:
-        password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
-            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-                algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+  security:
+    password_hashers:
+      # By default, password hashers are resource intensive and take time. This is
+      # important to generate secure password hashes. In tests however, secure hashes
+      # are not important, waste resources and increase test times. The following
+      # reduces the work factor to the lowest possible values.
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+        algorithm: auto
+        cost: 4 # Lowest possible value for bcrypt
+        time_cost: 3 # Lowest possible value for argon
+        memory_cost: 10 # Lowest possible value for argon

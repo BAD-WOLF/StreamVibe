@@ -1,54 +1,68 @@
 doctrine:
-    dbal:
-        url: '%env(resolve:DATABASE_URL)%'
+  dbal:
+    url: '%env(resolve:DATABASE_URL)%'
 
-        # IMPORTANT: You MUST configure your server version,
-        # either here or in the DATABASE_URL env var (see .env file)
-        #server_version: '16'
+    # IMPORTANT: You MUST configure your server version,
+    # either here or in the DATABASE_URL env var (see .env file)
+    #server_version: '16'
 
-        profiling_collect_backtrace: '%kernel.debug%'
-        use_savepoints: true
-    orm:
-        auto_generate_proxy_classes: true
-        enable_lazy_ghost_objects: true
-        report_fields_where_declared: true
-        validate_xml_mapping: true
-        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
-        identity_generation_preferences:
-            Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
-        auto_mapping: true
-        mappings:
-            App:
-                type: attribute
-                is_bundle: false
-                dir: '%kernel.project_dir%/src/Entity'
-                prefix: 'App\Entity'
-                alias: App
-        controller_resolver:
-            auto_mapping: false
+    profiling_collect_backtrace: '%kernel.debug%'
+  # NOTA (out/2026): saíram enable_native_lazy_objects: true e
+  # controller_resolver.auto_mapping: false. No DoctrineBundle 3 os dois são
+  # obrigatórios com esses valores (lazy objects nativos sempre ligados,
+  # auto_mapping só aceita false) e estão deprecated desde o 3.1 — o 4.0
+  # remove as opções, e a configuração passaria a quebrar.
+  orm:
+    validate_xml_mapping: true
+    naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+    identity_generation_preferences:
+      Doctrine\DBAL\Platforms\PostgreSQLPlatform: identity
+    auto_mapping: true
+    # NOTA (out/2026): mapeamento em XML dentro da Infrastructure (antes
+    # eram atributos nas entidades do Domain, que por isso importavam os
+    # repositórios da Infrastructure). Um diretório por namespace de
+    # entidade, como o SimplifiedXmlDriver exige: <Classe>.orm.xml.
+    mappings:
+      User:
+        type: xml
+        is_bundle: false
+        dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping/User'
+        prefix: 'App\Domain\User\Entity'
+        alias: User
+      Authentication:
+        type: xml
+        is_bundle: false
+        dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping/Authentication'
+        prefix: 'App\Domain\Authentication\Entity'
+        alias: Authentication
 
 when@test:
-    doctrine:
-        dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+  doctrine:
+    dbal:
+      # "TEST_TOKEN" is typically set by ParaTest
+      dbname_suffix: '_test%env(default::TEST_TOKEN)%'
 
+# NOTA (out/2026): saiu o proxy_dir. O DoctrineBundle 3 removeu a opção
+# (com lazy objects nativos não há classes de proxy geradas), e com ela
+# aqui o container de PRODUÇÃO não compilava: 'Unrecognized option
+# "proxy_dir" under "doctrine.orm.entity_managers.default"' — qualquer
+# comando ou requisição com APP_ENV=prod falhava (cache:clear, warmup,
+# o próprio PHP-FPM). Dev e test não passam por este bloco, por isso os
+# testes nunca pegaram.
 when@prod:
-    doctrine:
-        orm:
-            auto_generate_proxy_classes: false
-            proxy_dir: '%kernel.build_dir%/doctrine/orm/Proxies'
-            query_cache_driver:
-                type: pool
-                pool: doctrine.system_cache_pool
-            result_cache_driver:
-                type: pool
-                pool: doctrine.result_cache_pool
+  doctrine:
+    orm:
+      query_cache_driver:
+        type: pool
+        pool: doctrine.system_cache_pool
+      result_cache_driver:
+        type: pool
+        pool: doctrine.result_cache_pool
 
-    framework:
-        cache:
-            pools:
-                doctrine.result_cache_pool:
-                    adapter: cache.app
-                doctrine.system_cache_pool:
-                    adapter: cache.system
+  framework:
+    cache:
+      pools:
+        doctrine.result_cache_pool:
+          adapter: cache.app
+        doctrine.system_cache_pool:
+          adapter: cache.system

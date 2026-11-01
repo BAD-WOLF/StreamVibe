@@ -1,2 +1,6 @@
+# NOTA (out/2026): mesmo requirement de {_locale} das rotas da API
+# (config/routes/api_platform.yaml).
 gesdinet_jwt_refresh_token:
     path: /{_locale}/api/token/refresh
+    requirements:
+        _locale: en|pt_BR|es

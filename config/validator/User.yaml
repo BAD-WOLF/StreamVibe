@@ -1,0 +1,11 @@
+# NOTA (out/2026): regra de email único do App\Domain\User\Entity\User.
+# Antes era o atributo #[UniqueEntity] na própria entidade; saiu do Domain
+# junto com o mapeamento do Doctrine (ver
+# src/Infrastructure/Persistence/Doctrine/Mapping/User/User.orm.xml), porque
+# a checagem consulta o banco e é detalhe de infraestrutura. O
+# FrameworkBundle carrega config/validator/ automaticamente.
+App\Domain\User\Entity\User:
+  constraints:
+    - Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity:
+        fields: [email]
+        message: 'There is already an account with this email'

@@ -1,0 +1,25 @@
+# NOTA (out/2026): atualizações de dependências por pull request, no lugar
+# do "composer update" que o docker/Dockerfile.minimal rodava a cada build
+# (o TODO de lá já pedia Renovate ou Dependabot). Cada PR passa pelo CI
+# (.github/workflows/symfony.yml), que agora roda o PHPUnit — inclusive com
+# os patches do composer-patches aplicados no install.
+version: 2
+updates:
+  - package-ecosystem: composer
+    directory: "/"
+    target-branch: develop
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    target-branch: develop
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: "/docker"
+    target-branch: develop
+    schedule:
+      interval: weekly

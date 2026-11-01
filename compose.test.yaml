@@ -1,0 +1,96 @@
+# NOTA (out/2026): stack de teste isolado. Use este arquivo SOZINHO:
+#
+#   docker compose -f compose.test.yaml up --build -d --wait
+#   ./run-tests.sh all        (Unit, Integration e Application, uma de cada vez)
+#   docker compose -f compose.test.yaml down
+#
+# Uma suíte só: docker compose -f compose.test.yaml exec app \
+#   vendor/bin/phpunit --testsuite=Unit (ou Integration, Application).
+# Sem --testsuite o PHPUnit carrega todas as suítes do phpunit.dist.xml, e
+# All/Safe repetem arquivos das outras: sai "OK, but there were issues!",
+# com um aviso por arquivo repetido.
+#
+# (o --wait só devolve o terminal quando o app fica healthy, isto é, depois
+# que o entrypoint aplicou as migrations e refez o cache; rodar o PHPUnit
+# antes disso disputa o var/cache/test com o cache:clear do entrypoint.)
+#
+# Antes ele era somado ao compose.yaml (-f compose.yaml -f compose.test.yaml)
+# e teste e dev viravam o mesmo projeto Docker: mesmos contêineres
+# (streamvibe_app, streamvibe_psql_database), mesma rede e a mesma porta
+# 5432 no host. Um derrubava o outro, e trocar de ambiente pedia
+# down -v --rmi all. Agora:
+# - projeto, contêineres e rede próprios (name: streamvibe_test): dev e
+#   teste sobem juntos, e um down aqui não encosta no dev;
+# - o banco roda em tmpfs (memória): cada subida começa vazia, o entrypoint
+#   aplica as migrations e não sobra volume para apagar (dispensa o -v);
+# - Postgres no host só em 127.0.0.1:5433, para inspecionar (o dev usa a
+#   5432). Dentro da rede o app fala com database:5432;
+# - sem mailer: o phpunit.dist.xml força MAILER_DSN=null://null, e os
+#   testes leem os emails pelo coletor de mensagens do Symfony;
+# - sem porta do app no host: o PHPUnit não passa por HTTP.
+# Não some este arquivo ao compose.yaml de novo: o volume do banco de lá e
+# o tmpfs daqui caem no mesmo diretório e o Docker recusa.
+name: streamvibe_test
+
+services:
+  database:
+    container_name: streamvibe_test_database
+    image: postgres:${POSTGRES_VERSION:-16}-alpine
+    environment:
+      POSTGRES_DB: app_test
+      POSTGRES_PASSWORD: Gk7xRz92wM
+      POSTGRES_USER: app
+    healthcheck:
+      test: ["CMD", "pg_isready", "-d", "app_test", "-U", "app"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+    tmpfs:
+      - /var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5433:5432"
+    networks:
+      - streamvibe_test
+
+  app:
+    container_name: streamvibe_test_app
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.test
+    environment:
+      APP_ENV: test
+      # Banco "app" de propósito: no ambiente test o Doctrine acrescenta o
+      # sufixo _test (dbname_suffix), e quem existe aqui é o app_test.
+      DATABASE_URL: postgresql://app:Gk7xRz92wM@database:5432/app?serverVersion=16&charset=utf8
+      XDEBUG_MODE: coverage
+    volumes:
+      - ./tests:/app/tests:rw
+      # NOTA (out/2026): mesmo esquema do compose.override.yaml (dev).
+      # Sem estas montagens, src/ e config/ ficam com a cópia do momento
+      # do build (COPY . . no Dockerfile.test) e os testes novos (tests/
+      # montado) rodam contra código e configuração antigos. migrations/
+      # entra só leitura: o entrypoint aplica as migrations a cada subida.
+      # phpunit.dist.xml, .env* e composer.* continuam vindo da imagem:
+      # se mudar algum deles, rebuild (up --build -d).
+      - ./src:/app/src:rw
+      - ./config:/app/config:rw
+      - ./templates:/app/templates:rw
+      - ./translations:/app/translations:rw
+      - ./migrations:/app/migrations:ro
+    networks:
+      - streamvibe_test
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      # Healthy depois do entrypoint (migrations + cache:clear), quando o
+      # servidor do Symfony CLI já responde o GET /health.
+      test: ["CMD", "curl", "-fs", "http://localhost:8000/health"]
+      interval: 3s
+      timeout: 5s
+      retries: 40
+      start_period: 30s
+
+networks:
+  streamvibe_test:
+    name: streamvibe_test_network

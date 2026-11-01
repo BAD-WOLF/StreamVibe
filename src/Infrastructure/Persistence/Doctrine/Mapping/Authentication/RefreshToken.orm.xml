@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NOTA (out/2026): mapeamento do App\Domain\Authentication\Entity\RefreshToken
+  (entidade do gesdinet/jwt-refresh-token-bundle), igual aos atributos que
+  existiam na classe: tabela refresh_tokens, refresh_token único (255) e o
+  repositório do próprio bundle.
+-->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                    https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Authentication\Entity\RefreshToken"
+            table="refresh_tokens"
+            repository-class="Gesdinet\JWTRefreshTokenBundle\Entity\RefreshTokenRepository">
+
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="refreshToken" type="string" length="255" unique="true"/>
+        <field name="username" type="string" length="255"/>
+        <field name="valid" type="datetime"/>
+    </entity>
+</doctrine-mapping>

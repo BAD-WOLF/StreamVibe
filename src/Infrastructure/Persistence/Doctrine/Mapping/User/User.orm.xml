@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NOTA (out/2026): mapeamento do App\Domain\User\Entity\User, que antes
+  ficava em atributos #[ORM\...] dentro da própria entidade (e obrigava o
+  Domain a importar o UserRepository da Infrastructure). Espelha
+  exatamente a migration Version20260822104709: tabela "user" (entre
+  crases porque é palavra reservada no PostgreSQL), índice único
+  UNIQ_IDENTIFIER_EMAIL e o mesmo repositório.
+-->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                    https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\User\Entity\User"
+            table="`user`"
+            repository-class="App\Infrastructure\Persistence\Repository\UserRepository">
+
+        <unique-constraints>
+            <unique-constraint name="UNIQ_IDENTIFIER_EMAIL" fields="email"/>
+        </unique-constraints>
+
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="email" type="string" length="180"/>
+        <field name="roles" type="json"/>
+        <field name="password" type="string" length="255"/>
+        <field name="isVerified" type="boolean" column="is_verified"/>
+    </entity>
+</doctrine-mapping>

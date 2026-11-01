@@ -1,3 +1,7 @@
+# NOTA (out/2026): mesmo requirement de {_locale} das rotas da API
+# (config/routes/api_platform.yaml).
 api_platform_swagger_ui:
   path: /{_locale}/api/doc
   controller: api_platform.action.documentation
+  requirements:
+    _locale: en|pt_BR|es
