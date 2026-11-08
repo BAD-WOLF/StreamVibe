@@ -17,10 +17,11 @@ use Symfony\Component\Translation\IdentityTranslator;
 use Symfony\Component\Validator\Validation;
 
 /**
- * GetCurrentUserUseCase (GET /me): os dados vêm do banco, e `roles` é
- * sempre uma lista com ROLE_USER.
+ * GetCurrentUserUseCase (GET /me): os dados vêm do banco, e `role` é o
+ * papel da conta na hierarquia.
  *
- * NOTA (nov/2026): criado com o GET /me.
+ * NOTA (nov/2026): criado com o GET /me. Com a hierarquia de papéis, `roles`
+ * (a lista guardada) virou `role`.
  */
 final class GetCurrentUserUseCaseTest extends TestCase
 {
@@ -33,26 +34,29 @@ final class GetCurrentUserUseCaseTest extends TestCase
 
         self::assertSame(42, $response->id);
         self::assertSame('user42@example.com', $response->email);
-        self::assertSame(['ROLE_ADMIN', 'ROLE_USER'], $response->roles);
+        self::assertSame('ROLE_ADMIN', $response->role);
         self::assertTrue($response->verified);
         self::assertSame('Current user retrieved successfully', $response->message);
     }
 
     /**
-     * User::getRoles() usa array_unique(), que mantém as chaves: com um
-     * papel repetido no banco, sem o array_values() o JSON viraria um
-     * objeto ({"0": ..., "2": ...}) em vez de uma lista.
+     * Uma conta com mais de um papel guardado (de antes de assignRole(), que
+     * guarda um só) é do mais alto; sem nenhum, ROLE_USER.
      */
-    public function testRolesAreAlwaysAList(): void
+    public function testTheRoleIsTheHighestStoredOne(): void
     {
-        $user = $this->makeUser(id: 7, roles: ['ROLE_ADMIN', 'ROLE_ADMIN'], verified: false);
+        $user = $this->makeUser(id: 7, roles: ['ROLE_DEV', 'ROLE_ADMIN', 'ROLE_DEV'], verified: false);
 
         $response = $this->makeUseCase($this->userRepositoryReturning($user))
             ->execute(new GetCurrentUserRequest(userId: 7));
 
-        self::assertTrue(array_is_list($response->roles));
-        self::assertSame(['ROLE_ADMIN', 'ROLE_USER'], $response->roles);
+        self::assertSame('ROLE_ADMIN', $response->role);
         self::assertFalse($response->verified);
+
+        $plain = $this->makeUseCase($this->userRepositoryReturning($this->makeUser(id: 8, roles: [], verified: true)))
+            ->execute(new GetCurrentUserRequest(userId: 8));
+
+        self::assertSame('ROLE_USER', $plain->role);
     }
 
     public function testInvalidUserIdIsRejected(): void

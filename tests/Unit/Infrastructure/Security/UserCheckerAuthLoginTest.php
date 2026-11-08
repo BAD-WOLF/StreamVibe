@@ -46,6 +46,24 @@ final class UserCheckerAuthLoginTest extends TestCase
         $this->addToAssertionCount(1);
     }
 
+    /**
+     * NOTA (nov/2026): a conta bloqueada também só é recusada depois da
+     * senha certa — e antes da confirmação do email, que não adiantaria.
+     */
+    public function testABlockedAccountIsRefusedOnlyAfterTheRightPassword(): void
+    {
+        $checker = new UserCheckerAuthLogin(new IdentityTranslator());
+        $user = $this->makeUser(verified: false);
+        $user->block('spam', new \DateTimeImmutable());
+
+        $checker->checkPreAuth($user);
+
+        $this->expectException(CustomUserMessageAccountStatusException::class);
+        $this->expectExceptionMessage('This account has been blocked.');
+
+        $checker->checkPostAuth($user);
+    }
+
     private function makeUser(bool $verified): User
     {
         $user = new User();

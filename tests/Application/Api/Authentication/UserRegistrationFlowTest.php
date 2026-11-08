@@ -358,7 +358,8 @@ final class UserRegistrationFlowTest extends WebTestCase
 
         $htmlBody = $email->getHtmlBody();
         $this->assertIsString($htmlBody);
-        $this->assertStringContainsString("verify/email", $htmlBody);
+        // NOTA (nov/2026): o link leva à página do front (EmailVerifier).
+        $this->assertStringContainsString("/pt_BR/auth/verify-email?", $htmlBody);
     }
 
     /**
@@ -407,24 +408,28 @@ final class UserRegistrationFlowTest extends WebTestCase
 
     /**
      * Extract verification URL from email content
+     *
+     * NOTA (nov/2026): o email leva à página do front
+     * ({FRONTEND_UI_DOMAIN}/pt_BR/auth/verify-email?...), que chama a API
+     * com os mesmos parâmetros. Aqui o teste faz o papel da página: devolve
+     * a URL da API (/pt_BR/api/verify/email) com a query do link.
      */
     private function extractVerificationUrlFromEmail($email): string
     {
         $messageBody = $email->getHtmlBody();
         $this->assertIsString($messageBody);
 
-        // Ver NOTA 6: /{_locale}/api/verify/email, com o locale do
-        // cadastro (pt_BR).
+        // Ver NOTA 6: o locale do cadastro (pt_BR).
         preg_match(
-            '#https?://[^/"]+/pt_BR/api/verify/email\?[^"]+#',
+            '#https?://[^"]+/pt_BR/auth/verify-email\?[^"]+#',
             $messageBody,
             $matches,
         );
         $this->assertNotEmpty($matches, "Verification URL not found in email");
 
-        $verificationUrl = $matches[0];
+        $query = (string) parse_url($matches[0], PHP_URL_QUERY);
+        $verificationUrl = "/pt_BR/api/verify/email?" . $query;
 
-        $query = parse_url($verificationUrl, PHP_URL_QUERY);
         parse_str($query, $params);
 
         $requiredParams = ["expires", "id", "signature", "token"];

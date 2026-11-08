@@ -63,7 +63,8 @@ final class ResendVerificationApiTest extends WebTestCase
         $this->assertEmailCount(1);
         $email = $this->getMailerMessages()[0];
         $this->assertEmailAddressContains($email, "to", "resend-me@example.com");
-        $this->assertEmailHtmlBodyContains($email, "/pt_BR/api/verify/email?");
+        // NOTA (nov/2026): o link leva à página do front (EmailVerifier).
+        $this->assertEmailHtmlBodyContains($email, "/pt_BR/auth/verify-email?");
     }
 
     public function testTheLinkIsNotInTheResponse(): void

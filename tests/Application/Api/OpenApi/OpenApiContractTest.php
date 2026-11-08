@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Application\Api\OpenApi;
 
 use App\Domain\User\Entity\User;
+use App\Domain\User\ValueObject\Role;
 use App\Infrastructure\Persistence\Repository\UserRepository;
 use App\Tests\Helper\ApiAuthenticationTrait;
 use App\Tests\Helper\ApiRequestTrait;
@@ -137,6 +138,54 @@ final class OpenApiContractTest extends WebTestCase
         $this->client->request("GET", "/pt_BR/api/me");
 
         $this->assertResponseMatchesDocumentation("get", "/{_locale}/api/me", 200);
+    }
+
+    /**
+     * NOTA (nov/2026): a administração de contas — todas as rotas, na ordem
+     * em que um owner as usaria numa conta nova.
+     */
+    public function testAdminRoutesMatchTheirDocumentation(): void
+    {
+        $owner = $this->makeUser("contract-owner@example.com", verified: true);
+        $owner->assignRole(Role::Owner);
+        static::getContainer()->get("doctrine")->getManager()->flush();
+        $target = $this->makeUser("contract-target@example.com", verified: false);
+        $users = "/{_locale}/api/admin/users";
+        $user = "{$users}/{userId}";
+        $uri = "/pt_BR/api/admin/users/" . $target->getId();
+        $this->authenticateClient($this->client, $owner);
+
+        $this->client->request("GET", "/pt_BR/api/admin/users");
+        $this->assertResponseMatchesDocumentation("get", $users, 200);
+
+        $this->client->request("GET", $uri);
+        $this->assertResponseMatchesDocumentation("get", $user, 200);
+
+        $this->client->request("POST", "{$uri}/resend-verification");
+        $this->assertResponseMatchesDocumentation("post", "{$user}/resend-verification", 200);
+
+        $this->client->request("POST", "{$uri}/verify");
+        $this->assertResponseMatchesDocumentation("post", "{$user}/verify", 200);
+
+        $this->assertDocumentedBody("post", "{$user}/block", ["reason"]);
+        $this->postJson($this->client, "{$uri}/block", ["reason" => "contract"]);
+        $this->assertResponseMatchesDocumentation("post", "{$user}/block", 200);
+
+        $this->client->request("POST", "{$uri}/unblock");
+        $this->assertResponseMatchesDocumentation("post", "{$user}/unblock", 200);
+
+        $this->assertDocumentedBody("post", "{$user}/role", ["role"]);
+        $this->postJson($this->client, "{$uri}/role", ["role" => "ROLE_DEV"]);
+        $this->assertResponseMatchesDocumentation("post", "{$user}/role", 200);
+
+        $this->client->request("DELETE", "{$uri}/sessions");
+        $this->assertResponseMatchesDocumentation("delete", "{$user}/sessions", 200);
+
+        $this->client->request("GET", "/pt_BR/api/admin/audit-log");
+        $this->assertResponseMatchesDocumentation("get", "/{_locale}/api/admin/audit-log", 200);
+
+        $this->client->request("DELETE", $uri);
+        $this->assertResponseMatchesDocumentation("delete", $user, 200);
     }
 
     public function testImageRoutesWithoutTmdbMatchTheirDocumentation(): void
