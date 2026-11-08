@@ -59,6 +59,8 @@ final class ApiAccessControlTest extends WebTestCase
         yield "image sizes" => ["/pt_BR/api/images/sizes"];
         yield "image" => ["/pt_BR/api/image/w92/abc.jpg?format=url"];
         yield "reset requests of a user" => ["/pt_BR/api/reset-password/requests/1"];
+        // NOTA (nov/2026): a conta de quem está logado.
+        yield "current user" => ["/pt_BR/api/me"];
     }
 
     #[DataProvider("protectedRouteProvider")]

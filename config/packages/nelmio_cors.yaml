@@ -1,10 +1,24 @@
+# NOTA (nov/2026):
+# - allow_credentials ligado. O refresh token agora mora num cookie
+#   HttpOnly da API (config/packages/gesdinet_jwt_refresh_token.yaml), e o
+#   front chama o login, a renovação e o logout com credentials: 'include'.
+#   Sem o Access-Control-Allow-Credentials: true o navegador descarta o
+#   Set-Cookie dessas respostas e não deixa o front ler o corpo.
+# - Com credenciais o Allow-Origin nunca sai como "*": o bundle devolve a
+#   própria Origin da requisição quando ela é aceita — inclusive com
+#   CORS_ALLOW_ORIGIN='*', o valor do .env.dev.
+# - Retry-After entrou no expose_headers. É o header que diz quanto esperar
+#   depois de um 429 (troca de senha pedida há pouco, login bloqueado por
+#   tentativas demais), e o navegador só deixa o front ler os headers
+#   listados aqui.
 nelmio_cors:
     defaults:
         origin_regex: true
         allow_origin: ['%env(CORS_ALLOW_ORIGIN)%']
+        allow_credentials: true
         allow_methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'PATCH', 'DELETE']
         allow_headers: ['Content-Type', 'Authorization']
-        expose_headers: ['Link']
+        expose_headers: ['Link', 'Retry-After']
         max_age: 3600
     paths:
         '^/': null

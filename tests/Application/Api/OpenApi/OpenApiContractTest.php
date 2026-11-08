@@ -127,6 +127,18 @@ final class OpenApiContractTest extends WebTestCase
         $this->assertResponseMatchesDocumentation("get", "/{_locale}/api/reset-password/requests/{userId}", 200);
     }
 
+    /**
+     * NOTA (nov/2026): o GET /me entrou com a sessão em cookie.
+     */
+    public function testCurrentUserMatchesItsDocumentation(): void
+    {
+        $this->authenticateClient($this->client, $this->makeUser("contract-me@example.com", verified: true));
+
+        $this->client->request("GET", "/pt_BR/api/me");
+
+        $this->assertResponseMatchesDocumentation("get", "/{_locale}/api/me", 200);
+    }
+
     public function testImageRoutesWithoutTmdbMatchTheirDocumentation(): void
     {
         $this->authenticateClient($this->client, $this->makeUser("contract-images@example.com", verified: true));

@@ -15,5 +15,14 @@ framework:
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
+        pools:
             #my.dedicated.cache: null
+
+            # NOTA (nov/2026): contagem dos logins que falharam
+            # (App\Infrastructure\Security\LoginAttemptLimiter). Só números
+            # com prazo (no máximo a janela do limitador); nenhum dado de
+            # usuário, token ou resposta da API. Fica no "app" (arquivos em
+            # var/), como os outros pools: com mais de um servidor da API,
+            # cada um contaria as tentativas que recebeu.
+            cache.login_throttling:
+                adapter: cache.app

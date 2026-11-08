@@ -91,6 +91,14 @@ services:
       $senderAddress: "%app.mailer.sender_address%"
       $senderName: "%app.mailer.sender_name%"
 
+  # NOTA (nov/2026): contagem das tentativas de login no pool próprio
+  # (config/packages/cache.yaml), separada do cache.app de uso geral. Os
+  # listeners de login (LoginThrottlingListener) e de headers de segurança
+  # (SecurityHeadersListener) se registram pelo atributo #[AsEventListener].
+  App\Infrastructure\Security\LoginAttemptLimiter:
+    arguments:
+      $cache: "@cache.login_throttling"
+
   # Exception Listener configuration
   App\Infrastructure\Http\EventListener\ExceptionListener:
     arguments:

@@ -43,6 +43,17 @@ security:
         check_path: gesdinet_jwt_refresh_token
         # or if you have more than one user provider
         # provider: user_provider_name
+      # NOTA (nov/2026): logout em POST /{_locale}/api/logout, pelo nome da
+      # rota (config/routes/api_logout.yaml) — mesmo motivo do check_path
+      # acima: um path com "/" é comparado literalmente e não aceitaria o
+      # locale. Quem responde é o listener de logout do gesdinet: apaga do
+      # banco o refresh token que veio no cookie e devolve o Set-Cookie que
+      # apaga o cookie no navegador. O logout roda antes do controle de
+      # acesso, e o front o chama sem o header Authorization: com um JWT
+      # vencido no header, o autenticador "jwt" responderia 401 antes de o
+      # logout acontecer.
+      logout:
+        path: api_logout
 
     main:
       stateless: true
@@ -80,6 +91,10 @@ security:
     - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/reset-password(/status/[^/]+|/cancel|/confirm)?$', roles: PUBLIC_ACCESS }
     # Renovação do JWT: quem chama está com o access token vencido.
     - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/token/refresh$', roles: PUBLIC_ACCESS }
+    # NOTA (nov/2026): logout, pelo mesmo motivo: quem sai pode estar com o
+    # access token vencido (ou sem nenhum, numa aba que acabou de abrir).
+    # A sessão que ele encerra é a do refresh token do cookie.
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/logout$', roles: PUBLIC_ACCESS }
     - { path: '^/api/login_check', roles: PUBLIC_ACCESS }
     # Todo o resto da API (filmes, pessoas, imagens...) exige JWT.
     - { path: '^/[a-z]{2}(_[A-Z]{2})?/api', roles: IS_AUTHENTICATED_FULLY }

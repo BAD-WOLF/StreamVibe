@@ -1,0 +1,11 @@
+# NOTA (nov/2026): rota do logout, POST /{_locale}/api/logout. Não tem
+# controller, como a api_login_check: quem responde é o logout do firewall
+# "api" (config/packages/security.yaml), pelo nome desta rota. O listener
+# do gesdinet apaga do banco o refresh token que veio no cookie e manda o
+# navegador apagar o cookie. Mesmo requirement de {_locale} das outras
+# rotas da API.
+api_logout:
+  path: /{_locale}/api/logout
+  methods: [POST]
+  requirements:
+    _locale: en|pt_BR|es

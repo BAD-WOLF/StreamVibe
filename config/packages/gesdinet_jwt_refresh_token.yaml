@@ -1,2 +1,33 @@
+# NOTA (nov/2026): o refresh token saiu do corpo das respostas do login e
+# da renovação e foi para um cookie da API (antes o front o guardava no
+# localStorage, ao alcance de qualquer script da página):
+# - HttpOnly: o JavaScript não lê o cookie, então um XSS no front não leva
+#   o refresh token;
+# - SameSite=Strict: o navegador só manda o cookie em requisições do mesmo
+#   site. Por isso, em produção, o front e a API ficam em subdomínios do
+#   mesmo domínio próprio (app.seudominio.com e api.seudominio.com).
+#   Subdomínios de um sufixo público, como *.duckdns.org, contam como
+#   sites diferentes, e o cookie não iria;
+# - Secure: só por HTTPS (JWT_REFRESH_COOKIE_SECURE, desligada no .env.dev);
+# - sem domain: o cookie fica só no host da API;
+# - path /: a renovação e o logout têm o locale no caminho
+#   (/{_locale}/api/token/refresh e /{_locale}/api/logout), e o path de um
+#   cookie não aceita curinga.
+# single_use: cada renovação apaga o refresh token usado e emite outro
+# (rotação): um token copiado deixa de valer na próxima renovação de quem
+# é dono dele. Sem isso o cookie traria um problema — o login reaproveita
+# o refresh token que chega na requisição, e com o cookie seria o de uma
+# sessão anterior do mesmo navegador, até de outra conta.
+# ttl: 30 dias, o padrão do bundle, agora escrito aqui. A sessão dura
+# enquanto o front renovar dentro desse prazo.
 gesdinet_jwt_refresh_token:
     refresh_token_class: App\Domain\Authentication\Entity\RefreshToken
+    ttl: 2592000
+    single_use: true
+    cookie:
+        enabled: true
+        same_site: strict
+        path: /
+        http_only: true
+        secure: '%env(bool:JWT_REFRESH_COOKIE_SECURE)%'
+        remove_token_from_body: true
