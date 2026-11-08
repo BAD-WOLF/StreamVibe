@@ -2,3 +2,11 @@ lexik_jwt_authentication:
     secret_key: '%env(resolve:JWT_SECRET_KEY)%'
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
     pass_phrase: '%env(JWT_PASSPHRASE)%'
+    # NOTA (nov/2026): o access token (JWT) vale 15 minutos; era o padrão do
+    # bundle, 1 hora. O front agora o guarda só na memória da aba e pede
+    # outro ao refresh token (cookie HttpOnly,
+    # config/packages/gesdinet_jwt_refresh_token.yaml) quando ele vence ou
+    # quando a página abre. O JWT é stateless — um token vazado vale até
+    # expirar, mesmo depois de um logout ou de uma troca de senha —, então
+    # quanto mais curto, menor a janela.
+    token_ttl: 900
