@@ -11,6 +11,16 @@ security:
         class: App\Domain\User\Entity\User
         property: email
 
+  # NOTA (nov/2026): a hierarquia de papéis — cada um herda tudo do
+  # anterior: ROLE_USER < ROLE_DEV < ROLE_ADMIN < ROLE_OWNER. A conta guarda
+  # só o papel dela (User::assignRole()); o isGranted() e o access_control
+  # usam esta hierarquia. Espelho do App\Domain\User\ValueObject\Role (o
+  # RoleHierarchyApiTest confere que os dois batem).
+  role_hierarchy:
+    ROLE_DEV: ROLE_USER
+    ROLE_ADMIN: ROLE_DEV
+    ROLE_OWNER: ROLE_ADMIN
+
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js|assets|build)/
@@ -32,6 +42,10 @@ security:
       stateless: true
       entry_point: jwt
       provider: app_user_provider
+      # NOTA (nov/2026): recusa a conta bloqueada a cada requisição com JWT
+      # e a cada renovação do access token — inclusive com um token emitido
+      # antes do bloqueio.
+      user_checker: App\Infrastructure\Security\UserCheckerApi
       jwt: ~
       refresh_jwt:
         # NOTA (out/2026): nome da rota, não o path. A rota real é
@@ -96,6 +110,10 @@ security:
     # A sessão que ele encerra é a do refresh token do cookie.
     - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/logout$', roles: PUBLIC_ACCESS }
     - { path: '^/api/login_check', roles: PUBLIC_ACCESS }
+    # NOTA (nov/2026): administração de contas e log de auditoria. Quem
+    # administra qual conta (o admin só as abaixo do papel dele) é regra do
+    # UserAdministrationPolicy, nos UseCases.
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/admin(/|$)', roles: ROLE_ADMIN }
     # Todo o resto da API (filmes, pessoas, imagens...) exige JWT.
     - { path: '^/[a-z]{2}(_[A-Z]{2})?/api', roles: IS_AUTHENTICATED_FULLY }
     # - { path: ^/admin, roles: ROLE_ADMIN }

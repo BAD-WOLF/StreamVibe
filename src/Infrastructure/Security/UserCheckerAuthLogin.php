@@ -20,6 +20,11 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * email" em vez de "credenciais inválidas". No checkPostAuth(), que roda
  * depois da senha certa, a mensagem só aparece para o dono da conta. A
  * mensagem é a que o checkPostAuth() já usava.
+ *
+ * NOTA (nov/2026): a conta bloqueada (administração de contas) também é
+ * recusada no checkPostAuth(), pelo mesmo motivo, e antes da confirmação
+ * do email (confirmar não adiantaria nada). No firewall "api" quem recusa
+ * é o UserCheckerApi.
  */
 class UserCheckerAuthLogin implements UserCheckerInterface {
     /**
@@ -39,7 +44,8 @@ class UserCheckerAuthLogin implements UserCheckerInterface {
     }
 
     /**
-     * Depois da senha certa: a conta precisa ter o email confirmado.
+     * Depois da senha certa: a conta não pode estar bloqueada e precisa ter
+     * o email confirmado.
      *
      * NOTA (nov/2026): $token entrou na assinatura. Na 7.4 do Symfony ele é
      * um parâmetro "virtual" da UserCheckerInterface (comentado); na 8.0
@@ -54,6 +60,12 @@ class UserCheckerAuthLogin implements UserCheckerInterface {
     public function checkPostAuth(UserInterface $user, ?TokenInterface $token = null): void {
         if (!$user instanceof User) {
             return;
+        }
+
+        if ($user->isBlocked()) {
+            throw new CustomUserMessageAccountStatusException(
+                $this->translator->trans('This account has been blocked.'),
+            );
         }
 
         if (!$user->isVerified()) {

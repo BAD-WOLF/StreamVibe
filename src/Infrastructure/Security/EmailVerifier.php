@@ -23,7 +23,7 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
  * Mailer: monta e manda o email de confirmação com o link assinado, e
  * confere o link quando o usuário o abre.
  *
- * O link aponta para GET /{_locale}/api/verify/email (rota
+ * O link é assinado para GET /{_locale}/api/verify/email (rota
  * VerifyEmailEntryPoint::ROUTE_NAME). O {_locale} vem do contexto do
  * router — o locale da requisição que mandou o email (cadastro ou
  * reenvio).
@@ -46,6 +46,13 @@ use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
  *   outra) e validateEmailConfirmation() (virou validateLink()).
  * - Falha de envio vira EmailDeliveryException (503). Antes o envio era
  *   chamado dentro de um catch (Exception) no UseCase.
+ *
+ * NOTA (nov/2026): o email leva à página do front
+ * ({FRONTEND_UI_DOMAIN}/{locale}/auth/verify-email?expires&id&signature&token),
+ * e não mais à API — quem abria o link via um JSON. A página confere e
+ * confirma chamando a API com os mesmos parâmetros e o mesmo idioma: a
+ * assinatura cobre a URL da API inteira, idioma incluído. O mesmo
+ * FRONTEND_UI_DOMAIN do link de troca de senha.
  */
 final readonly class EmailVerifier implements EmailVerificationInterface {
     private const string CONFIRMATION_TEMPLATE = 'registration/confirmation_email.html.twig';
@@ -59,6 +66,7 @@ final readonly class EmailVerifier implements EmailVerificationInterface {
      * @param \Psr\Log\LoggerInterface                                    $logger
      * @param string                                                      $senderAddress
      * @param string                                                      $senderName
+     * @param string                                                      $frontendDomain FRONTEND_UI_DOMAIN (ex.: https://app.example.com)
      */
     public function __construct(
         private VerifyEmailHelperInterface $verifyEmailHelper,
@@ -67,6 +75,7 @@ final readonly class EmailVerifier implements EmailVerificationInterface {
         private LoggerInterface $logger,
         private string $senderAddress,
         private string $senderName,
+        private string $frontendDomain,
     ) {
     }
 
@@ -89,7 +98,7 @@ final readonly class EmailVerifier implements EmailVerificationInterface {
             ->context([
                 'user' => $user,
                 'app_name' => $this->senderName,
-                'signedUrl' => $signature->getSignedUrl(),
+                'confirmationUrl' => $this->frontendLink($signature->getSignedUrl()),
                 'expiresAtMessageKey' => $signature->getExpirationMessageKey(),
                 'expiresAtMessageData' => $signature->getExpirationMessageData(),
             ]);
@@ -128,5 +137,26 @@ final readonly class EmailVerifier implements EmailVerificationInterface {
                 $exception instanceof \Exception ? $exception : null,
             );
         }
+    }
+
+    /**
+     * A página do front que confirma o email, com os parâmetros do link
+     * assinado da API e o idioma dele (o primeiro segmento do caminho:
+     * /pt_BR/api/verify/email -> pt_BR).
+     *
+     * @param string $signedUrl
+     *
+     * @return string
+     */
+    private function frontendLink(string $signedUrl): string {
+        $path = (string) parse_url($signedUrl, PHP_URL_PATH);
+        $locale = explode('/', ltrim($path, '/'))[0];
+
+        return sprintf(
+            '%s/%s/auth/verify-email?%s',
+            rtrim($this->frontendDomain, '/'),
+            $locale,
+            (string) parse_url($signedUrl, PHP_URL_QUERY),
+        );
     }
 }

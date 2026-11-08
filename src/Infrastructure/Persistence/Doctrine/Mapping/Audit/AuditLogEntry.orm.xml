@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  NOTA (nov/2026): mapeamento do App\Domain\Audit\Entity\AuditLogEntry
+  (migration Version20261108120000).
+
+  - Sem chave estrangeira para "user": quem fez e a conta afetada ficam
+    como id + email, e a entrada continua lá depois que as contas forem
+    excluídas.
+  - read-only: a aplicação só insere entradas; o Doctrine nem procura
+    alterações nelas.
+  - Um índice para cada filtro da lista (a conta afetada e a ação). A
+    ordem da lista (a mais nova primeiro) usa a chave primária.
+-->
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+                    https://www.doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Domain\Audit\Entity\AuditLogEntry"
+            table="audit_log"
+            read-only="true"
+            repository-class="App\Infrastructure\Persistence\Repository\AuditLogRepository">
+
+        <indexes>
+            <index name="IDX_AUDIT_LOG_TARGET_USER" columns="target_user_id"/>
+            <index name="IDX_AUDIT_LOG_ACTION" columns="action"/>
+        </indexes>
+
+        <id name="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="action" type="string" length="40" enum-type="App\Domain\Audit\ValueObject\AuditAction"/>
+        <field name="occurredAt" type="datetime_immutable" column="occurred_at"/>
+        <field name="actorId" type="integer" column="actor_id" nullable="true"/>
+        <field name="actorEmail" type="string" length="180" column="actor_email" nullable="true"/>
+        <field name="targetUserId" type="integer" column="target_user_id" nullable="true"/>
+        <field name="targetEmail" type="string" length="180" column="target_email" nullable="true"/>
+        <field name="details" type="json"/>
+    </entity>
+</doctrine-mapping>

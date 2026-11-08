@@ -96,4 +96,32 @@ class BusinessLogicException extends DomainException {
             'context' => $this->context,
         ];
     }
+
+    /**
+     * NOTA (nov/2026): administração de contas — a ação tiraria o último
+     * owner (papel, bloqueio ou exclusão).
+     *
+     * @return self
+     */
+    public static function lastOwner(): self {
+        return new self(
+            'The last owner cannot lose the owner role, be blocked or be deleted',
+            409,
+            null,
+            ['rule' => 'last_owner'],
+        );
+    }
+
+    /**
+     * NOTA (nov/2026): administração de contas — a conta já está no estado
+     * pedido (já confirmada, já bloqueada, não bloqueada, já tem o papel).
+     * 409: a ação não muda nada, e não entra no log de auditoria.
+     *
+     * @param string $reason
+     *
+     * @return self
+     */
+    public static function noChange(string $reason): self {
+        return new self($reason, 409, null, ['rule' => 'no_change']);
+    }
 }

@@ -35,6 +35,13 @@ doctrine:
         dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping/Authentication'
         prefix: 'App\Domain\Authentication\Entity'
         alias: Authentication
+      # NOTA (nov/2026): o log de auditoria da administração de contas.
+      Audit:
+        type: xml
+        is_bundle: false
+        dir: '%kernel.project_dir%/src/Infrastructure/Persistence/Doctrine/Mapping/Audit'
+        prefix: 'App\Domain\Audit\Entity'
+        alias: Audit
 
 when@test:
   doctrine:

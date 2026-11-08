@@ -65,4 +65,48 @@ class PermissionDeniedException extends DomainException {
             ],
         );
     }
+
+    /**
+     * NOTA (nov/2026): administração de contas — a ação é sobre a própria
+     * conta do admin.
+     *
+     * @return self
+     */
+    public static function ownAccount(): self {
+        return new self('You cannot do this to your own account', 403, null, ['rule' => 'own_account']);
+    }
+
+    /**
+     * NOTA (nov/2026): administração de contas — o papel da conta não está
+     * abaixo do papel de quem tentou.
+     *
+     * @param string $targetRole
+     *
+     * @return self
+     */
+    public static function higherRole(string $targetRole): self {
+        return new self(
+            sprintf('Only a role above %s can manage this account', $targetRole),
+            403,
+            null,
+            ['rule' => 'higher_role', 'target_role' => $targetRole],
+        );
+    }
+
+    /**
+     * NOTA (nov/2026): administração de contas — o papel pedido não está
+     * abaixo do papel de quem tentou dar.
+     *
+     * @param string $role
+     *
+     * @return self
+     */
+    public static function roleAboveYours(string $role): self {
+        return new self(
+            sprintf('You cannot give the role %s', $role),
+            403,
+            null,
+            ['rule' => 'role_above_yours', 'role' => $role],
+        );
+    }
 }
