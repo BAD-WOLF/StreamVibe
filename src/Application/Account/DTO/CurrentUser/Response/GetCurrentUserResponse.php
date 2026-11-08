@@ -9,22 +9,26 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 /**
  * Resposta do GetCurrentUserUseCase: o `data` de GET /me.
  *
- *     {"id": 42, "email": "ana@example.com", "roles": ["ROLE_USER"], "verified": true}
+ *     {"id": 42, "email": "ana@example.com", "role": "ROLE_USER", "verified": true}
  *
  * O recurso é o próprio usuário, então o id é `id` (como o `id` de
  * GET /movies/{movieId}); `user_id` fica para as respostas que só
- * apontam para um usuário. `roles` são as do usuário, sempre com
- * ROLE_USER (User::getRoles()) — as mesmas que vão no JWT.
+ * apontam para um usuário.
  *
  * NOTA (nov/2026): criado com o GET /me. O front não sabia o id da própria
  * conta: o JWT não o traz, e ele guardava o user_id do cadastro feito
  * naquele navegador.
+ *
+ * NOTA (nov/2026, hierarquia de papéis): `roles` (a lista guardada, sempre
+ * com ROLE_USER) virou `role`: o papel da conta na hierarquia
+ * (ROLE_USER < ROLE_DEV < ROLE_ADMIN < ROLE_OWNER), o mesmo das telas de
+ * administração. Os herdados saem dele (o front espelha a hierarquia).
  */
 final class GetCurrentUserResponse {
     /**
      * @param int          $id
      * @param string       $email
-     * @param list<string> $roles
+     * @param string       $role
      * @param bool         $verified
      * @param string|null  $message
      */
@@ -39,10 +43,10 @@ final class GetCurrentUserResponse {
              * @return string
              */ get => $this->email;
         },
-        public private(set) array $roles {
+        public private(set) string $role {
             /**
-             * @return list<string>
-             */ get => $this->roles;
+             * @return string
+             */ get => $this->role;
         },
         public private(set) bool $verified {
             /**
@@ -61,7 +65,7 @@ final class GetCurrentUserResponse {
     /**
      * @param int          $id
      * @param string       $email
-     * @param list<string> $roles
+     * @param string       $role
      * @param bool         $verified
      * @param string|null  $message
      *
@@ -70,10 +74,10 @@ final class GetCurrentUserResponse {
     public static function success(
         int $id,
         string $email,
-        array $roles,
+        string $role,
         bool $verified,
         ?string $message = null,
     ): self {
-        return new self(id: $id, email: $email, roles: $roles, verified: $verified, message: $message);
+        return new self(id: $id, email: $email, role: $role, verified: $verified, message: $message);
     }
 }

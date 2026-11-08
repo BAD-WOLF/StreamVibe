@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Domain\User\Repository;
 
 use App\Domain\User\Entity\User;
+use App\Domain\User\ValueObject\Role;
 
 /**
  * Repositório de usuários (implementado por
@@ -16,6 +17,9 @@ use App\Domain\User\Entity\User;
  *   recebia o flush mesmo assim. O padrão daqui passou a ser o real (true).
  * - save() lança UserAlreadyExistsException quando o banco recusa o email
  *   repetido (corrida entre dois cadastros simultâneos): antes era 500.
+ *
+ * NOTA (nov/2026): findPage() e countActiveWithRole(), para a
+ * administração de contas (a lista com filtros e a regra do último owner).
  */
 interface UserRepositoryInterface {
     /**
@@ -74,4 +78,36 @@ interface UserRepositoryInterface {
         User $user,
         string $newHashedPassword,
     ): void;
+
+    /**
+     * Uma página das contas, da mais nova para a mais antiga, com os
+     * filtros que vierem (null = sem aquele filtro).
+     *
+     * @param int                                         $page     a partir de 1
+     * @param int                                         $perPage
+     * @param string|null                                 $search   trecho do email (sem diferenciar maiúsculas) ou o id
+     * @param \App\Domain\User\ValueObject\Role|null      $role     o papel da conta (o mais alto)
+     * @param bool|null                                   $verified
+     * @param bool|null                                   $blocked
+     *
+     * @return array{users: list<\App\Domain\User\Entity\User>, total: int}
+     */
+    public function findPage(
+        int $page,
+        int $perPage,
+        ?string $search,
+        ?Role $role,
+        ?bool $verified,
+        ?bool $blocked,
+    ): array;
+
+    /**
+     * Quantas contas ativas (não bloqueadas) têm $role como papel (o mais
+     * alto).
+     *
+     * @param \App\Domain\User\ValueObject\Role $role
+     *
+     * @return int
+     */
+    public function countActiveWithRole(Role $role): int;
 }

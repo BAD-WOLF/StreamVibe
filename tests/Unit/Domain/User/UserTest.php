@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\User;
 
 use App\Domain\User\Entity\User;
+use App\Domain\User\ValueObject\Role;
 use App\Tests\Helper\UserTestBuilder;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -328,5 +329,66 @@ final class UserTest extends TestCase
             $duration,
             "User entity methods should have good performance (completed in {$duration}s)",
         );
+    }
+
+    // ------------------------------------------------------------------
+    // NOTA (nov/2026): papel na hierarquia, datas e bloqueio (administração
+    // de contas).
+    // ------------------------------------------------------------------
+
+    public function testANewAccountRecordsWhenItWasCreated(): void
+    {
+        $before = new \DateTimeImmutable();
+        $user = new User();
+
+        $this->assertNotNull($user->getCreatedAt());
+        $this->assertGreaterThanOrEqual($before, $user->getCreatedAt());
+        $this->assertNull($user->getLastLoginAt());
+        $this->assertFalse($user->isBlocked());
+    }
+
+    public function testTheRoleIsTheHighestStoredOne(): void
+    {
+        $this->assertSame(Role::User, $this->user->getRole());
+
+        $this->user->setRoles(['ROLE_DEV', 'ROLE_ADMIN']);
+        $this->assertSame(Role::Admin, $this->user->getRole());
+    }
+
+    public function testAssignRoleStoresOneRole(): void
+    {
+        $this->user->setRoles(['ROLE_DEV', 'ROLE_ADMIN']);
+
+        $this->user->assignRole(Role::Owner);
+        $this->assertSame(['ROLE_OWNER', 'ROLE_USER'], array_values($this->user->getRoles()));
+        $this->assertSame(Role::Owner, $this->user->getRole());
+
+        $this->user->assignRole(Role::User);
+        $this->assertSame(['ROLE_USER'], array_values($this->user->getRoles()));
+        $this->assertSame(Role::User, $this->user->getRole());
+    }
+
+    public function testBlockAndUnblock(): void
+    {
+        $at = new \DateTimeImmutable('2026-11-08 12:00:00');
+
+        $this->user->block('spam', $at);
+        $this->assertTrue($this->user->isBlocked());
+        $this->assertSame($at, $this->user->getBlockedAt());
+        $this->assertSame('spam', $this->user->getBlockedReason());
+
+        $this->user->unblock();
+        $this->assertFalse($this->user->isBlocked());
+        $this->assertNull($this->user->getBlockedAt());
+        $this->assertNull($this->user->getBlockedReason());
+    }
+
+    public function testRecordLogin(): void
+    {
+        $at = new \DateTimeImmutable('2026-11-08 12:00:00');
+
+        $this->user->recordLogin($at);
+
+        $this->assertSame($at, $this->user->getLastLoginAt());
     }
 }

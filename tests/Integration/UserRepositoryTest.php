@@ -7,6 +7,7 @@ namespace App\Tests\Integration;
 use App\Domain\Exception\UserAlreadyExistsException;
 use App\Domain\User\Entity\User;
 use App\Domain\User\Repository\UserRepositoryInterface;
+use App\Domain\User\ValueObject\Role;
 use App\Infrastructure\Persistence\Repository\UserRepository;
 use App\Tests\Helper\UserTestBuilder;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -388,5 +389,75 @@ final class UserRepositoryTest extends KernelTestCase
         // Verify email uniqueness
         $emails = array_map(fn($user) => $user->getEmail(), $allUsers);
         $this->assertCount(20, array_unique($emails));
+    }
+
+    // ------------------------------------------------------------------
+    // NOTA (nov/2026): a lista da administração de contas (SQL nativo, com o
+    // filtro de papel dentro da coluna roles, em JSON).
+    // ------------------------------------------------------------------
+
+    public function testFindPageFiltersNewestFirst(): void
+    {
+        $plain = $this->saveUser("plain@example.com", [], verified: true);
+        $this->saveUser("legacy_1%@example.com", ["ROLE_USER"], verified: true);
+        $this->saveUser("dev@example.com", ["ROLE_DEV"], verified: false);
+        $this->saveUser("admin@example.com", ["ROLE_ADMIN", "ROLE_DEV"], verified: true);
+        $blockedOwner = $this->saveUser("owner@example.com", ["ROLE_OWNER"], verified: true, blocked: true);
+        $this->entityManager->clear();
+
+        $emails = fn(array $page): array => array_map(static fn(User $user): string => (string) $user->getEmail(), $page["users"]);
+
+        $all = $this->userRepository->findPage(1, 20, null, null, null, null);
+        $this->assertSame(["owner@example.com", "admin@example.com", "dev@example.com", "legacy_1%@example.com", "plain@example.com"], $emails($all));
+        $this->assertSame(5, $all["total"]);
+
+        $this->assertSame(["legacy_1%@example.com", "plain@example.com"], $emails($this->userRepository->findPage(1, 20, null, Role::User, null, null)));
+        $this->assertSame(["dev@example.com"], $emails($this->userRepository->findPage(1, 20, null, Role::Dev, null, null)));
+        $this->assertSame(["admin@example.com"], $emails($this->userRepository->findPage(1, 20, null, Role::Admin, null, null)));
+        $this->assertSame(["dev@example.com"], $emails($this->userRepository->findPage(1, 20, null, null, false, null)));
+        $this->assertSame(["owner@example.com"], $emails($this->userRepository->findPage(1, 20, null, null, null, true)));
+        $this->assertSame(["legacy_1%@example.com"], $emails($this->userRepository->findPage(1, 20, "_1%", null, null, null)), "% and _ are text");
+        $this->assertSame(["plain@example.com"], $emails($this->userRepository->findPage(1, 20, (string) $plain->getId(), null, null, null)));
+        $this->assertSame(5, $this->userRepository->findPage(1, 20, "EXAMPLE.COM", null, null, null)["total"]);
+        $this->assertSame(0, $this->userRepository->findPage(1, 20, "99999999999999999999", null, null, null)["total"]);
+
+        $page = $this->userRepository->findPage(2, 2, null, null, null, null);
+        $this->assertSame(["dev@example.com", "legacy_1%@example.com"], $emails($page));
+        $this->assertSame(5, $page["total"]);
+
+        $found = $this->userRepository->findPage(1, 1, null, Role::Owner, null, null)["users"][0];
+        $this->assertSame([$blockedOwner->getId(), true, "test"], [$found->getId(), $found->isBlocked(), $found->getBlockedReason()]);
+    }
+
+    public function testCountActiveWithRoleLeavesBlockedAccountsOut(): void
+    {
+        $this->saveUser("owner1@example.com", ["ROLE_OWNER"], verified: true);
+        $this->saveUser("owner2@example.com", ["ROLE_OWNER"], verified: true, blocked: true);
+        $this->saveUser("admin@example.com", ["ROLE_ADMIN"], verified: true);
+
+        $this->assertSame(1, $this->userRepository->countActiveWithRole(Role::Owner));
+        $this->assertSame(1, $this->userRepository->countActiveWithRole(Role::Admin));
+        $this->assertSame(0, $this->userRepository->countActiveWithRole(Role::Dev));
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    private function saveUser(string $email, array $roles, bool $verified, bool $blocked = false): User
+    {
+        $user = UserTestBuilder::create()
+            ->withEmail($email)
+            ->withPassword("hashed_password_123")
+            ->withRoles($roles)
+            ->verified($verified)
+            ->build();
+
+        if ($blocked) {
+            $user->block("test", new \DateTimeImmutable());
+        }
+
+        $this->userRepository->save($user);
+
+        return $user;
     }
 }

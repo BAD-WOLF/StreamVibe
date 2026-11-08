@@ -6,6 +6,11 @@
   exatamente a migration Version20260822104709: tabela "user" (entre
   crases porque é palavra reservada no PostgreSQL), índice único
   UNIQ_IDENTIFIER_EMAIL e o mesmo repositório.
+
+  NOTA (nov/2026): created_at, last_login_at, blocked_at e blocked_reason
+  (migration Version20261108120000). Todos aceitam NULL: as contas que já
+  existiam não têm data de criação registrada, e nem toda conta já fez
+  login ou foi bloqueada.
 -->
 <doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,5 +33,9 @@
         <field name="roles" type="json"/>
         <field name="password" type="string" length="255"/>
         <field name="isVerified" type="boolean" column="is_verified"/>
+        <field name="createdAt" type="datetime_immutable" column="created_at" nullable="true"/>
+        <field name="lastLoginAt" type="datetime_immutable" column="last_login_at" nullable="true"/>
+        <field name="blockedAt" type="datetime_immutable" column="blocked_at" nullable="true"/>
+        <field name="blockedReason" type="string" length="255" column="blocked_reason" nullable="true"/>
     </entity>
 </doctrine-mapping>

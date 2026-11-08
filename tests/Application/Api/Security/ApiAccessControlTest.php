@@ -61,6 +61,10 @@ final class ApiAccessControlTest extends WebTestCase
         yield "reset requests of a user" => ["/pt_BR/api/reset-password/requests/1"];
         // NOTA (nov/2026): a conta de quem está logado.
         yield "current user" => ["/pt_BR/api/me"];
+        // NOTA (nov/2026): administração de contas e log de auditoria.
+        yield "admin: accounts" => ["/pt_BR/api/admin/users"];
+        yield "admin: an account" => ["/en/api/admin/users/1"];
+        yield "admin: audit log" => ["/es/api/admin/audit-log"];
     }
 
     #[DataProvider("protectedRouteProvider")]

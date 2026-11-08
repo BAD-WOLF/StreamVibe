@@ -52,6 +52,10 @@ services:
   App\Domain\Authentication\Repository\ResetPasswordSolicitationRepositoryInterface:
     alias: App\Infrastructure\Persistence\Repository\ResetPasswordSolicitationRepository
 
+  # NOTA (nov/2026): o log de auditoria da administração de contas.
+  App\Domain\Audit\Repository\AuditLogRepositoryInterface:
+    alias: App\Infrastructure\Persistence\Repository\AuditLogRepository
+
   # Application
   App\Application\Shared\Gateway\MovieDatabaseGatewayInterface:
     alias: App\Infrastructure\ExternalServices\TmdbApiService
@@ -68,6 +72,10 @@ services:
   App\Application\Authentication\Port\RefreshTokenRevokerInterface:
     alias: App\Infrastructure\Security\RefreshTokenRevoker
 
+  # NOTA (nov/2026): administração de contas.
+  App\Application\Admin\Port\UserSessionsInterface:
+    alias: App\Infrastructure\Security\RefreshTokenSessions
+
   # SymfonyCasts ResetPassword bundle interface binding
   SymfonyCasts\Bundle\ResetPassword\Persistence\ResetPasswordRequestRepositoryInterface:
     alias: App\Infrastructure\Persistence\Repository\ResetPasswordSolicitationRepository
@@ -81,10 +89,12 @@ services:
     arguments:
       $tmdbToken: "%env(TMDB_TOKEN)%"
 
+  # NOTA (nov/2026): $frontendDomain — o link de confirmação leva ao front.
   App\Infrastructure\Security\EmailVerifier:
     arguments:
       $senderAddress: "%app.mailer.sender_address%"
       $senderName: "%app.mailer.sender_name%"
+      $frontendDomain: "%env(FRONTEND_UI_DOMAIN)%"
 
   App\Infrastructure\Security\PasswordResetManager:
     arguments:

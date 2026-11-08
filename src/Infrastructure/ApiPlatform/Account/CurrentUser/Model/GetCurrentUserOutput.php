@@ -12,7 +12,7 @@ use App\Infrastructure\ApiPlatform\Shared\Attribute\AutoMapFromDto;
  *
  *     {
  *       "success": true,
- *       "data": {"id": 42, "email": "ana@example.com", "roles": ["ROLE_USER"], "verified": true},
+ *       "data": {"id": 42, "email": "ana@example.com", "role": "ROLE_USER", "verified": true},
  *       "message": "Current user retrieved successfully"
  *     }
  *

@@ -18,7 +18,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * JWT: um email confirmado ou um papel trocado depois do login aparecem na
  * hora, sem esperar o token vencer.
  *
- * NOTA (nov/2026): criado com o GET /me.
+ * NOTA (nov/2026): criado com o GET /me. Com a hierarquia de papéis, devolve
+ * o papel da conta (`role`) no lugar da lista guardada (`roles`).
  */
 final readonly class GetCurrentUserUseCase {
     /**
@@ -53,7 +54,7 @@ final readonly class GetCurrentUserUseCase {
         return GetCurrentUserResponse::success(
             id: (int) $user->getId(),
             email: (string) $user->getEmail(),
-            roles: array_values($user->getRoles()),
+            role: $user->getRole()->value,
             verified: $user->isVerified(),
             message: $this->translator->trans('Current user retrieved successfully'),
         );

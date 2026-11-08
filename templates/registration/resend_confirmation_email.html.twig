@@ -1,8 +1,10 @@
+{# NOTA (nov/2026): o link leva à página do front que confirma o email
+   (EmailVerifier::frontendLink()), e não mais à API. #}
 <h1>Hi! Please confirm your email!</h1>
 
 <p>
     Please confirm your email address by clicking the following link: <br><br>
-    <a href="{{ signedUrl|raw }}">Confirm my Email</a>.
+    <a href="{{ confirmationUrl|raw }}">Confirm my Email</a>.
     This link will expire AGAIN in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
 </p>
 

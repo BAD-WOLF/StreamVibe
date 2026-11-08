@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Application\Api\Account;
 
 use App\Domain\User\Entity\User;
+use App\Domain\User\ValueObject\Role;
 use App\Tests\Helper\ApiAuthenticationTrait;
 use App\Tests\Helper\ApiRequestTrait;
 use App\Tests\Helper\DatabaseTestTrait;
@@ -16,7 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * GET /{locale}/api/me: a conta do usuário do JWT, lida do banco.
  *
- * NOTA (nov/2026): criado com o GET /me.
+ * NOTA (nov/2026): criado com o GET /me. Com a hierarquia de papéis, `roles`
+ * virou `role` (o papel da conta).
  */
 final class CurrentUserApiTest extends WebTestCase
 {
@@ -53,7 +55,7 @@ final class CurrentUserApiTest extends WebTestCase
             [
                 'id' => $user->getId(),
                 'email' => 'me@example.com',
-                'roles' => ['ROLE_ADMIN', 'ROLE_USER'],
+                'role' => 'ROLE_ADMIN',
                 'verified' => true,
             ],
             $body['data'],
@@ -71,16 +73,16 @@ final class CurrentUserApiTest extends WebTestCase
         $this->authenticateClient($this->client, $user);
 
         $this->client->request('GET', '/en/api/me');
-        $this->assertSame(['ROLE_USER'], $this->responseData($this->client)['data']['roles']);
+        $this->assertSame('ROLE_USER', $this->responseData($this->client)['data']['role']);
 
         $entityManager = static::getContainer()->get('doctrine')->getManager();
         $stored = $entityManager->getRepository(User::class)->find($user->getId());
         $this->assertInstanceOf(User::class, $stored);
-        $stored->setRoles(['ROLE_ADMIN']);
+        $stored->assignRole(Role::Admin);
         $entityManager->flush();
 
         $this->client->request('GET', '/en/api/me');
-        $this->assertSame(['ROLE_ADMIN', 'ROLE_USER'], $this->responseData($this->client)['data']['roles']);
+        $this->assertSame('ROLE_ADMIN', $this->responseData($this->client)['data']['role']);
     }
 
     public function testRequiresAJwt(): void

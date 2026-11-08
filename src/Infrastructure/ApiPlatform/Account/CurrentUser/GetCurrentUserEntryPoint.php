@@ -45,7 +45,7 @@ use App\Infrastructure\Http\Controller\Account\CurrentUser\GetCurrentUserControl
                         ),
                     ],
                     summary: 'Get the account of the logged-in user',
-                    description: 'Id, email, roles and email verification of the user of the JWT, read from the database on every call (a change after the login shows up at once).',
+                    description: 'Id, email, role (ROLE_USER < ROLE_DEV < ROLE_ADMIN < ROLE_OWNER, each with everything of the one before) and email verification of the user of the JWT, read from the database on every call (a change after the login shows up at once).',
                     parameters: [
                         new Parameter(
                             name: '_locale',
