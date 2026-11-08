@@ -28,7 +28,7 @@
     "nelmio/cors-bundle": "^2.6.1",
     "nikic/php-parser": "^5.9",
     "paragonie/sodium_compat": "^2.5.2",
-    "phpdocumentor/reflection-docblock": "^5.6.7",
+    "phpdocumentor/reflection-docblock": "^6.0.3",
     "phpstan/phpdoc-parser": "^2.4.1",
     "phpunit/phpunit": "^12.5.43",
     "sentry/sentry-symfony": "^5.15",
