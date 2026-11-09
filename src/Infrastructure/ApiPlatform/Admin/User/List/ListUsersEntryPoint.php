@@ -24,6 +24,9 @@ use App\Infrastructure\Http\Controller\Admin\User\List\ListUsersController;
  * ListUsersOutput.
  *
  * NOTA (nov/2026): criado com a administração de contas.
+ *
+ * NOTA (nov/2026): o 403 de quem não é ROLE_ADMIN traz o motivo, como o
+ * Symfony responde ("Access Denied. The user doesn't have ROLE_ADMIN.").
  */
 #[
     ApiResource(
@@ -52,10 +55,10 @@ use App\Infrastructure\Http\Controller\Admin\User\List\ListUsersController;
                             content: new UnauthorizedSchema(),
                         ),
                         403 => new Response(
-                            description: 'Forbidden — the user of the JWT is not ROLE_ADMIN (http_error "Access Denied.")',
+                            description: 'Forbidden — the user of the JWT is not ROLE_ADMIN (http_error "Access Denied. The user doesn\'t have ROLE_ADMIN.")',
                             content: new ErrorResponseSchema(
                                 type: 'http_error',
-                                message: 'Access Denied.',
+                                message: 'Access Denied. The user doesn\'t have ROLE_ADMIN.',
                             ),
                         ),
                     ],

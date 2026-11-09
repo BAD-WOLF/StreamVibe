@@ -30,6 +30,9 @@ use App\Infrastructure\Http\Controller\Admin\User\Sessions\RevokeUserSessionsCon
  * método.
  *
  * NOTA (nov/2026): criado com a administração de contas.
+ *
+ * NOTA (nov/2026): o 403 de quem não é ROLE_ADMIN traz o motivo, como o
+ * Symfony responde ("Access Denied. The user doesn't have ROLE_ADMIN.").
  */
 #[
     ApiResource(
@@ -68,7 +71,7 @@ use App\Infrastructure\Http\Controller\Admin\User\Sessions\RevokeUserSessionsCon
                             content: new UnauthorizedSchema(),
                         ),
                         403 => new Response(
-                            description: 'Forbidden — the user of the JWT is not ROLE_ADMIN (http_error "Access Denied."); or the account is your own, or its role is not below yours (permission_denied_error)',
+                            description: 'Forbidden — the user of the JWT is not ROLE_ADMIN (http_error "Access Denied. The user doesn\'t have ROLE_ADMIN."); or the account is your own, or its role is not below yours (permission_denied_error)',
                             content: new ErrorResponseSchema(
                                 type: 'permission_denied_error',
                                 message: 'Only a role above ROLE_ADMIN can manage this account',
