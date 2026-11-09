@@ -88,7 +88,8 @@ final class SystemApiTest extends WebTestCase
         $this->client->request('GET', $uri);
 
         $error = $this->assertApiError($this->client, Response::HTTP_FORBIDDEN, 'http_error');
-        $this->assertSame('Access Denied.', $error['message']);
+        // a mensagem do Symfony traz o motivo (o voto do RoleVoter)
+        $this->assertSame("Access Denied. The user doesn't have ROLE_DEV.", $error['message']);
     }
 
     /**

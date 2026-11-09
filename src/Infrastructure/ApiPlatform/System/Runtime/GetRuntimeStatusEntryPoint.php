@@ -44,10 +44,10 @@ use App\Infrastructure\Http\Controller\System\Runtime\GetRuntimeStatusController
                             content: new UnauthorizedSchema(),
                         ),
                         403 => new Response(
-                            description: 'Forbidden — the user of the JWT is not ROLE_DEV (http_error "Access Denied.")',
+                            description: 'Forbidden — the user of the JWT is not ROLE_DEV (http_error "Access Denied. The user doesn\'t have ROLE_DEV.")',
                             content: new ErrorResponseSchema(
                                 type: 'http_error',
-                                message: 'Access Denied.',
+                                message: 'Access Denied. The user doesn\'t have ROLE_DEV.',
                             ),
                         ),
                     ],
