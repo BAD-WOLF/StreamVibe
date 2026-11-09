@@ -26,6 +26,9 @@ use App\Infrastructure\Http\Controller\Admin\User\Role\ChangeUserRoleController;
  * ChangeUserRoleOutput.
  *
  * NOTA (nov/2026): criado com a administração de contas.
+ *
+ * NOTA (nov/2026): o 403 de quem não é ROLE_ADMIN traz o motivo, como o
+ * Symfony responde ("Access Denied. The user doesn't have ROLE_ADMIN.").
  */
 #[
     ApiResource(
@@ -57,7 +60,7 @@ use App\Infrastructure\Http\Controller\Admin\User\Role\ChangeUserRoleController;
                             content: new UnauthorizedSchema(),
                         ),
                         403 => new Response(
-                            description: 'Forbidden — the user of the JWT is not ROLE_ADMIN (http_error "Access Denied."); or the account is your own, its role is not below yours, or the new role is not below yours (permission_denied_error)',
+                            description: 'Forbidden — the user of the JWT is not ROLE_ADMIN (http_error "Access Denied. The user doesn\'t have ROLE_ADMIN."); or the account is your own, its role is not below yours, or the new role is not below yours (permission_denied_error)',
                             content: new ErrorResponseSchema(
                                 type: 'permission_denied_error',
                                 message: 'You cannot give the role ROLE_ADMIN',

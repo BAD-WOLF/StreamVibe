@@ -188,6 +188,37 @@ final class OpenApiContractTest extends WebTestCase
         $this->assertResponseMatchesDocumentation("delete", $user, 200);
     }
 
+    /**
+     * NOTA (nov/2026): o painel do sistema (ROLE_DEV). GET
+     * /system/dependencies vai ao TMDB, mas devolve os mesmos campos com ou
+     * sem rede (sem resposta, reachable false) — por isso entra aqui. O
+     * arquivo de log é um de exemplo, apagado no fim.
+     */
+    public function testSystemRoutesMatchTheirDocumentation(): void
+    {
+        $dev = $this->makeUser("contract-dev@example.com", verified: true);
+        $dev->assignRole(Role::Dev);
+        static::getContainer()->get("doctrine")->getManager()->flush();
+        $this->authenticateClient($this->client, $dev);
+        $logs = (string) static::getContainer()->getParameter("kernel.logs_dir");
+        if (!is_dir($logs)) {
+            mkdir($logs, 0777, true);
+        }
+        file_put_contents("{$logs}/contract-test.log", "[2026-11-08T10:00:00.000+00:00] app.ERROR: a line\n");
+
+        try {
+            foreach (["server", "runtime", "dependencies", "processes", "logs"] as $route) {
+                $this->client->request("GET", "/pt_BR/api/system/{$route}");
+                $this->assertResponseMatchesDocumentation("get", "/{_locale}/api/system/{$route}", 200);
+            }
+
+            $this->client->request("GET", "/pt_BR/api/system/logs/contract-test.log");
+            $this->assertResponseMatchesDocumentation("get", "/{_locale}/api/system/logs/{file}", 200);
+        } finally {
+            @unlink("{$logs}/contract-test.log");
+        }
+    }
+
     public function testImageRoutesWithoutTmdbMatchTheirDocumentation(): void
     {
         $this->authenticateClient($this->client, $this->makeUser("contract-images@example.com", verified: true));

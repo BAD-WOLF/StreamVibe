@@ -13,6 +13,12 @@ parameters:
   app.mailer.sender_address: 'noreply@streamvibe.com'
   app.mailer.sender_name: 'StreamVibe'
 
+  # NOTA (nov/2026): nível mínimo do log em arquivo (var/log/<ambiente>.log,
+  # App\Infrastructure\Logging\FileLogger), o que o painel do sistema lê:
+  # info em dev e test, warning em prod (when@prod no fim deste arquivo). A
+  # variável de ambiente LOG_LEVEL, quando existe, vale mais que este.
+  app.log.level: info
+
 services:
 
   # default configuration for services in *this* file
@@ -76,6 +82,29 @@ services:
   App\Application\Admin\Port\UserSessionsInterface:
     alias: App\Infrastructure\Security\RefreshTokenSessions
 
+  # NOTA (nov/2026): painel do sistema (ROLE_DEV). O TmdbApiService é
+  # também a porta de conferência do TMDB: o HttpClient continua só nele.
+  App\Application\Shared\Port\SecretMaskerInterface:
+    alias: App\Infrastructure\Security\SecretMasker
+
+  App\Application\System\Port\ServerInspectorInterface:
+    alias: App\Infrastructure\System\ProcServerInspector
+
+  App\Application\System\Port\RuntimeInspectorInterface:
+    alias: App\Infrastructure\System\PhpRuntimeInspector
+
+  App\Application\System\Port\ProcessInspectorInterface:
+    alias: App\Infrastructure\System\ProcProcessInspector
+
+  App\Application\System\Port\DatabaseInspectorInterface:
+    alias: App\Infrastructure\Persistence\DoctrineDatabaseInspector
+
+  App\Application\System\Port\MovieDatabaseProbeInterface:
+    alias: App\Infrastructure\ExternalServices\TmdbApiService
+
+  App\Application\System\Port\LogReaderInterface:
+    alias: App\Infrastructure\Logging\LogFileReader
+
   # SymfonyCasts ResetPassword bundle interface binding
   SymfonyCasts\Bundle\ResetPassword\Persistence\ResetPasswordRequestRepositoryInterface:
     alias: App\Infrastructure\Persistence\Repository\ResetPasswordSolicitationRepository
@@ -101,6 +130,47 @@ services:
       $senderAddress: "%app.mailer.sender_address%"
       $senderName: "%app.mailer.sender_name%"
 
+  # NOTA (nov/2026): o logger da aplicação. Decora o logger padrão do
+  # Symfony (sem o MonologBundle, ele só escreve no stderr, do nível error
+  # para cima) — que continua escrevendo lá e alimentando o profiler — e
+  # grava também em var/log/<ambiente>.log, o arquivo que o painel do
+  # sistema lê.
+  App\Infrastructure\Logging\FileLogger:
+    decorates: logger
+    arguments:
+      $inner: "@.inner"
+      $logsDir: "%kernel.logs_dir%"
+      $environment: "%kernel.environment%"
+      $minLevel: "%env(default:app.log.level:LOG_LEVEL)%"
+
+  # NOTA (nov/2026): painel do sistema (ROLE_DEV).
+  App\Infrastructure\Logging\LogFileReader:
+    arguments:
+      $logsDir: "%kernel.logs_dir%"
+
+  App\Infrastructure\System\PhpRuntimeInspector:
+    arguments:
+      $environment: "%kernel.environment%"
+      $debug: "%kernel.debug%"
+      $bundles: "%kernel.bundles%"
+
+  App\Infrastructure\Persistence\DoctrineDatabaseInspector:
+    arguments:
+      $migrations: "@doctrine.migrations.dependency_factory"
+
+  # NOTA (nov/2026): os segredos que o SecretMasker esconde pelo valor nas
+  # mensagens que saem pelo painel do sistema. Resolvidos como o resto da
+  # aplicação os resolve (.env ou cofre); um que não existe vira null.
+  App\Infrastructure\Security\SecretMasker:
+    arguments:
+      $secrets:
+        APP_SECRET: "%env(default::APP_SECRET)%"
+        DATABASE_URL: "%env(default::DATABASE_URL)%"
+        JWT_PASSPHRASE: "%env(default::JWT_PASSPHRASE)%"
+        MAILER_DSN: "%env(default::MAILER_DSN)%"
+        SENTRY_DSN: "%env(default::SENTRY_DSN)%"
+        TMDB_TOKEN: "%env(default::TMDB_TOKEN)%"
+
   # NOTA (nov/2026): contagem das tentativas de login no pool próprio
   # (config/packages/cache.yaml), separada do cache.app de uso geral. Os
   # listeners de login (LoginThrottlingListener) e de headers de segurança
@@ -125,3 +195,9 @@ services:
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
+
+# NOTA (nov/2026): em produção o log em arquivo fica do warning para cima
+# (ver app.log.level, no começo deste arquivo).
+when@prod:
+  parameters:
+    app.log.level: warning
