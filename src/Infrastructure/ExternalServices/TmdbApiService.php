@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace App\Infrastructure\ExternalServices;
 
 use App\Application\Shared\Gateway\MovieDatabaseGatewayInterface;
+use App\Application\System\DTO\Dependencies\Response\Model\ExternalServiceStatus;
+use App\Application\System\Port\MovieDatabaseProbeInterface;
 use App\Domain\Exception\BusinessLogicException;
 use App\Domain\Exception\DomainException;
 use App\Domain\Exception\ExternalServiceException;
@@ -39,11 +41,22 @@ use Throwable;
  * - Similar/Recommendations ganharam `page` (antes era sempre a página 1).
  * - getUpcoming(), getMovieGenres() e discoverMovies() continuam aqui (não
  *   têm endpoint ainda), agora pelo mesmo caminho de tradução de erros.
+ *
+ * NOTA (nov/2026): passou a implementar também a
+ * App\Application\System\Port\MovieDatabaseProbeInterface (probe(), a
+ * conferência do TMDB no painel do sistema) — assim o HttpClient e o
+ * endereço do TMDB continuam só aqui.
  */
-class TmdbApiService implements MovieDatabaseGatewayInterface {
+class TmdbApiService implements MovieDatabaseGatewayInterface, MovieDatabaseProbeInterface {
     private const string API_BASE_URL   = 'https://api.themoviedb.org/3';
     private const string IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/';
     private const string SERVICE_NAME   = 'TMDB';
+
+    /**
+     * Limite (segundos) da conferência do probe(): o painel do sistema não
+     * fica preso esperando o TMDB.
+     */
+    private const float PROBE_TIMEOUT = 5.0;
 
     private array $options;
 
@@ -315,6 +328,45 @@ class TmdbApiService implements MovieDatabaseGatewayInterface {
      */
     public function discoverMovies(array $filters = []): array {
         return $this->requestJson('/discover/movie', $filters);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * GET /authentication é o endpoint do TMDB que só confere o token (200
+     * = aceito, 401 = recusado). Sem resposta em PROBE_TIMEOUT segundos, o
+     * TMDB conta como fora do ar.
+     *
+     * NOTA (nov/2026): criado com o painel do sistema (ROLE_DEV).
+     */
+    public function probe(): ExternalServiceStatus {
+        $started = hrtime(true);
+
+        try {
+            $status = $this->client->request('GET', self::API_BASE_URL.'/authentication', $this->options + [
+                'timeout' => self::PROBE_TIMEOUT,
+                'max_duration' => self::PROBE_TIMEOUT,
+            ])->getStatusCode();
+        } catch (TransportExceptionInterface $exception) {
+            return new ExternalServiceStatus(
+                reachable: false,
+                latencyMs: null,
+                statusCode: null,
+                error: $exception->getMessage(),
+            );
+        }
+
+        return new ExternalServiceStatus(
+            reachable: true,
+            latencyMs: round((hrtime(true) - $started) / 1_000_000, 2),
+            statusCode: $status,
+            error: match (true) {
+                $status >= 200 && $status < 300 => null,
+                $status === 401, $status === 403 => 'Authentication rejected by TMDB (check TMDB_TOKEN)',
+                $status === 429 => 'Rate limited by TMDB',
+                default => sprintf('TMDB answered with HTTP %d', $status),
+            },
+        );
     }
 
     /**

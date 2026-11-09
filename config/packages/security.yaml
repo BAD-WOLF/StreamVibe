@@ -114,6 +114,9 @@ security:
     # administra qual conta (o admin só as abaixo do papel dele) é regra do
     # UserAdministrationPolicy, nos UseCases.
     - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/admin(/|$)', roles: ROLE_ADMIN }
+    # NOTA (nov/2026): o painel do sistema (servidor, runtime, dependências,
+    # processos e logs) é de ROLE_DEV para cima.
+    - { path: '^/[a-z]{2}(_[A-Z]{2})?/api/system(/|$)', roles: ROLE_DEV }
     # Todo o resto da API (filmes, pessoas, imagens...) exige JWT.
     - { path: '^/[a-z]{2}(_[A-Z]{2})?/api', roles: IS_AUTHENTICATED_FULLY }
     # - { path: ^/admin, roles: ROLE_ADMIN }
