@@ -72,7 +72,7 @@ final class FileLogger extends AbstractLogger implements DebugLoggerInterface {
     private int $minimumSeverity;
 
     /**
-     * O arquivo aberto (só na primeira gravação).
+     * O arquivo aberto (na primeira gravação, e de novo se alguém o fechar).
      *
      * @var resource|null
      */
@@ -101,15 +101,6 @@ final class FileLogger extends AbstractLogger implements DebugLoggerInterface {
         string $minLevel,
     ) {
         $this->minimumSeverity = self::SEVERITY[strtolower(trim($minLevel))] ?? self::SEVERITY[LogLevel::WARNING];
-    }
-
-    /**
-     * Fecha o arquivo no fim do processo.
-     */
-    public function __destruct() {
-        if (is_resource($this->handle)) {
-            fclose($this->handle);
-        }
     }
 
     /**
@@ -197,6 +188,15 @@ final class FileLogger extends AbstractLogger implements DebugLoggerInterface {
      * Grava a linha; na primeira vez, cria a pasta, faz a rotação e abre
      * o arquivo. Uma falha desliga o arquivo até o fim do processo.
      *
+     * NOTA (nov/2026): sem __destruct() que feche o arquivo — o PHP o fecha
+     * sozinho quando o logger some. Na coleta de ciclos (o container antigo
+     * entre as requisições do KernelBrowser) os destrutores rodam em
+     * qualquer ordem, e o do Doctrine\DBAL\Logging\Connection registra
+     * "Disconnecting" no logger: com o arquivo já fechado, o fwrite() lança
+     * TypeError (o @ não segura exceção). Por isso também um arquivo fechado
+     * por fora é aberto de novo, e nada daqui sai como exceção: um logger
+     * nunca derruba a requisição.
+     *
      * @param string $line
      *
      * @return void
@@ -209,11 +209,15 @@ final class FileLogger extends AbstractLogger implements DebugLoggerInterface {
         $this->busy = true;
 
         try {
-            $this->handle ??= $this->open();
+            if (!is_resource($this->handle)) {
+                $this->handle = $this->open();
+            }
 
             if ($this->handle === null || @fwrite($this->handle, $line) === false) {
                 $this->unavailable = true;
             }
+        } catch (Throwable) {
+            $this->unavailable = true;
         } finally {
             $this->busy = false;
         }

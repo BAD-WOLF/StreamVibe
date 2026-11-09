@@ -10,6 +10,7 @@ use LogicException;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\AbstractLogger;
 use Psr\Log\InvalidArgumentException;
+use ReflectionProperty;
 use RuntimeException;
 use stdClass;
 use Stringable;
@@ -214,6 +215,61 @@ final class FileLoggerTest extends TestCase
             ['first', 'The log directory cannot be created; the file log is off', 'mkdir(): File exists', 'second'],
             $inner->messages,
         );
+    }
+
+    /**
+     * Um arquivo fechado por fora é aberto de novo: a linha é gravada, sem
+     * exceção (no PHP 8 o fwrite() num arquivo fechado lança TypeError, e
+     * o @ não segura exceção).
+     */
+    public function testAClosedFileIsOpenedAgain(): void
+    {
+        $logger = $this->logger('debug');
+        $logger->info('first');
+        $handle = new ReflectionProperty(FileLogger::class, 'handle')->getValue($logger);
+        self::assertIsResource($handle);
+        fclose($handle);
+
+        $logger->info('after the close');
+
+        self::assertCount(2, $this->lines());
+        self::assertStringEndsWith('] app.INFO: after the close', $this->lines()[1]);
+    }
+
+    /**
+     * O caso dos testes de API: entre as requisições do KernelBrowser, o
+     * container antigo vira um ciclo de objetos, e o destrutor de um deles
+     * (o Doctrine\DBAL\Logging\Connection) registra "Disconnecting" no
+     * logger que está no mesmo ciclo. A linha é gravada, sem exceção.
+     */
+    public function testAnotherDestructorInTheSameCycleCanStillLog(): void
+    {
+        $inner = new class extends AbstractLogger {
+            public ?object $owner = null;
+
+            public function log($level, string|Stringable $message, array $context = []): void
+            {
+            }
+        };
+        $logger = new FileLogger($inner, $this->directory, 'dev', 'debug');
+        $logger->info('first');
+        $connection = new class($logger) {
+            public function __construct(private readonly FileLogger $logger)
+            {
+            }
+
+            public function __destruct()
+            {
+                $this->logger->info('Disconnecting');
+            }
+        };
+        // o ciclo: logger -> inner -> conexão -> logger
+        $inner->owner = $connection;
+        unset($logger, $connection, $inner);
+
+        gc_collect_cycles();
+
+        self::assertStringEndsWith('] app.INFO: Disconnecting', $this->lines()[1] ?? '');
     }
 
     public function testTheProfilerKeepsTheLogsOfTheDecoratedLogger(): void
