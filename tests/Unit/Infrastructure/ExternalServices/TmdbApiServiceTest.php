@@ -142,6 +142,55 @@ final class TmdbApiServiceTest extends TestCase
         }
     }
 
+    /**
+     * NOTA (nov/2026): a conferência do TMDB do painel do sistema
+     * (MovieDatabaseProbeInterface::probe()).
+     */
+    public function testTheProbeChecksTheTokenOnTheAuthenticationEndpoint(): void
+    {
+        $response = new MockResponse('{"success": true, "status_code": 1, "status_message": "Success."}');
+
+        $status = $this->service($response)->probe();
+
+        self::assertTrue($status->reachable);
+        self::assertSame(200, $status->statusCode);
+        self::assertNull($status->error);
+        self::assertIsFloat($status->latencyMs);
+        self::assertGreaterThanOrEqual(0.0, $status->latencyMs);
+        self::assertSame("https://api.themoviedb.org/3/authentication", $response->getRequestUrl());
+        self::assertContains("Authorization: Bearer test-token", $response->getRequestOptions()["headers"]);
+        self::assertSame(5.0, $response->getRequestOptions()["timeout"]);
+    }
+
+    /**
+     * @return iterable<string, array{int, string}>
+     */
+    public static function probeAnswerProvider(): iterable
+    {
+        yield "token rejected" => [401, "Authentication rejected by TMDB (check TMDB_TOKEN)"];
+        yield "forbidden" => [403, "Authentication rejected by TMDB (check TMDB_TOKEN)"];
+        yield "rate limited" => [429, "Rate limited by TMDB"];
+        yield "down" => [503, "TMDB answered with HTTP 503"];
+    }
+
+    #[DataProvider("probeAnswerProvider")]
+    public function testTheProbeReportsAnAnswerThatIsNotOk(int $httpCode, string $error): void
+    {
+        $status = $this->service(new MockResponse("{}", ["http_code" => $httpCode]))->probe();
+
+        self::assertTrue($status->reachable, "TMDB answered");
+        self::assertSame([$httpCode, $error], [$status->statusCode, $status->error]);
+    }
+
+    public function testTheProbeWithoutAnAnswerIsNotReachable(): void
+    {
+        $status = $this->service(new MockResponse("", ["error" => "Could not resolve host: api.themoviedb.org"]))->probe();
+
+        self::assertFalse($status->reachable);
+        self::assertSame([null, null], [$status->latencyMs, $status->statusCode]);
+        self::assertStringContainsString("Could not resolve host", (string) $status->error);
+    }
+
     private function service(MockResponse $response): TmdbApiService
     {
         return new TmdbApiService(new MockHttpClient($response), new NullLogger(), "test-token");

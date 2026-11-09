@@ -65,6 +65,10 @@ final class ApiAccessControlTest extends WebTestCase
         yield "admin: accounts" => ["/pt_BR/api/admin/users"];
         yield "admin: an account" => ["/en/api/admin/users/1"];
         yield "admin: audit log" => ["/es/api/admin/audit-log"];
+        // NOTA (nov/2026): o painel do sistema (ROLE_DEV).
+        yield "system: server" => ["/pt_BR/api/system/server"];
+        yield "system: processes" => ["/en/api/system/processes"];
+        yield "system: a log file" => ["/es/api/system/logs/prod.log"];
     }
 
     #[DataProvider("protectedRouteProvider")]
