@@ -9,7 +9,7 @@
 #   nginx (docker/nginx/default.conf) manda o PHP por FastCGI para
 #   app:9000 — nenhuma requisição chegava ao Symfony.
 # Agora é PHP-FPM na 9000, como o nginx espera, sem dependências de dev.
-FROM php:8.4-fpm AS app
+FROM php:8.5-fpm AS app
 
 WORKDIR /app
 
